@@ -1,0 +1,68 @@
+---
+title: "Publish & test a flow"
+description: "Safely ship a flow — dry-run, publish, monitor, roll back."
+---
+
+A flow can sit as a **draft** forever — it won't affect a real conversation until you publish. Always test before you publish.
+
+## Dry-run
+
+In the flow editor, click **Test run**. You get a simulation panel:
+
+1. Pick a **trigger event** (e.g. `message_received` on WhatsApp).
+2. Fill in simulated message text, tags, contact fields.
+3. Click **Run**.
+
+The canvas lights up each node as it executes. You see:
+
+- which conditions matched
+- what message would have been sent (not actually sent)
+- which assignee would have been chosen
+- any tags / actions that would have fired
+
+Iterate until it matches your expectation.
+
+## Validation
+
+When you click **Publish**, Keloa validates the flow and blocks publishing if:
+
+- A node is missing a required config (e.g. Message with empty template).
+- A Condition has an unreachable branch.
+- A WhatsApp Message is outside the 24-hour window and isn't a template.
+- The flow would loop indefinitely.
+
+Fix the red nodes it highlights, then publish.
+
+## Publishing
+
+Click **Publish**. The flow:
+
+- Gets a version stamp.
+- Becomes live immediately — next matching trigger runs it.
+- Previous version is archived (not deleted).
+
+## Monitor
+
+Open the flow → **Runs** tab for a live log:
+
+- Every trigger firing (timestamp, conversation link)
+- Which branch was taken at each condition
+- What nodes ran
+- Any error messages
+
+You can filter by status (success / partial / failed) and date.
+
+## Rollback
+
+Go to **Versions** → pick a previous published version → **Restore**. It becomes live immediately. The broken version stays archived in case you want to compare or patch.
+
+## Pausing
+
+Toggle the flow's status to **paused** to stop all runs without deleting. Useful during incidents or while redesigning.
+
+## Best practices
+
+- **Ship small, iterate.** One flow, one purpose. Don't build a mega-flow with 30 nodes.
+- **Tag from the flow**, so you can measure its impact later in analytics.
+- **Dry-run three scenarios**: the happy path, an edge case, and a "nothing matches" case.
+- **Review runs weekly** for the first month. Most surprises show up in the first 100 runs.

@@ -1,0 +1,82 @@
+---
+title: "Website crawl"
+description: "Paste a URL — Keloa crawls your site and turns every page into answerable knowledge."
+---
+
+The fastest way to give your agent broad coverage of what your business does is to let it read your website.
+
+## Add a crawl
+
+<Steps>
+  <Step title="Open Knowledge">
+    Sidebar → **Knowledge** → **New source** → **Website crawl**.
+  </Step>
+  <Step title="Paste the URL">
+    Top-level domain works best: `https://acme.com`. You can also start from a sub-section (`/docs`) to scope the crawl.
+  </Step>
+  <Step title="Pick an agent">
+    Choose which AI agent should have access. You can reassign later.
+  </Step>
+  <Step title="Start the crawl">
+    Click **Create**. Keloa:
+
+    1. Discovers the sitemap (or crawls outward from the URL).
+    2. Fetches each page.
+    3. Extracts clean text (no menus, no footers).
+    4. Chunks it and indexes it.
+
+    Small sites finish in a minute; large ones take a few minutes to an hour.
+  </Step>
+</Steps>
+
+## What gets crawled
+
+- Pages on the same domain.
+- Content accessible to anonymous visitors (logged-in areas are **not** fetched).
+- HTML — not PDFs linked from pages. Upload those separately as [file uploads](/knowledge/file-upload).
+
+## What gets ignored
+
+- Navigation, footers, cookie banners.
+- JavaScript-rendered content that's not prerendered.
+- Pages blocked by `robots.txt` or `noindex`.
+- Off-domain links.
+
+## Page limits
+
+| Plan | Pages per source |
+| --- | --- |
+| Starter | 50 |
+| Growth | 500 |
+| Business | 5 000 |
+| Scale | Unlimited |
+
+If your site has more pages than your cap, the crawl stops at the cap — we prioritise top-level pages first.
+
+## Watching progress
+
+On the **Knowledge** list, the source status cycles **queued → syncing → synced**. Click the row to see individual pages, their status, and word count. Click **View pages** to inspect what was extracted.
+
+## Keeping content fresh
+
+A crawl is a snapshot at that moment. Two ways to keep it current:
+
+- **Recrawl manually** — open the source → **Recrawl**. Re-fetches and re-indexes.
+- **Schedule auto-recrawl** (Business plan and up) — daily or weekly.
+
+When a page is removed from your site, it stays in the index until the next recrawl.
+
+## Tips
+
+- Start with your top-level domain. Scope down only if the crawl pulls in irrelevant content (blog posts, legal boilerplate).
+- After the crawl, chat with the agent ([Test](/agents/test-agent)) and look for bad answers. Those point at missing or stale pages — patch with a **Q&amp;A pair** rather than rewriting the site.
+- If a specific page shouldn't be indexed, add it to your `robots.txt`.
+
+## Troubleshooting
+
+| Issue | Try |
+| --- | --- |
+| Crawl status stuck on **syncing** for >1 hour | Open the source → **Retry**. If still stuck, contact support. |
+| Pages have garbled text | The page is likely JS-rendered. Use a file upload of the content instead. |
+| Crawl captured 0 pages | Check the URL scheme (`https://`), check `robots.txt`. |
+| Answer uses outdated price | The page was crawled before the change. **Recrawl** the source. |

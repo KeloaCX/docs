@@ -1,0 +1,53 @@
+---
+title: "Tools"
+description: "Let your agent do things, not just answer — look up orders, hand off, fetch tracking."
+---
+
+Out of the box, your agent answers questions. **Tools** let it take actions — looking up a Shopify order, escalating to a teammate, or pulling a tracking number.
+
+## Managing tools
+
+Open **AI agents → edit agent → Tools**, or go to **Integrations → Tools** for workspace-wide toggles.
+
+Each tool has:
+
+- a **key** (e.g. `shopify.orders.lookup`)
+- a short description of what it does
+- an **enabled/disabled** switch
+- optional config (e.g. which store to query)
+
+## Built-in tools
+
+| Tool | What it does | Requires |
+| --- | --- | --- |
+| **Handoff to human** | Assign the conversation to a teammate when the AI can't help | — |
+| **Tag conversation** | Apply a tag the agent picks (e.g. `returns`) | — |
+| **Collect email** | Ask the visitor for an email if not known | — |
+
+## Integration-gated tools
+
+These appear only when the relevant integration is connected:
+
+| Tool | Integration |
+| --- | --- |
+| **Shopify: look up order** | [Shopify](/channels/shopify) |
+| **Shopify: search products** | [Shopify](/channels/shopify) |
+| **Shopify: tracking lookup** | [Shopify](/channels/shopify) |
+
+Connect the integration first, then the tools become switchable on your agent.
+
+## When tools fire
+
+The agent decides per-message whether to use a tool. The decision is based on the system prompt and the conversation — e.g. *"customer said 'where is my order #1234'"* → call `shopify.orders.lookup`.
+
+You can force tool usage with the system prompt: *"Whenever a customer mentions an order number, call `shopify.orders.lookup` before answering."*
+
+## Seeing tool calls
+
+In any conversation, open **Sources** on the context drawer — it shows which knowledge passages **and** which tools were used for each reply. Handy when an answer looks surprising.
+
+## Tool limits
+
+- Some plans cap how many tools can be active per agent. See [Plans](/billing/plans).
+- Each tool call counts against your credit allowance just like a reply.
+- If a tool fails (e.g. Shopify down), the agent falls back to answering from knowledge alone and mentions it couldn't fetch live data.

@@ -1,0 +1,50 @@
+---
+title: "Triggers"
+description: "Every event that can start a flow, and how to scope it."
+---
+
+A **Trigger** node is where every flow begins. Each flow has exactly one Trigger.
+
+## Events
+
+| Event | Fires when |
+| --- | --- |
+| `message_received` | A new inbound message arrives on any conversation |
+| `conversation_opened` | A conversation is created (first inbound message) |
+| `conversation_reopened` | A resolved conversation gets a new inbound message |
+| `contact_created` | A new contact is created (first time we see this person) |
+
+You pick one event per flow. If you need multiple events to feed the same logic, duplicate the flow and change the trigger.
+
+## Channel scoping
+
+By default a trigger fires on **all channels**. Scope it to one or more:
+
+- Webchat
+- Email
+- WhatsApp
+- Instagram
+- Messenger
+- Shopify
+
+This is how you build channel-specific flows — different greetings, different routing, different after-hours handling.
+
+## Timing
+
+Triggers fire **before** the AI agent replies. So if your flow sends a message or does a handoff, it happens before the AI would have. If the flow just tags or sets a condition and falls through, the AI proceeds as usual.
+
+Want to trigger **after** the AI replies instead? Use a flow with `message_received` and no blocking action — it'll run in parallel.
+
+## Multiple flows on the same trigger
+
+You can have several flows on `message_received`. All matching flows run. If two flows both try to handoff, the first one wins — the second is skipped (you'll see this in the flow log).
+
+Order of execution across flows is stable but not configurable. If you need strict ordering, combine them into one flow with conditional branches.
+
+## Debouncing
+
+Triggers don't debounce on their own — a burst of 5 messages in 2 seconds will fire 5 times. If you want to act only once per conversation, check the conversation for an internal tag the flow sets, and skip if it's there.
+
+## Disabling a trigger
+
+Pause the flow (**⋯ → Pause**) to disable every trigger in it without deleting. Resume restores.

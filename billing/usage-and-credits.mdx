@@ -1,0 +1,59 @@
+---
+title: "Usage & credits"
+description: "How AI credits work, where usage shows, and what to do when you're approaching the cap."
+---
+
+Every plan includes a monthly allowance of **AI credits**. A credit is roughly one AI round-trip — one reply, or one tool call.
+
+## What counts as a credit
+
+| Event | Credits |
+| --- | --- |
+| AI reply on a channel | 1 |
+| AI-drafted reply you edit and send | 1 |
+| Tool call (Shopify order lookup, etc.) | 1 |
+| Flow **Message** node sending a fixed template | 0 |
+| Flow **Condition** / **Action** / **Resolve** / **Handoff** nodes | 0 |
+| Knowledge ingestion (crawl, file parse) | 0 |
+| Manual reply typed by a teammate | 0 |
+
+Rule of thumb: the AI using the LLM costs a credit. Humans and deterministic automation don't.
+
+## See your usage
+
+Sidebar → **Settings → Plan &amp; billing** shows:
+
+- Current period usage vs cap
+- Rolling 30-day chart
+- Breakdown by agent and channel
+
+Usage also surfaces as a banner in-app when you're above 80% and again above 100% of the cap.
+
+## What happens at the cap
+
+- **At 100%** — new AI replies are blocked until you top up or next cycle starts. Human teammates can still reply; flows still fire condition/action/handoff/resolve nodes; knowledge still works.
+- **At cap + grace** (Business+) — Keloa sends a warning but keeps the AI running for 7 days so you're not stuck. You'll be billed for the overage.
+
+## Top up
+
+From the usage page, click **Top up credits**. Pick a bundle (Business+) or upgrade to a bigger plan. Top-ups apply instantly.
+
+## Per-agent quota (Scale)
+
+On the Scale plan, you can set a **per-agent monthly quota** to prevent one agent from consuming everything. Configure in the agent's edit screen → **Limits**.
+
+## Credit-saving tips
+
+- **Refine your system prompt** to keep replies short.
+- **Use flows for deterministic paths** (after-hours, tagging) — those are free.
+- **Use macros** for the 10 most common human replies — no AI cost at all.
+- **Tighten knowledge** — irrelevant passages make the model work harder and waste tokens.
+- **Disable unused tools** per agent — fewer surface-area, fewer accidental calls.
+
+## Past-due grace
+
+If your card fails at renewal, Keloa keeps service running for **7 days** while we retry. After that, the workspace downgrades to Starter caps until billing is fixed. Nothing is deleted — you can upgrade and pick up where you left off.
+
+## Invoices
+
+See [Manage subscription](/billing/manage-subscription) for invoices, card changes, and cancellation.

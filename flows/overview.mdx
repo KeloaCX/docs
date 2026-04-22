@@ -1,0 +1,91 @@
+---
+title: "Flows overview"
+description: "Visual automation for your inbox — triggers, conditions, messages, actions, handoffs."
+---
+
+A **flow** is a visual automation you build by dragging nodes onto a canvas and connecting them. Use flows to route, tag, escalate, or auto-reply — layered on top of your AI agent.
+
+## When to use a flow
+
+- **Routing** — send VIP customers to a senior teammate immediately.
+- **Escalation** — if the AI can't resolve in 2 turns, hand off.
+- **Auto-tagging** — tag anything mentioning "refund" with `returns`.
+- **Auto-replies** — send a templated greeting when a conversation opens on a specific channel.
+- **After-hours** — politely acknowledge messages outside business hours.
+
+You don't need a flow for the AI to answer — that happens automatically once an agent is attached to a channel. Flows add deterministic logic on top.
+
+## Node types
+
+<CardGroup cols={2}>
+  <Card title="Trigger" icon="bolt">
+    The start. Fires on *message received*, *conversation opened*, *contact created*.
+  </Card>
+  <Card title="Condition" icon="code-branch">
+    Branch on channel, tag, AI intent, language, or a custom field.
+  </Card>
+  <Card title="Message" icon="comment">
+    Send a message to the customer (with optional delay).
+  </Card>
+  <Card title="Action" icon="wrench">
+    Tag, set priority, assign, collect an email.
+  </Card>
+  <Card title="Handoff" icon="user-plus">
+    Route to a teammate, team, or round-robin within a specialty.
+  </Card>
+  <Card title="Resolve" icon="circle-check">
+    Close the conversation, optionally send CSAT.
+  </Card>
+</CardGroup>
+
+## Plan availability
+
+Flows are available from the **Growth** plan upwards. Caps:
+
+| Plan | Flows |
+| --- | --- |
+| Starter | — |
+| Growth | 3 |
+| Business | 10 |
+| Scale | Unlimited |
+
+## Typical flow shapes
+
+**Triage flow:**
+```
+Trigger (message received)
+  → Condition (channel == WhatsApp AND tag == "vip")
+      ├── Yes → Handoff (senior team)
+      └── No  → let AI continue
+```
+
+**After-hours flow:**
+```
+Trigger (message received)
+  → Condition (business hours)
+      ├── Open   → let AI continue
+      └── Closed → Message ("We're back at 9") → Action (tag "after-hours")
+```
+
+**CSAT on resolve:**
+```
+Trigger (conversation resolved)
+  → Resolve (csat enabled, delay 30s)
+```
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Build a flow" icon="diagram-project" href="/flows/build-a-flow">
+    Step-by-step for your first flow.
+  </Card>
+  <Card title="Triggers" icon="bolt" href="/flows/triggers">
+    Every event you can start a flow on.
+  </Card>
+  <Card title="Conditions" icon="code-branch" href="/flows/conditions">
+    Fields, operators, and combining logic.
+  </Card>
+  <Card title="Publish &amp; test" icon="rocket" href="/flows/publish-and-test">
+    Safely ship a flow to production.
+  </Card>
+</CardGroup>

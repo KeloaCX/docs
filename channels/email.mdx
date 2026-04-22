@@ -1,0 +1,77 @@
+---
+title: "Email"
+description: "Turn support@yours into an AI-handled inbox with branded replies."
+---
+
+Connect an email address (or several) so that messages to `support@yourdomain.com` land in Keloa, get an AI reply, and send back through your domain with your branding.
+
+## Two parts: inbound and outbound
+
+- **Inbound** — forward mail *to* Keloa so we receive it.
+- **Outbound** — verify your domain with Keloa so replies *from* you look legitimate (pass SPF/DKIM).
+
+Both are required for a working email channel.
+
+## Connect an email channel
+
+<Steps>
+  <Step title="Open the integration">
+    Sidebar → **Integrations** → **Email** → **Connect**.
+  </Step>
+
+  <Step title="Create an inbound address">
+    Keloa generates an address like `acme-abc123@inbound.keloa.cx`. This is where email should be *forwarded* (not the final sender address shown to customers — that comes in step 4).
+  </Step>
+
+  <Step title="Add a forwarding rule">
+    Set up your existing mailbox to forward to the inbound address above.
+    - **Google Workspace** → Admin → Gmail → Routing → Add rule → forward to Keloa.
+    - **Microsoft 365** → Exchange admin → Mail flow rule → redirect to Keloa.
+    - **cPanel / generic** → Mail → Forwarders.
+
+    Send a test email to `support@yourdomain.com`. It should appear in the **Inbox** within seconds.
+  </Step>
+
+  <Step title="Verify your sending domain">
+    Go to **Settings → Email domains → Add domain** and enter your domain (e.g. `yourdomain.com`).
+
+    Keloa shows three DNS records to add:
+    - SPF (`TXT`)
+    - DKIM (`CNAME` × 2)
+
+    Add them at your DNS provider. Click **Verify** once propagated (usually 5–30 minutes).
+  </Step>
+
+  <Step title="Set the sender address">
+    Once the domain is verified, pick the visible sender — e.g. `support@yourdomain.com`. Replies from Keloa will come from that address, threaded with the original, with your workspace signature.
+  </Step>
+</Steps>
+
+## Reply behaviour
+
+- Each conversation is one email thread — replies are threaded on `Message-ID`.
+- Your workspace signature (Settings → Workspace → Signature) is appended automatically.
+- Quoted text from customers is collapsed in the inbox so you only see the new content.
+
+## What the AI does
+
+Everything it does on other channels: drafts replies, answers from your knowledge, uses tools, hands off via flows.
+
+Out-of-office and vacation auto-responders are detected and ignored — the AI won't get stuck in a loop.
+
+## Attachments
+
+Up to 25 MB per email, inline or attached. Images preview in the inbox; PDFs download on click.
+
+## Disconnecting
+
+**Integrations → Email → Disconnect** stops new forwards from being accepted. Remove your forwarding rule at the source as well to avoid bounces.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| Emails not arriving | Send a test to the inbound address. If that works, the forwarding rule is the issue. |
+| Outbound rejected as spam | DKIM not verified. Re-check DNS records. |
+| Replies threading as new conversations | Your forwarder is stripping `In-Reply-To` — check it's passing raw headers. |
+| Auto-responder loops | They're auto-detected and suppressed. If one slips through, mark that conversation as **spam**. |

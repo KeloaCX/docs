@@ -1,0 +1,60 @@
+---
+title: "Test an agent"
+description: "Chat with your agent before letting it loose on customers."
+---
+
+Never let an untested agent go live on a channel. Keloa gives you a private chat panel against any agent — same knowledge, same prompt, same tools — before a real customer ever talks to it.
+
+## Open the Try panel
+
+**AI agents** → click the agent card → **Try this agent**.
+
+You get a chat interface. Ask anything a customer would. Responses show:
+
+- the reply the agent would send
+- which knowledge sources it pulled from (click **Sources** to expand)
+- any tools it called and the tool result
+
+Nothing here touches a real customer. It's a sandbox.
+
+## What to test
+
+Run at least these five buckets:
+
+| Bucket | Examples |
+| --- | --- |
+| **Top 10 real questions** | Past inbox threads; paste them verbatim |
+| **Edge cases** | Misspellings, multi-language, long rambles |
+| **Out-of-scope** | *"Who is the CEO?"*, *"What's 2+2?"* — should acknowledge and hand off |
+| **Angry customer** | *"This is the third time I've asked…"* — should acknowledge first |
+| **Handoff trigger** | *"Can I talk to a human?"* — should immediately hand off |
+
+## What a good answer looks like
+
+- Grounded in a cited source, or honestly says it doesn't know.
+- In the customer's language.
+- Concise. Three paragraphs is usually too long.
+- Offers a next step if it can't fully answer.
+
+## What a bad answer looks like
+
+- Invents a fact. → Add the right answer to knowledge.
+- Too formal/stiff or too casual. → Adjust the voice section of the prompt.
+- Rambles. → Add *"Reply in one short paragraph unless a list is clearly better"* to the prompt.
+- Ignores a clear handoff signal. → Add *"If the user asks for a human, hand off immediately"* to the rules.
+
+## Before you flip to live
+
+Checklist:
+
+- [ ] Tested top 10 real questions
+- [ ] Tested "angry customer" and "ask for human"
+- [ ] System prompt has a handoff clause
+- [ ] Knowledge is current (no stale prices or hours)
+- [ ] A teammate is set to receive handoffs
+
+When all five are done, flip **Status → live** and attach to the channel.
+
+<Tip>
+Do the same test after any significant knowledge update — a big crawl can shift answers in unexpected ways.
+</Tip>

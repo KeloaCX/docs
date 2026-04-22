@@ -1,0 +1,57 @@
+---
+title: "Macros (saved replies)"
+description: "Save the 10 replies you send every day and insert them with a slash."
+---
+
+Macros are your saved replies. Type `/` in the composer, pick one, and the text appears — variables filled in.
+
+## Create a macro
+
+1. Open **Settings → Macros**.
+2. Click **New macro**.
+3. Give it a short **name** (this is what you search for).
+4. Write the **body** — plain text with optional Markdown.
+5. Save.
+
+## Variables
+
+You can reference dynamic values with `{{...}}`:
+
+| Variable | Renders |
+| --- | --- |
+| `{{contact.first_name}}` | Contact's first name, or "there" if we don't know it |
+| `{{contact.name}}` | Full name |
+| `{{contact.email}}` | Email address |
+| `{{contact.company}}` | Company name, if set |
+| `{{agent.name}}` | You, the replying teammate |
+| `{{workspace.name}}` | Your workspace name |
+
+Example:
+
+```text
+Hi {{contact.first_name}} — thanks for reaching out to {{workspace.name}}!
+I've forwarded this to our returns team and we'll get back within 1 business day.
+
+— {{agent.name}}
+```
+
+## Inserting a macro
+
+In any composer, type `/` and start typing the macro name. Pick with arrow keys and <kbd>Enter</kbd>, or click. The body is inserted where your cursor is — you can still edit it before sending.
+
+## Use in flows
+
+Macros can also be referenced from **Message** nodes in flows, so auto-replies stay consistent with what your team sends manually. See [Messages &amp; actions](/flows/messages-and-actions).
+
+## Good macros
+
+- are short — a paragraph, not a page
+- address one intent (e.g. *"we received your return"*, not *"returns FAQ"*)
+- use variables for anything that changes per contact
+- read well with no edit — if you always tweak one, update the macro
+
+## Tips
+
+- Keep macros under ~30. More than that and finding the right one is slower than typing.
+- Use short, searchable names — `shipping-eu-delay` beats `Shipping EU Delay Response Template (Updated)`.
+- Pair common macros with tags — e.g. when a macro is about returns, also add the `returns` tag to the conversation so analytics pick it up.

@@ -1,0 +1,62 @@
+---
+title: "File upload"
+description: "Upload PDFs, DOCX, TXT, or Markdown. Great for policies, manuals, and specs."
+---
+
+Any content that isn't on your public site lives better as a file upload — policies, supplier specs, internal manuals you want the agent to reference.
+
+## Add a file
+
+<Steps>
+  <Step title="Open Knowledge">
+    Sidebar → **Knowledge** → **New source** → **File upload**.
+  </Step>
+  <Step title="Drop or pick your files">
+    Drag and drop, or click to browse. You can upload multiple at once.
+  </Step>
+  <Step title="Pick an agent">
+    Which agent this content is for.
+  </Step>
+  <Step title="Create">
+    Files parse in the background. Status flips to **synced** when the agent can use them.
+  </Step>
+</Steps>
+
+## Supported formats
+
+| Type | Extension | Notes |
+| --- | --- | --- |
+| PDF | `.pdf` | Text extraction — scans need OCR first |
+| Word | `.docx` | Tables and lists preserved |
+| Plain text | `.txt` | The cleanest option |
+| Markdown | `.md`, `.mdx` | Headings help chunking — use them |
+
+## Good file practices
+
+- **Split giant PDFs.** A 500-page PDF is harder to search than 10× 50-page topical files. Break by topic if you can.
+- **Prefer Markdown when the source allows it.** Clean, short, structured — the ideal format for retrieval.
+- **Remove cover pages and legalese.** They dilute searches. Keep the substantive content.
+- **Name files meaningfully.** `shipping-policy-eu-2026.pdf` ranks better in citations than `doc (2).pdf`.
+
+## Updating a file
+
+To replace a file: delete the old source, add a new one. A diff-based replace is on our roadmap.
+
+## Limits
+
+| Plan | Knowledge storage |
+| --- | --- |
+| Starter | 5 MB |
+| Growth | 50 MB |
+| Business | 500 MB |
+| Scale | 5 GB |
+
+Individual files are capped at 25 MB. Split larger ones.
+
+## Security
+
+Files are stored in the EU, encrypted at rest. Only your workspace can retrieve them. If you delete a file, it's purged from the index within minutes and from storage within 24 hours.
+
+<Warning>
+Don't upload documents with customer personal data you wouldn't want the AI to reference. If a passage can be retrieved, it can appear (heavily paraphrased) in a reply.
+</Warning>

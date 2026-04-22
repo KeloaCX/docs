@@ -1,0 +1,53 @@
+---
+title: "Resolving conversations"
+description: "Close conversations cleanly, collect CSAT, and know when to reopen."
+---
+
+Resolving a conversation closes it out — removes it from the open list, stops the SLA timer, and optionally triggers a CSAT survey.
+
+## Resolve a single conversation
+
+Press <kbd>e</kbd> or click **Resolve** in the conversation header.
+
+You can add an optional **resolution type**:
+
+- **Resolved** — the normal case
+- **No action needed** — spam, mis-directed, nothing to do
+- **Duplicate** — same as another conversation
+- **Spam** — filter and never show again
+
+## Bulk resolve
+
+Select conversations in the list, then **Resolve** in the bulk bar. Useful after triage.
+
+## Reopen
+
+A resolved conversation reopens automatically when the contact sends a new message. You can also reopen manually:
+
+- Open the conversation (use the **Resolved** filter or search) and press <kbd>r</kbd>.
+- Or click **Reopen** in the header.
+
+## CSAT (customer satisfaction)
+
+If CSAT is enabled on a flow's **Resolve** node, a one-tap survey is sent after resolution — 👍 / 😐 / 👎 — and the result appears on the conversation and in analytics.
+
+Enable CSAT per flow, or globally by asking support to turn it on for every resolved conversation.
+
+<Tip>
+Don't CSAT everything. Send it on human-resolved conversations, skip it for "no action needed" and spam.
+</Tip>
+
+## Resolution time
+
+The clock starts when the first inbound message lands and stops when you resolve. Shown in **Analytics → Response times**, and broken down by channel, tag, and assignee.
+
+## When to resolve
+
+- Customer confirmed the issue is sorted ("thanks, that worked!").
+- You've given a final answer and there's no expected follow-up.
+- The conversation is spam or misrouted.
+
+## When *not* to resolve
+
+- You're waiting on the customer. Use the tag `waiting-on-customer` instead, and keep it open.
+- The AI promised a follow-up that hasn't happened. Let the flow auto-follow-up, then resolve.

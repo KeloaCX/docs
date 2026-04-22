@@ -1,0 +1,85 @@
+---
+title: "WhatsApp Business"
+description: "Connect WhatsApp Business API to unify WhatsApp messages into your Keloa inbox."
+---
+
+Keloa connects to WhatsApp via the official **WhatsApp Business Platform**. This is the business-grade API, not the WhatsApp Business app — it lets you message from a shared team inbox with automation and AI.
+
+## Prerequisites
+
+- A **Meta Business account** (business.facebook.com).
+- A phone number **not** currently registered with any WhatsApp app. If it's in use in the consumer app, you'll need to deregister it first.
+- Permission to manage the business on Meta.
+
+## Connect WhatsApp
+
+<Steps>
+  <Step title="Open the integration">
+    Sidebar → **Integrations** → **WhatsApp Business** → **Connect**.
+  </Step>
+
+  <Step title="Sign in with Meta">
+    You'll be redirected to Meta's Embedded Signup flow. Sign in and pick the business.
+  </Step>
+
+  <Step title="Create or choose a WhatsApp Business Account (WABA)">
+    If this is your first integration, create a WABA. Otherwise pick the existing one.
+  </Step>
+
+  <Step title="Verify the phone number">
+    - Enter the phone number to use.
+    - Receive the SMS/call verification code and enter it.
+    - Pick a display name (e.g. "Acme Support"). Meta reviews this — usually minutes, sometimes a day.
+  </Step>
+
+  <Step title="Return to Keloa">
+    Meta redirects back. Your WhatsApp channel is now **connected**. Incoming messages start flowing into the Keloa inbox.
+  </Step>
+</Steps>
+
+## The 24-hour customer service window
+
+WhatsApp distinguishes between:
+
+- **Session messages** — free-form, sent within 24 hours of the last customer message. No restrictions.
+- **Template messages** — required for anything outside that window. Must be pre-approved by Meta.
+
+Keloa enforces this automatically — if you try to send a free-form message outside the window, we'll block it and prompt you to pick a template.
+
+## Message templates
+
+A **template** is a pre-approved message with optional placeholders. Examples: appointment reminder, order-shipped update, re-engagement.
+
+### Creating a template
+
+1. Settings → **WhatsApp templates** → **New template**.
+2. Pick a category (utility / marketing / authentication).
+3. Write the body with `{{1}}`, `{{2}}` placeholders for dynamic parts.
+4. Submit for Meta approval.
+
+Approval takes minutes to a few hours. Approved templates appear in the composer's **Template** picker.
+
+### Sending a template
+
+In a conversation outside the 24-hour window, the composer will automatically switch to template mode. Pick one, fill variables, send.
+
+## What the AI does
+
+The AI agent replies **within** the 24-hour window like on any other channel. Outside the window, it cannot reply (no free-form allowed) — your flow should handle re-engagement via templates if needed.
+
+## Multiple numbers
+
+You can connect several numbers to the same workspace — each is a separate WhatsApp channel with its own phone and its own default agent.
+
+## Disconnecting
+
+**Integrations → WhatsApp → Disconnect** unlinks the WABA in your Keloa workspace. The number itself stays registered with Meta — deregister it from Meta if you want to move it elsewhere.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| Verification SMS never arrives | Try the voice-call option. Some carriers block 6-digit SMS codes. |
+| "Phone number already registered" | Number is in use in the WhatsApp consumer app. Deregister it in WhatsApp settings → Account → Delete account → two-factor PIN. |
+| Template rejected | Read the rejection reason. Usually promotional content in a utility template, or missing opt-in. |
+| Messages sent but not received | Check the display name has been approved. Customers can still message you before approval, but outbound from business is gated. |

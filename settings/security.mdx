@@ -1,0 +1,74 @@
+---
+title: "Security"
+description: "SSO, 2FA, audit log — hardening your workspace."
+---
+
+Security settings live in **Settings → Security**. What's available depends on your plan.
+
+## Two-factor authentication (2FA)
+
+Every user can enable 2FA on their own account (see [Password &amp; 2FA](/account/password-and-2fa)). Admins can **require** 2FA for all members of a workspace:
+
+- **Settings → Security → Require 2FA** → toggle on.
+- Members without 2FA are prompted to set it up on next login.
+
+Available on all plans.
+
+## Single sign-on (SSO)
+
+Available on **Scale** plan.
+
+Supported protocols:
+
+- **SAML 2.0** (Okta, Azure AD, JumpCloud, etc.)
+- **OIDC** (Google Workspace, generic OIDC providers)
+
+Set up in **Settings → Security → SSO**:
+
+1. Pick protocol.
+2. Enter your IdP metadata.
+3. Keloa gives you the ACS URL and entity ID to paste into your IdP.
+4. Test with one user.
+5. Enforce for all members.
+
+Just-in-time provisioning: new users land with a configurable default role.
+
+## Audit log
+
+**Settings → Security → Audit log** records every admin action:
+
+- Member invites, role changes, removals
+- Channel connects and disconnects
+- Knowledge source adds and deletes
+- Flow publishes
+- Retention policy changes
+- Data exports and contact deletions
+
+Each entry has timestamp, operator, IP address, and user agent. Export to CSV for compliance reporting.
+
+Available on **Business** and **Scale**.
+
+## Session management
+
+- Sessions expire after **30 days** of inactivity (configurable down to 24 hours on Business+).
+- Force sign-out all sessions from **Settings → Security → Revoke all sessions**.
+
+## IP allowlist
+
+Scale only. Restrict inbox access to a list of IP ranges (your offices, VPN). Public channel webhooks still work — the allowlist only applies to the inbox UI.
+
+## Brute-force protection
+
+Login endpoints are rate-limited (5 attempts per minute per IP). Repeated failures lock the account for 15 minutes and email the account owner.
+
+## Bug bounty
+
+We run a private bug bounty. Responsible disclosure via [security@keloa.cx](mailto:security@keloa.cx) — we respond within 24 hours.
+
+## Compliance
+
+- GDPR-compliant. Data Processing Agreement available on request.
+- SOC 2 Type II (in progress, target 2026).
+- ISO 27001 (planned).
+
+See [Data &amp; privacy](/settings/data-and-privacy) for the privacy-facing controls.

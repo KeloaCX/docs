@@ -1,0 +1,72 @@
+---
+title: "Handoff & resolve"
+description: "Hand conversations to humans, and close them out with optional CSAT."
+---
+
+## Handoff node
+
+A **Handoff** node assigns the conversation to a teammate and signals that the AI should step back.
+
+### Targets
+
+| Target type | Use when |
+| --- | --- |
+| **User** | You want this specific person (e.g. account manager for a VIP) |
+| **Team** | You want any member of a team (e.g. Senior support) |
+| **Round-robin within specialty** | You want even distribution across everyone with a specialty |
+
+### Reason
+
+Add a short reason (*"VIP customer"*, *"Complex billing issue"*). It's shown to the assignee in the conversation header so they know why it landed with them.
+
+### What handoff actually does
+
+- Assigns the conversation to the chosen teammate / team.
+- Stops the AI from replying (you can hand back manually).
+- Sends a desktop notification to the assignee.
+- Clears the AI's "responding" indicator in the widget.
+
+### Let the AI continue after a human
+
+If a teammate resolves the issue and the customer asks a follow-up later, the **AI takes over again** once the conversation goes back to an unassigned state (`Unassign` from the header).
+
+## Resolve node
+
+A **Resolve** node closes the conversation — optional at the end of any flow.
+
+### Configure
+
+- **Resolution type** — resolved / no action needed / duplicate / spam
+- **CSAT enabled** — send the one-tap survey after resolving
+- **CSAT delay** — in seconds (e.g. 30s so the customer doesn't feel rushed)
+
+### CSAT
+
+When enabled, the customer sees a 👍 / 😐 / 👎 prompt right after resolution. Results appear on the conversation and in **Analytics**.
+
+CSAT is **only** sent through the same channel the conversation was on. Email CSATs include a one-click link; webchat and messaging CSATs are inline buttons.
+
+## Combining handoff and resolve
+
+Rarely in the same flow — usually one or the other. But they do combine in one pattern:
+
+```
+Trigger (message received)
+  → Condition (intent equals "cancellation" AND sentiment equals "negative")
+      ├── Yes → Handoff (retention team, reason "angry cancel")
+      └── No  → (end)
+```
+
+...and a separate flow:
+
+```
+Trigger (conversation resolved)
+  → Resolve (csat_enabled: true, delay 30s)
+```
+
+The first escalates the right cases to humans; the second asks every resolved customer how it went.
+
+## Important
+
+- A flow that does **Handoff** should not also send a **Message** right after — the human will, and two messages looks unprofessional. If you want a reassurance message, send it from the flow *before* the handoff.
+- **Resolve** is the actual close. If you only want to tag "resolved-by-ai" without closing, use an **Action** node with a tag — not a Resolve.

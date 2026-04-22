@@ -1,0 +1,92 @@
+---
+title: "FAQ"
+description: "Quick answers to the questions we get most."
+---
+
+## General
+
+<AccordionGroup>
+  <Accordion title="Do I need technical skills to run Keloa?">
+    No. Everything in this documentation is point-and-click. The only two technical steps are (a) pasting a script tag if you install the web widget yourself, and (b) adding DNS records if you use Keloa as your email sender. Both have step-by-step guides.
+  </Accordion>
+
+  <Accordion title="Which languages does Keloa support?">
+    The UI ships in English and Dutch. The AI can understand and reply in any language — it auto-detects from the customer's message. English, Dutch, German and French work best today.
+  </Accordion>
+
+  <Accordion title="Where is my data stored?">
+    In the EU. Application data, knowledge vectors, and attachments live in EU data centres. See [Data &amp; privacy](/settings/data-and-privacy) for the details.
+  </Accordion>
+
+  <Accordion title="Can I use Keloa for multiple brands or stores?">
+    Yes — each brand gets its own workspace. One Keloa account can belong to many workspaces. Agencies do this all the time. Scale plan offers consolidated billing across workspaces.
+  </Accordion>
+</AccordionGroup>
+
+## AI agent
+
+<AccordionGroup>
+  <Accordion title="Will the AI say things I didn't tell it to?">
+    Your agent is instructed to answer only from the knowledge you provide and the conversation itself. If it doesn't find an answer, it says so and hands off — unless your system prompt tells it otherwise. See [System prompt](/agents/system-prompt).
+  </Accordion>
+
+  <Accordion title="Can I see why the AI replied the way it did?">
+    Yes. Open any conversation and click **Sources** in the context drawer — you'll see which knowledge passages and which tool calls shaped the reply.
+  </Accordion>
+
+  <Accordion title="Can I turn the AI off for certain conversations?">
+    Yes, three ways: (1) flip the agent's status to **paused**, (2) manually reply as a teammate — the AI steps back automatically, (3) use a flow with a **Handoff** node for specific conditions.
+  </Accordion>
+
+  <Accordion title="Does the AI learn from past conversations?">
+    No. It uses the current conversation plus your knowledge base. Past conversations don't get added to the knowledge base automatically — if you want to seed from them, export and paste the best answers as **Q&amp;A pairs**.
+  </Accordion>
+</AccordionGroup>
+
+## Channels
+
+<AccordionGroup>
+  <Accordion title="Can I connect multiple WhatsApp numbers?">
+    Yes. Each number is a separate channel in Keloa, with its own default AI agent. Subject to your plan's channel cap.
+  </Accordion>
+
+  <Accordion title="Does the widget slow down my site?">
+    No. The loader is under 6 KB and loads `async`. The full widget is lazy-loaded on first interaction. It won't affect Core Web Vitals.
+  </Accordion>
+
+  <Accordion title="Can I use Keloa without email?">
+    Yes — email is optional. Plenty of workspaces run only webchat + WhatsApp, for example.
+  </Accordion>
+</AccordionGroup>
+
+## Billing
+
+<AccordionGroup>
+  <Accordion title="Is there a free plan?">
+    Yes — **Starter** is free forever. 100 AI replies/month, 1 channel, 1 seat. Upgrade any time.
+  </Accordion>
+
+  <Accordion title="What if I go over my AI credits?">
+    On Starter and Growth, the AI stops replying until the next cycle — human teammates can still respond and flows still work. On Business and Scale there's a 7-day grace where AI keeps running and overage is billed. See [Usage &amp; credits](/billing/usage-and-credits).
+  </Accordion>
+
+  <Accordion title="Can I pay by invoice / SEPA?">
+    Monthly plans are card + iDEAL + SEPA direct debit. Yearly plans on Business+ can be paid by bank invoice — email [sales@keloa.cx](mailto:sales@keloa.cx).
+  </Accordion>
+</AccordionGroup>
+
+## Security and privacy
+
+<AccordionGroup>
+  <Accordion title="Do you train models on my data?">
+    No. Every LLM we use is called with zero-retention flags set. Your prompts and completions are not used for any model training.
+  </Accordion>
+
+  <Accordion title="Can I sign a DPA?">
+    Yes. Our template DPA is available at [keloa.cx/legal/dpa](https://keloa.cx/legal/dpa) — sign and email back, or request a countersign.
+  </Accordion>
+
+  <Accordion title="How do I delete a specific customer's data?">
+    **Settings → Data &amp; privacy → Delete contact**. Erases contact, conversations, messages, attachments. Irreversible.
+  </Accordion>
+</AccordionGroup>

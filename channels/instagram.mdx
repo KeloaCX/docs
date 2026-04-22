@@ -1,0 +1,72 @@
+---
+title: "Instagram"
+description: "Connect an Instagram Professional account so DMs and story replies land in Keloa."
+---
+
+Keloa handles Instagram DMs via Meta's Instagram Messaging API. DMs, story replies, and message reactions all flow into the same inbox.
+
+## Prerequisites
+
+- An **Instagram Professional account** (Business or Creator). Consumer accounts aren't supported by the API.
+- The Instagram account **linked to a Facebook Page** (required by Meta).
+- A **Meta Business account** with admin access to that Page.
+
+## Connect Instagram
+
+<Steps>
+  <Step title="Open the integration">
+    Sidebar → **Integrations** → **Instagram** → **Connect**.
+  </Step>
+
+  <Step title="Sign in with Meta and pick the Page">
+    Pick the Facebook Page linked to the Instagram account you want to connect. All Pages you admin will be listed.
+  </Step>
+
+  <Step title="Grant messaging permissions">
+    Meta will show the permissions Keloa needs: read/send DMs, read your Page profile, subscribe to webhooks. Approve.
+  </Step>
+
+  <Step title="Done">
+    The Instagram channel is now **connected**. Test by sending a DM from another account — it should land in Keloa within a second.
+  </Step>
+</Steps>
+
+## What's supported
+
+- Direct Messages (text, images, short video, audio notes).
+- Story replies (show up as a DM with the story preview).
+- Message reactions (👍 ❤️ etc.) — appear next to the message in Keloa.
+- Read receipts — toggleable in the channel settings.
+
+## What's not supported
+
+- **Comments** on posts (these aren't part of the Messaging API).
+- **Broadcasts** — no outbound mass-messaging.
+- Message reactions **from business side** — you can only send text/media, not react.
+
+## 7-day window
+
+Like WhatsApp, Instagram has a reply window: **7 days** after the last user message. Outside that, you can only send a **human agent message** (`HUMAN_AGENT` tag) which must be sent by a human, not a bot, and is intended for a human-in-the-loop response.
+
+Keloa enforces this — the composer will disable AI replies outside the window.
+
+## What the AI does
+
+Inside the 7-day window, the AI responds like on any other channel. Outside the window, a human teammate can send a manual reply (tagged `HUMAN_AGENT`).
+
+## Multiple accounts
+
+Connect multiple Instagram accounts — each is its own channel with its own agent attachment. You'll see them as separate cards in **Integrations**.
+
+## Disconnecting
+
+**Integrations → Instagram → Disconnect** removes the Meta webhook subscription. You can also revoke access from `business.facebook.com → Business settings → Business integrations → Keloa → Remove`.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| No DMs arrive | Check the Instagram account is Professional, linked to a Page, and the Page is selected in Keloa. |
+| "Missing permissions" on connect | The signed-in Meta user isn't an admin on the Page. Grant admin or have an admin re-connect. |
+| Can't reply after 7 days | Expected — use a manual reply tagged as human-agent, or re-engage via email / another channel. |
+| Story replies show without context | Instagram only sends the story preview for 24 hours after posting — after that, the thumbnail may be gone. |

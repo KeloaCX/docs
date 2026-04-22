@@ -1,0 +1,61 @@
+---
+title: "Analytics"
+description: "Volume, response time, AI deflection, CSAT — the numbers that tell you how your support is doing."
+---
+
+The **Analytics** dashboard gives you the four or five numbers that actually matter, without burying you in charts.
+
+## Top metrics
+
+| Metric | What it tells you |
+| --- | --- |
+| **Conversations** | Total opened in the period |
+| **AI-resolved** | How many the AI handled end-to-end (no human touch). Your deflection rate. |
+| **First response time** | Median time from inbound to first reply (AI or human) |
+| **Resolution time** | Median time from open to resolved |
+| **CSAT** | % 👍 out of all rated conversations |
+
+## Time range
+
+Top-right: pick a range (today, last 7 days, 30 days, 90 days, custom). All metrics and charts update together.
+
+## Breakdowns
+
+Each chart can be broken down by:
+
+- **Channel** (webchat, email, WhatsApp, …) — see where volume lives
+- **Tag** — see which topics drive volume
+- **Assignee** — workload per teammate
+- **AI agent** — useful if you run several agents
+
+Click a bar/line segment to filter the whole dashboard to that slice.
+
+## Conversations over time
+
+A daily line chart of inbound volume. Spikes usually correspond to outages, launches, or campaign sends — hover the spike to see which tags were unusually high that day.
+
+## AI deflection
+
+A stacked bar:
+
+- **AI resolved** — AI handled it end-to-end
+- **AI assisted** — AI replied at least once, human took over to resolve
+- **Human only** — no AI involvement
+
+A healthy setup sits around **50–70% AI resolved** with most of the rest AI-assisted. If AI-resolved is low (<20%), your knowledge base probably needs more Q&amp;A pairs — those are the single biggest lever. See [Q&amp;A pairs](/knowledge/qa-pairs).
+
+## Response times
+
+Two views: first-response and resolution. Median and 90th percentile lines, plus a distribution histogram. Break down by channel or teammate to find where the slow queue is.
+
+## CSAT
+
+Overall satisfaction %, trend over time, breakdown by agent and tag. Low CSAT on a specific tag is a clue — e.g. bad ratings on `returns` usually means your return policy is harsher than customers expect.
+
+## Exporting
+
+Every chart has **⋯ → Export CSV** for the raw numbers behind it. Handy for monthly board reports.
+
+## Plan availability
+
+Analytics is available on every plan. The **AI deflection** and **CSAT** charts require AI and CSAT to actually be running — you'll see an empty state telling you how to enable them.

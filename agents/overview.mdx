@@ -1,0 +1,68 @@
+---
+title: "AI agents overview"
+description: "What AI agents are, how they work, and how to get great replies out of them."
+---
+
+An **AI agent** is the personality answering on your channels. Every workspace starts with one — created during onboarding — and you can add more for different roles (pre-sales, order support, post-sales).
+
+## What an agent is
+
+Each agent has:
+
+| Property | What it controls |
+| --- | --- |
+| **Name** | What customers see in the UI ("Hi, I'm Nova") |
+| **Greeting** | First message on webchat |
+| **Status** | `live` (answers automatically) or `paused` (only drafts) |
+| **System prompt** | The core instructions — tone, scope, rules, what to refuse |
+| **Languages** | Which languages it's allowed to reply in |
+| **Temperature** | How creative vs deterministic (low = safer, high = more varied) |
+| **Knowledge sources** | Which crawls, files, and Q&amp;As it can draw from |
+| **Tools** | What it's allowed to do — look up orders, hand off, etc. |
+
+## How an agent actually replies
+
+When a message arrives on a channel an agent is attached to:
+
+1. Keloa picks the best knowledge passages for this question using semantic search.
+2. The system prompt + passages + conversation history go to the LLM.
+3. The model drafts a reply. If it wants to use a tool (*look up order*, *hand off*), it calls it.
+4. Reply goes back to the customer and into the inbox.
+
+This all happens in a few seconds. The reply includes citations to the knowledge sources it used — you can see them in the conversation's **Sources** panel.
+
+## Grounded answers, not hallucinations
+
+The agent only answers from your knowledge sources and the conversation itself. If it doesn't know, it says so — or hands off to a human via a flow. You'll never catch it inventing a policy you don't have.
+
+If the agent is guessing when it shouldn't, that's almost always fixable by:
+
+1. Adding the answer to your knowledge (a Q&amp;A pair is fastest).
+2. Tightening the system prompt — *"If you don't find it in the knowledge, say you'll route to a teammate and hand off."*
+
+## One agent or several?
+
+Start with one. Split when you notice:
+
+- The system prompt is getting conflicting rules ("be playful on pre-sales, strict on refunds").
+- Different channels need different personalities (formal on email, casual on Instagram DM).
+- You want different knowledge scopes (only product pages for pre-sales, only policy pages for returns).
+
+Each agent can be attached to a different channel or different flow.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Create an agent" icon="plus" href="/agents/create-agent">
+    The step-by-step for a new agent.
+  </Card>
+  <Card title="Write a system prompt" icon="pen" href="/agents/system-prompt">
+    The single highest-leverage thing you can edit.
+  </Card>
+  <Card title="Tools" icon="wrench" href="/agents/tools">
+    What your agent can do beyond answering.
+  </Card>
+  <Card title="Test your agent" icon="flask" href="/agents/test-agent">
+    Chat with an agent before letting it loose on customers.
+  </Card>
+</CardGroup>

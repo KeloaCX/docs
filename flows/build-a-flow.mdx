@@ -1,0 +1,83 @@
+---
+title: "Build a flow"
+description: "From blank canvas to published automation in five minutes."
+---
+
+We'll build a classic flow: **"When a VIP customer messages on WhatsApp, route them to our senior team."**
+
+<Steps>
+  <Step title="Open Flows">
+    Sidebar → **Flows** → **New flow**.
+
+    Give it a name (*VIP WhatsApp routing*) and an optional description.
+  </Step>
+
+  <Step title="Drop a Trigger">
+    From the node palette on the left, drag **Trigger** onto the canvas.
+
+    Click it to configure:
+    - **Channel** — WhatsApp
+    - **Event** — Message received
+
+    (Leave both as "any" to trigger on everything — we're scoping to WhatsApp here.)
+  </Step>
+
+  <Step title="Add a Condition">
+    Drag **Condition** onto the canvas and connect Trigger → Condition.
+
+    Click to configure:
+    - **Field** — `contact.tags`
+    - **Operator** — `contains`
+    - **Value** — `vip`
+
+    The condition node always has **two outputs**: `yes` (matches) and `no` (doesn't).
+  </Step>
+
+  <Step title="Add a Handoff">
+    Drag **Handoff** onto the canvas. Connect the condition's **yes** output to it.
+
+    Configure:
+    - **Target type** — Team
+    - **Team** — Senior support (or whoever handles VIPs)
+    - **Reason** — *"VIP customer on WhatsApp"*  (shown to the assignee)
+  </Step>
+
+  <Step title="Let the AI handle the rest">
+    Leave the **no** output unconnected. When the condition doesn't match, the flow simply ends — and the AI agent on the channel continues normally.
+  </Step>
+
+  <Step title="Save and test">
+    Hit **Save**. The flow is saved as a **draft** — it doesn't run yet.
+
+    Click **Test run** → simulate a WhatsApp message with a VIP tag. Watch the flow light up each node as it executes.
+
+    See [Publish and test](/flows/publish-and-test) for the full testing workflow.
+  </Step>
+
+  <Step title="Publish">
+    When the test looks right, click **Publish**. The flow goes live immediately.
+  </Step>
+</Steps>
+
+## Canvas basics
+
+- **Drag** from a node's handle to another node to connect.
+- **Click** a node to open its config panel on the right.
+- **Right-click** to delete, duplicate, or re-arrange.
+- **Space + drag** (or scroll wheel) to pan.
+- <kbd>Cmd</kbd>+<kbd>Enter</kbd> saves.
+
+## Auto-layout
+
+Messy canvas? Click **Auto-layout** in the toolbar to let Keloa tidy the nodes based on their connections.
+
+## Versions and rollback
+
+Every **Publish** snapshots the flow. If the new version misbehaves, open the flow → **Versions** → roll back to any previous published version.
+
+## Common flow patterns
+
+- **Welcome message** — Trigger (conversation opened) → Message ("Hi, welcome to Acme!")
+- **After-hours** — Trigger (message received) → Condition (business hours?) → Message ("We're back at 9")
+- **Auto-tag by keyword** — Trigger → Condition (message.body contains "refund") → Action (tag: returns)
+- **CSAT** — Trigger (conversation resolved) → Resolve (csat_enabled: true)

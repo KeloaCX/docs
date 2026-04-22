@@ -1,0 +1,67 @@
+---
+title: "Conditions"
+description: "Branch your flow on channel, tag, AI intent, sentiment and more."
+---
+
+A **Condition** node splits the flow into two paths — one for matches, one for non-matches.
+
+## Fields you can match on
+
+| Field | Example value |
+| --- | --- |
+| `channel` | `webchat`, `email`, `whatsapp`, `instagram`, `messenger`, `shopify` |
+| `subject` | Email subject line |
+| `message.body` | The incoming message text |
+| `contact.email` | Contact's email |
+| `contact.name` | Full name |
+| `contact.company` | Company name |
+| `contact.tags` | Any tag on the contact |
+| `intent` | AI-inferred intent (e.g. `shipping`, `refund`, `pre_sales`) |
+| `sentiment` | `positive`, `neutral`, `negative` |
+
+## Operators
+
+| Operator | Meaning |
+| --- | --- |
+| `equals` | exact match |
+| `not_equals` | not this value |
+| `contains` | substring match (case-insensitive) |
+| `starts_with` | beginning of the string |
+| `ends_with` | end of the string |
+| `in` | value is one of a list |
+
+## Combining conditions
+
+One Condition node can have multiple rules. All rules in a condition are **AND-ed** — the branch matches only if every rule passes.
+
+For OR logic, use **two Condition nodes** back to back, each feeding the same next node from their `yes` outputs.
+
+## Multiple branches
+
+Advanced: add more than two branches on a single Condition node. Each branch has its own rule set — the first matching branch wins. This is like `if/else if/else` instead of just `if/else`.
+
+Use multiple branches when you're classifying into more than two buckets — e.g. *intent = refund* → returns team, *intent = sales* → sales team, *default* → AI.
+
+## Intent and sentiment
+
+`intent` and `sentiment` are classified by the AI on every inbound message. They're available as fields for conditions and as analytics dimensions.
+
+Common intents surface automatically — shipping, refund, pricing, technical, cancellation, pre-sales. If the model isn't confident, `intent` is `unknown`.
+
+## Example
+
+Match a high-value customer in distress:
+
+```
+Condition:
+  contact.tags     contains   "vip"
+  AND sentiment    equals     "negative"
+→ yes: Handoff (senior team, reason "VIP in distress")
+→ no:  let AI continue
+```
+
+## Tips
+
+- **Start with one rule.** Add more only when the first one isn't specific enough.
+- **Prefer tags over string matching.** A tag is deliberate; a keyword match fires on anything.
+- **Test with the Try run.** The panel shows every condition's evaluation with real values.

@@ -1,0 +1,73 @@
+---
+title: "Writing a system prompt"
+description: "The one field that changes your agent's voice, scope and rules. Templates and pitfalls."
+---
+
+The system prompt is the single highest-leverage thing you can change about your agent. A good one makes the difference between answers your customers love and answers that make you wince.
+
+## Anatomy of a good prompt
+
+A working prompt has four parts, in this order:
+
+1. **Identity** — who the agent is.
+2. **Voice** — how it speaks.
+3. **Scope** — what it's allowed to talk about.
+4. **Rules** — what it must never do.
+
+## Template
+
+Copy this, fill in the bold bits:
+
+```text
+You are **Nova**, the customer support assistant for **Acme Coffee Roasters**.
+
+Voice: friendly, concise, never salesy. Reply in the language the
+customer wrote in. Use one short paragraph unless a list is clearly
+better.
+
+Scope: you help with orders, shipping, subscriptions, returns, and
+our product range. For anything outside that (legal, employment,
+partnerships) acknowledge the question and say you'll route it to
+the right team, then hand off.
+
+Rules:
+- Only answer from the provided knowledge. If the answer isn't in
+  there, say you'll check with the team and hand off.
+- Never invent prices, SKUs, delivery times, or policies.
+- If a customer asks for a human, hand off immediately.
+- If a customer is upset, acknowledge first, resolve second.
+```
+
+That's ~150 words. Don't go much longer — most of the value is in the first three sentences.
+
+## What goes where
+
+| Section | Include |
+| --- | --- |
+| **Identity** | Name, company, role (support / sales / onboarding) |
+| **Voice** | Formal or casual, short or thorough, emoji policy, language rules |
+| **Scope** | Topics in-scope (and critically, topics out-of-scope) |
+| **Rules** | Hard no-goes: no invented policies, no medical advice, hand off for X |
+
+## Common mistakes
+
+- **Giving it facts instead of instructions.** *"We ship in 3–5 days"* belongs in **Knowledge**, not the prompt. The prompt tells the agent *how to behave*; knowledge tells it *what's true*.
+- **Too many rules.** After ~10 rules the model starts ignoring some. Prioritise.
+- **Ambiguous voice.** "Friendly but professional but playful but concise" → confused replies. Pick two.
+- **Forgetting the handoff clause.** Always say what to do when it doesn't know.
+
+## Tuning temperature
+
+Under **Advanced**, temperature controls creativity:
+
+| Value | Behaviour |
+| --- | --- |
+| `0.0 – 0.3` | Deterministic. Same question → almost same answer. Best for support. |
+| `0.4 – 0.7` | Balanced. The default. |
+| `0.8 – 1.0` | Creative. Good for content/brainstorming agents, not support. |
+
+## Iterate with the Try panel
+
+Don't guess whether your prompt works. Open **AI agents → Try** and chat with the agent like a customer would. Paste real past questions. When you catch a bad answer, tweak the prompt, try again — 5 minutes of that is worth more than an hour of speculating.
+
+See [Test an agent](/agents/test-agent).

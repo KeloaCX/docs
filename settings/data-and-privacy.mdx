@@ -1,0 +1,84 @@
+---
+title: "Data & privacy"
+description: "GDPR controls, data export, contact deletion, and retention policies."
+---
+
+Keloa is built in the Netherlands and hosted in the EU. Everything privacy-related lives in one place: **Settings → Data &amp; privacy**.
+
+## Export data
+
+### Whole workspace
+
+**Export workspace → JSON** returns a machine-readable export of:
+
+- All contacts and their custom fields
+- All conversations and messages
+- All knowledge sources and contents
+- All flows and their configurations
+- All audit-log entries
+
+**Export workspace → CSV** returns a spreadsheet-friendly subset (contacts + conversations).
+
+Delivered as a signed download link by email when ready (big workspaces may take minutes to an hour).
+
+### Single contact
+
+On any contact profile → **⋯ → Export contact JSON**. Returns the complete record for that person — used to fulfill GDPR subject access requests.
+
+## Delete a contact
+
+**Data &amp; privacy → Delete contact** — search, select, confirm.
+
+Effects:
+
+- The contact record is deleted.
+- Every conversation with this contact is deleted.
+- Every message (inbound and outbound) is deleted.
+- Files they uploaded are purged from storage (within 24h).
+- Audit log retains the deletion event (timestamp, operator) — that stays.
+
+**Irreversible.** We don't retain a hidden copy.
+
+## Retention
+
+Set how long resolved conversations are kept:
+
+| Retention | Effect |
+| --- | --- |
+| **Forever** (default) | Kept until you delete them |
+| **30 / 90 / 365 days after resolution** | Auto-deleted that many days after the last message on a resolved conversation |
+
+Retention runs daily. Messages, attachments, and any AI metadata are removed.
+
+Setting a retention policy **does not** retroactively delete older data. It applies to conversations resolved after the policy was set. To delete older data, use **Delete contact** or **Bulk delete by date** (Business+).
+
+## Data residency
+
+- Application data, knowledge vectors, and attachments live in the EU.
+- LLM providers (when used) are routed through their EU endpoints where available.
+- Zero-retention flags are set with every LLM provider — no prompts or completions are used for provider training.
+
+Full sub-processor list at [keloa.cx/legal/subprocessors](https://keloa.cx/legal/subprocessors).
+
+## Encryption
+
+- **At rest** — AES-256.
+- **In transit** — TLS 1.2+.
+- **Passwords** — bcrypt, never stored in plaintext.
+
+## Who can do what
+
+| Action | Role |
+| --- | --- |
+| Export workspace | Admin |
+| Export single contact | Admin, Agent |
+| Delete contact | Admin |
+| Change retention policy | Admin |
+
+## Audit log
+
+**Settings → Security → Audit log** records every privacy action — exports, deletions, retention changes — with timestamp, operator, and IP.
+
+## Legal
+
+Process docs, DPA templates, and sub-processor lists live at [keloa.cx/legal](https://keloa.cx/legal). Contact [privacy@keloa.cx](mailto:privacy@keloa.cx) for DPA requests or anything not answered above.

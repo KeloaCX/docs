@@ -1,0 +1,98 @@
+---
+title: "Core concepts"
+description: "The building blocks of Keloa — how workspaces, agents, channels, knowledge and flows fit together."
+---
+
+You'll meet these words all over the product. Learn them once and the rest of the docs click into place.
+
+## Workspace
+
+A **workspace** is your company's space in Keloa — one per business. It holds every conversation, every contact, every AI agent and every knowledge source. Everything is scoped to the workspace; teammates you invite see only this workspace's data.
+
+You can belong to multiple workspaces (for example an agency with several clients) and switch between them from the workspace menu in the sidebar.
+
+## Contact
+
+A **contact** is a person who has messaged you — identified by their email, phone number, or webchat session. Contacts are merged when we can confidently tell it's the same person (same email across channels, for example). Contacts can optionally belong to a **Company**.
+
+See [Contacts](/contacts/overview).
+
+## Conversation
+
+A **conversation** is a thread with one contact on one channel. It has a status (*open*, *pending*, *resolved*), optional tags, an assignee, and a list of messages.
+
+Inbound messages from any channel land as a conversation in your **Inbox**.
+
+## Channel
+
+A **channel** is a connection between Keloa and an outside system that carries messages — webchat, email, WhatsApp, Instagram, Messenger, or Shopify. Each channel has a status (*connected*, *pending setup*, *disconnected*) and can be bound to an AI agent.
+
+See [Channels](/channels/overview).
+
+## AI agent
+
+An **AI agent** is the personality and brain behind automated replies. Each agent has:
+
+- a **name** and **greeting**
+- a **system prompt** that shapes voice, scope, and rules
+- a set of **knowledge sources** it can draw from
+- **tools** it's allowed to use (e.g. look up a Shopify order, hand off to a human)
+
+You can have several agents — e.g. one for pre-sales, one for order support — and attach different agents to different channels or flows.
+
+See [AI agents](/agents/overview).
+
+## Knowledge
+
+**Knowledge** is the content your AI is allowed to answer from. Four kinds of sources:
+
+1. **Website crawl** — paste a URL, we crawl and index it
+2. **File upload** — PDFs, DOCX, TXT, Markdown
+3. **Text snippet** — paste any plain text
+4. **Q&amp;A pairs** — write canonical question/answer rows
+
+Every source belongs to a specific agent, so you can scope what each agent knows. No knowledge = generic answers; good knowledge = accurate, cited answers.
+
+See [Knowledge](/knowledge/overview).
+
+## Flow
+
+A **flow** is a visual automation — a graph of nodes that runs when something happens. Triggers (*message received*, *conversation opened*, …), Conditions (*if tag is "VIP"*), Messages (*auto-reply*), Actions (*tag, set priority*), Handoff (*route to a teammate*), Resolve (*mark solved, ask for CSAT*).
+
+Use flows to route, tag, escalate, or auto-reply with deterministic logic on top of your AI agent.
+
+See [Flows](/flows/overview).
+
+## Macro
+
+A **macro** is a saved reply. Type `/` in the inbox composer to insert one. Great for the 10 replies you send every day.
+
+See [Macros](/inbox/macros).
+
+## Assignment rule
+
+An **assignment rule** decides which teammate a new conversation goes to, based on channel, tag, language or intent. Rules run top-down — the first match wins.
+
+See [Assignment rules](/settings/assignment-rules).
+
+## Credits
+
+An **AI credit** is roughly one round-trip with the AI (one message in, one reply out). Each plan includes a monthly allowance; overages roll over or can be topped up.
+
+See [Usage &amp; credits](/billing/usage-and-credits).
+
+---
+
+## How they fit together
+
+```
+Visitor ──► Channel ──► Conversation ──► AI agent ──► Reply
+                            │                │
+                            │                └── draws from ── Knowledge
+                            │
+                            └── may trigger ── Flow ──► Handoff to teammate
+```
+
+A visitor sends a message on a **channel**. It becomes a **conversation** in your **inbox**. An **AI agent** replies, pulling answers from its **knowledge**. A **flow** may tag it, escalate it, or hand it off. A teammate resolves it.
+
+That's Keloa.

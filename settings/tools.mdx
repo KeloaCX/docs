@@ -1,0 +1,60 @@
+---
+title: "Tools"
+description: "What your agents can do beyond answering — view all tools and toggle them per workspace."
+---
+
+**Tools** are the things your AI agent can *do* (not just answer). Look up orders, tag conversations, hand off to a teammate, fetch tracking, collect an email.
+
+## Workspace tools vs agent tools
+
+There are two layers of on/off:
+
+- **Workspace tools** (**Settings → Tools**) — whether the tool is *available at all* in your workspace.
+- **Agent tools** (AI agent → edit → Tools) — whether a specific agent is *allowed* to use it.
+
+A tool needs to be on at both layers to work.
+
+## Categories
+
+| Category | Tools |
+| --- | --- |
+| **Conversation** | Hand off to human, add tag, set priority |
+| **Contact** | Collect email, set contact field |
+| **Shopify** *(if connected)* | Order lookup, product search, tracking fetch |
+| **Generic / custom** | Anything your workspace has added via integrations |
+
+## Enabling tools
+
+On the Tools page, toggle each tool. Saving applies workspace-wide. Then go to each agent and enable the ones it should be allowed to call.
+
+<Tip>
+Enable narrow sets of tools per agent. A pre-sales agent probably doesn't need "handoff to senior support"; a returns agent doesn't need "product search".
+</Tip>
+
+## What happens on a tool call
+
+1. The agent decides to call a tool based on the conversation.
+2. Keloa executes the tool (e.g. hits Shopify's API).
+3. The result is fed back to the agent as context.
+4. The agent composes a reply grounded in the tool's result.
+
+You can see every tool call in the conversation's **Sources** panel.
+
+## Cost
+
+Each tool call costs ~1 credit (same as a reply). See [Usage &amp; credits](/billing/usage-and-credits).
+
+## Limits
+
+Some plans cap how many tools an agent can use at once:
+
+| Plan | Tools per agent |
+| --- | --- |
+| Starter | 2 |
+| Growth | 5 |
+| Business | Unlimited |
+| Scale | Unlimited |
+
+## Disabling a tool
+
+Toggle off at the workspace level → every agent loses the ability instantly. Useful during incidents (e.g. Shopify API down → turn off Shopify tools temporarily).

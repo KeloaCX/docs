@@ -1,0 +1,57 @@
+---
+title: "Widget appearance"
+description: "Style your web chat widget to match your brand."
+---
+
+Tune how the widget looks on your site — colours, greeting, avatar, languages, position. Changes preview live on the right of the settings page.
+
+## Open widget settings
+
+Sidebar → **Settings** → **Widget**.
+
+## What you can customise
+
+| Setting | Details |
+| --- | --- |
+| **Theme colour** | Bubble and header background. Pick from swatches or enter a hex. |
+| **Greeting** | First message shown when a visitor opens the widget. Supports variables. |
+| **Avatar** | Optional image for the AI agent in the header. 64×64 px PNG or SVG. |
+| **Launcher text** | Optional small label next to the bubble (e.g. "Chat with us"). |
+| **Position** | Bottom-right (default) or bottom-left. |
+| **Show branding** | Whether to show "Powered by Keloa" in the footer. (Removable on Business+.) |
+| **Language** | English, Dutch — auto-detected per visitor. |
+
+## Preview
+
+The live preview on the right updates as you type. Open the full-screen preview with **Open preview** — launches the widget on a sandbox page so you can click through a real conversation flow without touching your site.
+
+## Greeting with variables
+
+Same variable system as macros:
+
+```text
+Hi there 👋 I'm {{agent.name}} from {{workspace.name}}. How can I help today?
+```
+
+`agent.name` is the default AI agent attached to the webchat channel. `workspace.name` is your workspace.
+
+## Accessibility
+
+- The widget ships WCAG 2.1 AA-compliant contrast.
+- The launcher is focusable via keyboard (`Tab`), and the chat panel is operable with arrow keys.
+- Screen reader announcements are present for every state change.
+
+## Mobile behaviour
+
+- On mobile, the widget opens full-screen.
+- The launcher stays below any bottom navigation you may have — set a `margin-bottom` offset in **Advanced** if you need to.
+
+## Advanced
+
+- **CSS offset** — add a margin if your site has a sticky bottom bar.
+- **Restrict to paths** — show the widget only on certain URLs (comma-separated globs).
+- **Identify anonymous visitors** — see the [widget docs](/channels/web-widget) for the JS API.
+
+## Save
+
+Changes save on click. The next time the script loads on your site (usually within seconds thanks to a CDN cache), visitors see the new style.

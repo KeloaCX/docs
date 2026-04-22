@@ -1,0 +1,97 @@
+---
+title: "Onboarding walkthrough"
+description: "What happens the first time you sign into Keloa — and how to come back to any step later."
+---
+
+The first time you sign in, Keloa runs a short wizard that turns a blank workspace into something usable. This page shows every step in detail so you know what's happening and where to revisit each piece afterwards.
+
+## Step 1 · Website scan
+
+Paste a URL and Keloa inspects the homepage to extract:
+
+| What we detect | Where it lands |
+| --- | --- |
+| Brand name and logo colour | **Settings → Workspace** and the widget theme |
+| Industry and short description | **Settings → Workspace → Context** (used in agent prompts) |
+| Default language | **Settings → Workspace** |
+| Support email | **Settings → Workspace → Contact** |
+| Business hours | **Settings → Workspace → Contact** |
+| Starter system prompt | Your first AI agent |
+
+<Note>
+Nothing is saved until you click **Continue**. You can also **Skip** the scan entirely and fill it in by hand.
+</Note>
+
+## Step 2 · Your first AI agent
+
+Every workspace needs at least one agent. Onboarding creates one with:
+
+- **Name** — what customers see ("Nova", "Kay", whatever fits)
+- **Tone** — friendly / professional / playful — maps to the system prompt
+- **Greeting** — the first message on the widget (e.g. *"Hi! How can I help?"*)
+- **System prompt** — drafted from the scan; you can edit it now or later
+
+The agent starts as **live** — it will answer immediately on any channel you connect.
+
+See [Create an agent](/agents/create-agent) to change these later.
+
+## Step 3 · Pick your first channel
+
+You choose **one** channel to start. The rest are a single click in **Integrations** once you're live.
+
+<CardGroup cols={3}>
+  <Card title="Webchat" icon="comment" href="/channels/web-widget">
+    Fastest to set up — one script tag on your site.
+  </Card>
+  <Card title="Email" icon="envelope" href="/channels/email">
+    Forward support@yours → Keloa; AI replies with a branded signature.
+  </Card>
+  <Card title="WhatsApp" icon="whatsapp" href="/channels/whatsapp">
+    Requires a WhatsApp Business account; we'll walk you through it.
+  </Card>
+  <Card title="Instagram" icon="instagram" href="/channels/instagram">
+    DMs and story replies land in the Keloa inbox.
+  </Card>
+  <Card title="Messenger" icon="facebook-messenger" href="/channels/messenger">
+    Connect the Facebook Page you already use.
+  </Card>
+  <Card title="Shopify" icon="shopify" href="/channels/shopify">
+    Installs the app and pulls in product + order context.
+  </Card>
+</CardGroup>
+
+## Step 4 · Widget appearance
+
+If you picked webchat, onboarding sets a default theme colour from your scan. Tune it in **Settings → Widget**:
+
+- bubble and header colour
+- greeting message
+- optional avatar image
+- languages (EN / NL)
+
+Changes preview live in the right-hand pane.
+
+## Completing onboarding
+
+When you hit **Finish**, Keloa:
+
+1. Marks your workspace as onboarded so you won't land here again.
+2. Creates a live AI agent.
+3. Creates a channel row — already connected for webchat, or marked *pending setup* for external channels that need verification.
+4. Queues a knowledge ingest job for your website (you'll see pages appearing in **Knowledge** within a minute or two).
+
+You land on the **Dashboard** with a status summary.
+
+## Coming back to a step
+
+| I want to… | Go to |
+| --- | --- |
+| Change workspace name, colour, or hours | **Settings → Workspace** |
+| Rerun or edit the website scan | **Knowledge → Add source → Website crawl** |
+| Edit the first AI agent | **AI agents → ⋯ → Edit** |
+| Add more channels | **Integrations** |
+| Restyle the widget | **Settings → Widget** |
+
+<Tip>
+If you ever want to redo onboarding: clear it with your admin, or just open **Knowledge** and start a new crawl — that covers 90% of what onboarding did.
+</Tip>

@@ -1,0 +1,84 @@
+---
+title: "Assignment rules"
+description: "Auto-route new conversations to the right teammate based on channel, tag, language, or intent."
+---
+
+Assignment rules run automatically on every new conversation (and on messages that reopen one). The first matching rule wins — so order matters.
+
+## Open assignment rules
+
+Sidebar → **Settings** → **Assignment rules**.
+
+You'll see rules in evaluation order. Drag to reorder.
+
+## Anatomy of a rule
+
+Each rule has:
+
+- **When** — a set of conditions (same fields and operators as flow [Conditions](/flows/conditions))
+- **Then** — who to assign
+
+### When fields
+
+- `channel` — webchat, email, whatsapp, …
+- `contact.tags`
+- `contact.company`
+- `contact.language`
+- `intent` — AI-inferred intent
+- `conversation.tags`
+
+### Then targets
+
+- **User** — a specific teammate
+- **Specialty** — any teammate with that specialty, round-robin
+- **Nobody** — explicitly leave unassigned (useful to short-circuit later rules)
+
+## Examples
+
+**Route VIPs to senior support:**
+```
+When:  contact.tags contains "vip"
+Then:  Specialty "senior-support"
+```
+
+**Route Dutch-language email to the NL team:**
+```
+When:  channel equals "email"
+   AND contact.language equals "nl"
+Then:  Specialty "dutch"
+```
+
+**Auto-route refunds by intent:**
+```
+When:  intent equals "refund"
+Then:  Specialty "returns"
+```
+
+## Order matters
+
+Rules are top-down. Once one matches, the rest are skipped. So put **specific** rules first, **catch-all** rules last.
+
+## No rule matched
+
+If no rule matches, the conversation is left unassigned. The AI agent still handles it; human teammates can claim it from the inbox filter **AI**.
+
+## Round-robin within specialty
+
+When the target is a **specialty**, conversations distribute evenly across everyone with that specialty. Out-of-office and paused teammates are skipped automatically.
+
+## Editing a rule
+
+Click the row → edit → save. Changes apply from the next incoming conversation (existing ones don't re-assign).
+
+## Pausing and deleting
+
+- Toggle the switch to pause/unpause.
+- **⋯ → Delete** removes the rule entirely.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| Rule never matches | Inspect a recent conversation: does `contact.tags` actually contain the value? Tags are case-sensitive. |
+| Wrong teammate assigned | Reorder rules — a more specific rule above may be winning. |
+| Everyone gets assigned out-of-hours stuff | Add a rule at the top: *`business_hours equals false` → Nobody* to short-circuit. |

@@ -1,11 +1,11 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "Keloa",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#F97316",
+    "light": "#FB923C",
+    "dark": "#0F172A"
   },
   "favicon": "/favicon.svg",
   "navigation": {
@@ -18,51 +18,115 @@
             "pages": [
               "index",
               "quickstart",
-              "development"
+              "onboarding",
+              "concepts"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Inbox",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "inbox/overview",
+              "inbox/replying",
+              "inbox/assignments",
+              "inbox/macros",
+              "inbox/tags-and-filters",
+              "inbox/resolving"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "AI agents",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
+              "agents/overview",
+              "agents/create-agent",
+              "agents/system-prompt",
+              "agents/tools",
+              "agents/test-agent"
             ]
           },
           {
-            "group": "AI tools",
+            "group": "Knowledge",
             "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
-            ]
-          }
-        ]
-      },
-      {
-        "tab": "API reference",
-        "groups": [
-          {
-            "group": "API documentation",
-            "pages": [
-              "api-reference/introduction"
+              "knowledge/overview",
+              "knowledge/website-crawl",
+              "knowledge/file-upload",
+              "knowledge/text-snippet",
+              "knowledge/qa-pairs",
+              "knowledge/managing-sources"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Flows",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "flows/overview",
+              "flows/build-a-flow",
+              "flows/triggers",
+              "flows/conditions",
+              "flows/messages-and-actions",
+              "flows/handoff-and-resolve",
+              "flows/publish-and-test"
+            ]
+          },
+          {
+            "group": "Channels",
+            "pages": [
+              "channels/overview",
+              "channels/web-widget",
+              "channels/email",
+              "channels/whatsapp",
+              "channels/instagram",
+              "channels/messenger",
+              "channels/shopify"
+            ]
+          },
+          {
+            "group": "Contacts & companies",
+            "pages": [
+              "contacts/overview",
+              "contacts/contact-profile",
+              "contacts/companies"
+            ]
+          },
+          {
+            "group": "Analytics",
+            "pages": [
+              "analytics/overview"
+            ]
+          },
+          {
+            "group": "Workspace settings",
+            "pages": [
+              "settings/workspace",
+              "settings/members-and-roles",
+              "settings/assignment-rules",
+              "settings/widget-appearance",
+              "settings/tools",
+              "settings/email-domains",
+              "settings/data-and-privacy",
+              "settings/security"
+            ]
+          },
+          {
+            "group": "Billing & plans",
+            "pages": [
+              "billing/plans",
+              "billing/usage-and-credits",
+              "billing/manage-subscription"
+            ]
+          },
+          {
+            "group": "Account",
+            "pages": [
+              "account/profile",
+              "account/password-and-2fa",
+              "account/invitations"
+            ]
+          },
+          {
+            "group": "Help & resources",
+            "pages": [
+              "resources/faq",
+              "resources/troubleshooting",
+              "resources/glossary"
             ]
           }
         ]
@@ -71,14 +135,19 @@
     "global": {
       "anchors": [
         {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
+          "anchor": "Website",
+          "href": "https://keloa.cx",
+          "icon": "globe"
         },
         {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
+          "anchor": "Status",
+          "href": "https://status.keloa.cx",
+          "icon": "signal-bars"
+        },
+        {
+          "anchor": "Contact",
+          "href": "mailto:support@keloa.cx",
+          "icon": "envelope"
         }
       ]
     }
@@ -91,32 +160,28 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:hi@mintlify.com"
+        "href": "mailto:support@keloa.cx"
       }
     ],
     "primary": {
       "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
+      "label": "Open Keloa",
+      "href": "https://app.keloa.cx"
     }
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity"
+    ]
   },
   "footer": {
     "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
+      "linkedin": "https://linkedin.com/company/keloa",
+      "x": "https://x.com/keloa_io"
     }
   }
 }

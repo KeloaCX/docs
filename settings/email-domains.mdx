@@ -1,0 +1,65 @@
+---
+title: "Email domains"
+description: "Verify your sending domain so replies pass SPF/DKIM and don't land in spam."
+---
+
+To send email *from* Keloa using your own domain (`support@yourdomain.com`), you have to prove you own that domain. This is standard email auth: SPF and DKIM records at your DNS provider.
+
+## Add a domain
+
+<Steps>
+  <Step title="Open Email domains">
+    Sidebar → **Settings** → **Email domains** → **Add domain**.
+  </Step>
+
+  <Step title="Enter the domain">
+    Just the domain — no `@`, no mailbox. E.g. `yourdomain.com`.
+  </Step>
+
+  <Step title="Add DNS records">
+    Keloa shows three records to add at your DNS provider:
+
+    - **SPF** (`TXT` record) — usually merged into your existing SPF if any.
+    - **DKIM** (`CNAME` × 2) — points to Keloa's signing keys.
+
+    The Keloa UI has a **Copy** button on each record. Paste into your DNS provider as-is.
+  </Step>
+
+  <Step title="Wait for propagation">
+    Usually 5–30 minutes. Some providers (looking at you, some legacy ones) take hours. Use [dnschecker.org](https://dnschecker.org) to watch propagation.
+  </Step>
+
+  <Step title="Verify">
+    Back in Keloa, click **Verify**. Status flips to **verified** when all three records resolve.
+  </Step>
+</Steps>
+
+## Using the verified domain
+
+Once verified, open **Integrations → Email → Sender address** and pick `support@yourdomain.com` (or any mailbox on that domain). Replies go out from there, with your workspace signature.
+
+## Plan limits
+
+| Plan | Domains |
+| --- | --- |
+| Starter | 1 |
+| Growth | 3 |
+| Business | 10 |
+| Scale | Unlimited |
+
+## Re-verifying
+
+DNS records can drift (e.g. provider migration). Click **Re-verify** any time to re-check. If it fails, check your current records against what Keloa shows.
+
+## Removing a domain
+
+**⋯ → Remove**. Any channels using this domain as sender will fall back to the default Keloa-branded sender until you pick another verified domain.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| Verify keeps failing | DNS not propagated yet, or record copied with a trailing `.`. Recopy from Keloa. |
+| SPF conflict | You already have an SPF record with a different provider. Merge them: one `v=spf1` record with all `include:` entries. |
+| Replies still in spam | Verify DKIM — it's the strongest signal. Also ensure your **From** name matches your brand, not a random username. |
+| Gmail shows "via keloa.cx" | Expected when only DKIM is set up but not a `Return-Path` alignment. Not harmful, and usually goes away after SPF is right too. |

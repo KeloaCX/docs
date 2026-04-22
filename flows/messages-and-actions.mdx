@@ -1,0 +1,77 @@
+---
+title: "Messages & actions"
+description: "Send replies and apply changes from within a flow."
+---
+
+## Message nodes
+
+A **Message** node sends a message to the customer, on the same channel the conversation is on.
+
+### Configure
+
+- **Template** — the text, with variable substitution (e.g. `{{contact.first_name}}`)
+- **Delay** — optional delay before sending (seconds, minutes, hours). Useful for a natural-feeling follow-up.
+
+### Variables
+
+Same variable system as [Macros](/inbox/macros):
+
+| Variable | Renders |
+| --- | --- |
+| `{{contact.first_name}}` | Contact's first name |
+| `{{contact.name}}` | Full name |
+| `{{workspace.name}}` | Your workspace name |
+| `{{agent.name}}` | The AI agent attached to the channel |
+
+### Use a macro instead
+
+In the template field, click **Use macro** to pull from your saved replies. Keeps voice consistent across manual and automated messages.
+
+### Channel quirks
+
+- **WhatsApp** outside the 24-hour window: only pre-approved templates. Keloa will prevent publishing a flow that violates this.
+- **Email** messages go as a reply in the existing thread.
+- **Webchat** messages appear with the agent's avatar.
+
+## Action nodes
+
+An **Action** node changes something about the conversation or contact — no message is sent.
+
+### Available actions
+
+| Action | What it does |
+| --- | --- |
+| **Add tag** | Add a tag to the conversation (e.g. `vip`, `returns`) |
+| **Remove tag** | Remove a tag |
+| **Set priority** | Low / normal / high / urgent |
+| **Collect email** | Ask the visitor for their email if not known (webchat only) |
+| **Set contact field** | Write to a custom field on the contact |
+
+Each action runs instantly. The flow continues to the next node.
+
+### Chaining
+
+Put several actions in a row — *tag, set priority, notify* — all on one incoming message. Each action node has one output to keep the graph linear.
+
+## Example: after-hours flow
+
+```
+Trigger (message received, channel: any)
+  → Condition (business hours: open?)
+      ├── Yes → (end, AI continues)
+      └── No  → Message ("Thanks! Our team replies when we reopen at 9:00.")
+              → Action (tag: "after-hours")
+```
+
+The customer gets a friendly acknowledgement, the conversation is tagged for analytics, and the AI still processes the message so it's ready with context when you log in.
+
+## Example: auto-tag refund requests
+
+```
+Trigger (message received)
+  → Condition (message.body contains "refund" OR intent equals "refund")
+      ├── Yes → Action (tag: "returns") → Action (set priority: high)
+      └── No  → (end)
+```
+
+Now every refund conversation is pre-tagged and prioritised without anyone lifting a finger.

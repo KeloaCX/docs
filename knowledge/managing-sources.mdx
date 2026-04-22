@@ -1,0 +1,70 @@
+---
+title: "Managing sources"
+description: "Recrawl, retry, reassign, delete — keep your knowledge clean."
+---
+
+The **Knowledge** list is where you manage every source. Filter, search, and take action from one page.
+
+## List view
+
+Each row shows:
+
+- **Type** (website / file / snippet / Q&amp;A)
+- **Name**
+- **Attached agent**
+- **Status** (queued / syncing / synced / failed)
+- **Last synced**
+
+Filter by type or status at the top. Search by name.
+
+## Recrawl a website source
+
+Open the source → **Recrawl**. Keloa refetches every page and re-indexes. Old chunks are swapped for new atomically — there's no "gap" where the agent loses the knowledge.
+
+Use this when you've updated pages, added new ones, or a customer gets a stale answer.
+
+## Retry a failed source
+
+If the status is **failed**, open it to see why. Common causes:
+
+- Domain unreachable during the crawl → **Retry**
+- File parsing error (corrupted PDF) → re-upload
+- Cap exceeded → remove unused sources or upgrade plan
+
+Retry queues the whole source again.
+
+## Retry a single page
+
+Inside a website source, each page has its own status. If one page failed (e.g. a 5xx at the time), click **Retry** on just that row without rebuilding the whole crawl.
+
+## Reassign to another agent
+
+Open the source → **Agent** dropdown → pick a different agent → save. Re-indexes against the new agent in seconds. Useful when splitting one agent into two.
+
+## Delete a source
+
+**⋯ → Delete** on the row. Immediate:
+
+- Chunks are removed from the vector index.
+- Raw file (if any) is scheduled for deletion.
+- The agent will no longer see this content on the next message.
+
+## Bulk delete
+
+Select rows with the checkboxes → **Delete selected**. Great when cleaning up after a reorg.
+
+## Storage budget
+
+The bar at the top of the page shows MB used vs. your plan cap. When you hit the cap, new sources fail with "over cap" — delete unused sources or upgrade.
+
+Vector count (under the bar) is a rough indicator of index size; it drives search latency, not your bill.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| Source stuck at **queued** | Worker isn't running. Wait 1–2 minutes, or contact support. |
+| Source stuck at **syncing** for hours | **Retry**. If it fails again, check the URL or file. |
+| Answer doesn't reflect a page I updated | **Recrawl** the source. |
+| Too many pages crawled on a small site | Use a narrower starting URL (e.g. `/products` instead of `/`). |
+| Sensitive info leaking into replies | Delete the source containing it, then **Recrawl** remaining sources. |

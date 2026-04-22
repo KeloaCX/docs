@@ -1,0 +1,47 @@
+---
+title: "Assignments"
+description: "Route conversations to the right teammate — manually, by rule, or by specialty."
+---
+
+Assignments decide who owns a conversation. An owner sees it in their **Mine** tab, gets notified on new messages, and is usually the one expected to close it.
+
+## Assign manually
+
+Open a conversation → click **Assign** in the header (or press <kbd>a</kbd>) → pick a teammate. You'll see everyone on the workspace, with their specialties listed underneath.
+
+Pick **Unassign** to remove an owner. Pick yourself to claim it.
+
+## Bulk assign
+
+Select multiple conversations in the list, then use **Assign** in the bulk bar to give them all to one teammate.
+
+## Teammate specialties
+
+Each teammate can have a list of **specialties** (e.g. *returns*, *shipping*, *technical*). Specialties do two things:
+
+- They're visible in the assignee picker so you know who's a good fit.
+- They feed **assignment rules** that auto-route conversations.
+
+Edit specialties in **Settings → Members** → click a teammate.
+
+## Assignment rules
+
+Instead of hand-picking an assignee, let Keloa route automatically based on channel, language, tag, or AI intent.
+
+Rules run top-down — the first match wins. Set them up once, and most conversations arrive with an owner already assigned.
+
+See [Assignment rules](/settings/assignment-rules) for the full guide.
+
+## Round-robin
+
+Inside an assignment rule, you can set the target to **round-robin within specialty** — so conversations get distributed evenly across everyone who has that specialty.
+
+## AI-first, human-next
+
+A common pattern:
+
+1. AI agent answers automatically.
+2. If the AI can't resolve in 2 turns, a flow with a **Handoff** node assigns to a human.
+3. The assignee gets a notification and picks it up.
+
+See [Handoff and resolve](/flows/handoff-and-resolve).

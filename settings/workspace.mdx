@@ -1,0 +1,52 @@
+---
+title: "Workspace settings"
+description: "Your company's profile inside Keloa — name, colours, hours, signature, context."
+---
+
+Workspace settings are your identity inside Keloa. Name, colour, business hours, default language — plus the **workspace context** used to generate AI agent prompts.
+
+## Open workspace settings
+
+Sidebar → **Settings** → **Workspace**.
+
+## Fields
+
+| Field | Where it shows |
+| --- | --- |
+| **Name** | Top of sidebar, emails, CSAT survey |
+| **Slug** | Used in webchat embed (`data-account="..."`) and default URLs — read-only once set |
+| **Default language** | EN or NL — used when we can't detect the customer's language |
+| **Business hours** | Feeds the "business hours open?" condition in flows; shown on CSAT emails |
+| **Contact email** | Used as the From address on CSAT if no email channel is configured |
+| **Signature** | Appended to all outbound email |
+| **Brand colour** | Widget default theme colour |
+
+## Workspace context
+
+A free-form description of your business — **critical** for AI agent quality. The onboarding scan pre-fills this; you can edit any time.
+
+Good fields to populate:
+
+- **Public name** — what customers call you
+- **Industry** — *"specialty coffee roaster"*
+- **Description** — one paragraph on what you do
+- **Support email** and **business hours**
+
+This context is injected into every AI agent's system prompt alongside their own prompt, so keep it concise and factual.
+
+## Signatures
+
+Plain text or simple HTML. Signatures support variables:
+
+```text
+— {{agent.name}} @ {{workspace.name}}
+📧 support@{{workspace.domain}}
+```
+
+## Multi-language
+
+If you operate in multiple languages, set **Default language** to the most common one. Keloa's AI auto-detects the customer's language on every message and replies in kind (EN/NL at launch; more coming).
+
+## Who can edit
+
+Only **admins** can change workspace settings. Other roles see a read-only view.

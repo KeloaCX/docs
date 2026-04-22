@@ -1,0 +1,78 @@
+---
+title: "Q&A pairs"
+description: "The highest-precision way to teach your agent — write canonical question / answer rows."
+---
+
+A **Q&A pair** is a single question and its canonical answer. It's the most direct way to control what your agent says. If you only invest in one knowledge format, make it this one.
+
+## Add Q&A pairs
+
+<Steps>
+  <Step title="Open Knowledge">
+    Sidebar → **Knowledge** → **New source** → **Q&A pairs**.
+  </Step>
+  <Step title="Name the source">
+    Group related pairs, e.g. "Returns FAQ", "Shipping FAQ".
+  </Step>
+  <Step title="Add rows">
+    Click **Add pair** and fill in:
+    - **Question** — how a customer would phrase it
+    - **Answer** — the exact reply you'd want the agent to give
+  </Step>
+  <Step title="Pick an agent and save">
+    Indexed in seconds.
+  </Step>
+</Steps>
+
+## Writing great pairs
+
+The question should sound like a real customer, not a doc heading:
+
+| ❌ Weak | ✅ Real customer voice |
+| --- | --- |
+| "Returns procedure" | "How do I return an item?" |
+| "Shipping destinations" | "Do you ship to Belgium?" |
+| "Hours of operation" | "Are you open on Sunday?" |
+
+The answer should be copy-pastable into a reply:
+
+```text
+Q: How do I return an item?
+A: No problem — you have 30 days from delivery. Reply with
+   your order number and we'll email a prepaid return label.
+   Refund lands within 5 business days after we receive the item.
+```
+
+Short. Specific. Has a next step.
+
+## Cover the 20 most common questions
+
+Pull your inbox's last 500 conversations and group by intent. The top 20 questions usually cover 80% of volume — write a pair for each.
+
+This is the highest-ROI single thing you can do for your agent's accuracy.
+
+## Multiple phrasings
+
+Customers ask the same thing three different ways. Add separate pairs for each, pointing at similar answers:
+
+```text
+Q: Where's my order?
+Q: I haven't received my package
+Q: When will my order arrive?
+→ same answer about how to check tracking + when to contact us
+```
+
+Don't try to merge them — separate pairs match better in search.
+
+## Editing pairs
+
+Open the source in **Knowledge** → edit any row inline → save. Changes re-index immediately. Deleted pairs are removed from the index within seconds.
+
+## Exporting pairs
+
+Click the source → **⋯ → Export CSV**. Handy for bulk editing in a spreadsheet then re-uploading.
+
+## When NOT to use Q&A pairs
+
+- For a narrative document (use **file upload** or **text snippet**).
+- For live, changing data like order status (use a **tool** instead, e.g. Shopify order lookup).

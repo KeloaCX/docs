@@ -1,0 +1,61 @@
+---
+title: "Contacts overview"
+description: "Every person you've talked to, with their full conversation history and company context."
+---
+
+The **Contacts** section is your customer directory. Every person who's messaged on any channel appears here, and Keloa automatically merges identities when it can tell it's the same person.
+
+## The Contacts list
+
+Open **Contacts** from the sidebar. Each row shows:
+
+- **Name** (or "unknown" until the contact provides one)
+- **Email** and **phone** if known
+- **Channels** where you've talked
+- **Last message** timestamp
+- **Conversation count**
+- **Tags**
+
+Search by name, email, or phone at the top.
+
+## Where contacts come from
+
+A contact is created the first time we see someone:
+
+- **Webchat** — a new browser session. When they share an email, we merge.
+- **Email** — from the `From` header.
+- **WhatsApp** — the sender's phone number.
+- **Instagram / Messenger** — the Meta-side user ID (they stay anonymous to you, not to Meta).
+- **Shopify** — the buyer's email on the order.
+
+## Identity merging
+
+If a contact shows up with the same email across two channels (say webchat and email), we merge them into one contact automatically. All conversations, on all channels, end up on one profile.
+
+You can also **merge manually** in rare cases the system missed:
+
+1. Open one of the two contacts.
+2. Click **⋯ → Merge into another contact**.
+3. Pick the target.
+
+Merges are irreversible — double-check first.
+
+## Tags on contacts
+
+Separate from conversation tags. Contact tags stick around forever (`vip`, `german-speaking`, `wholesale-partner`) — conversation tags are thread-level.
+
+Add contact tags from the contact's profile. They're available as fields in flow **Conditions**.
+
+## Companies
+
+Contacts can optionally belong to a **Company**. Useful for B2B where you're supporting multiple people at the same customer. See [Companies](/contacts/companies).
+
+## Exporting
+
+**Contacts → ⋯ → Export CSV** exports the filtered list. GDPR note: **Data &amp; privacy** exports all data for a single contact on request.
+
+## Deleting a contact
+
+For GDPR deletion requests: **Settings → Data &amp; privacy → Delete contact**. All conversations, messages, and the contact record itself are removed.
+
+See [Data &amp; privacy](/settings/data-and-privacy).

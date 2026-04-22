@@ -1,0 +1,58 @@
+---
+title: "Facebook Messenger"
+description: "Connect your Facebook Page so Messenger chats come into Keloa."
+---
+
+Connect the Facebook Page you already use to route Messenger conversations into the Keloa inbox.
+
+## Prerequisites
+
+- A **Facebook Page** (not a personal profile).
+- Admin access to the Page.
+- A **Meta Business account** linking the Page (usual path if you run any Meta ads).
+
+## Connect Messenger
+
+<Steps>
+  <Step title="Open the integration">
+    Sidebar → **Integrations** → **Messenger** → **Connect**.
+  </Step>
+
+  <Step title="Sign in with Meta">
+    Meta asks which Page(s) to connect. Pick the one you want.
+  </Step>
+
+  <Step title="Grant permissions">
+    Messenger access, page engagement, manage inbox. Approve.
+  </Step>
+
+  <Step title="Done">
+    Connected. Messenger messages to your Page start flowing into the Keloa inbox.
+  </Step>
+</Steps>
+
+## 24-hour window
+
+Messenger enforces a **24-hour response window**. Inside it, you can send anything. Outside, you need a **message tag** (`CONFIRMED_EVENT_UPDATE`, `POST_PURCHASE_UPDATE`, `ACCOUNT_UPDATE`) or a One-Time Notification token — see Meta's platform policy.
+
+Keloa blocks free-form AI replies outside the window automatically.
+
+## What the AI does
+
+Inside the 24-hour window, AI replies as on any other channel. Outside, human teammates can still reply with tagged messages if the context fits one of Meta's allowed tags.
+
+## Combined with Instagram
+
+If you run both Instagram and Messenger for the same brand, you'll have two separate channels in Keloa. They can point at the same or different AI agents.
+
+## Disconnecting
+
+**Integrations → Messenger → Disconnect** removes the webhook subscription from the Page. Messages stop arriving immediately.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| "No Pages found" during connect | The Meta user signing in doesn't admin any Pages. Grant access or have an admin connect. |
+| Messages arrive but can't reply | Check the channel status in Integrations — the token may need re-auth. |
+| Outside 24-hour window, need to reach customer | Use a tagged message type or email/WhatsApp follow-up. |

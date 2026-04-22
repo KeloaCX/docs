@@ -1,0 +1,100 @@
+---
+title: "Website widget"
+description: "Put a branded chat bubble on any website with one script tag."
+---
+
+The widget is the fastest channel to ship. One line of HTML and visitors can chat with your AI agent from any page.
+
+## Install
+
+<Steps>
+  <Step title="Grab your snippet">
+    Settings → **Widget** → copy the embed snippet. It looks like:
+
+    ```html
+    <script async
+            src="https://app.keloa.cx/widget/v1/loader.js"
+            data-account="your-workspace-slug"
+            data-agent="default"></script>
+    ```
+  </Step>
+
+  <Step title="Paste before &lt;/body&gt;">
+    In your site's template, drop the snippet just before the closing `</body>` tag. Every page will now show the widget.
+
+    Framework-specific notes:
+    - **WordPress** — Appearance → Theme File Editor → `footer.php`, or use an insert-header plugin.
+    - **Webflow / Squarespace / Wix** — Settings → Custom code → Footer.
+    - **Next.js** — add to `app/layout.tsx` inside `<body>`.
+    - **Shopify (theme)** — `theme.liquid` before `</body>`. (If you're using the Shopify channel, see [Shopify](/channels/shopify).)
+  </Step>
+
+  <Step title="Test">
+    Open your site in an incognito window. A chat bubble should appear in the bottom-right. Click it, say hi, and watch the conversation arrive in your **Inbox**.
+  </Step>
+</Steps>
+
+## Appearance
+
+Open **Settings → Widget** to customise:
+
+- **Theme colour** — bubble and header background
+- **Greeting** — first message shown when the widget opens
+- **Avatar** — optional image for the agent
+- **Languages** — EN, NL (per-visitor auto-detected)
+- **Position** — bottom-right (default) or bottom-left
+
+Changes preview live in the right pane.
+
+## Preview without publishing
+
+**Settings → Widget → Open preview** launches the widget on a sandbox page — useful for testing new greetings or colours without touching your site.
+
+## Loading behaviour
+
+- The loader script is <6 KB. It's loaded `async` and does nothing until needed.
+- The full widget iframe is lazy-loaded the first time the bubble is hovered or clicked.
+- No impact on Core Web Vitals if you install it `async` as shown above.
+
+## Privacy and tracking
+
+- No cross-site cookies.
+- A first-party session token is set in `localStorage` so returning visitors keep their conversation context.
+- No data is sent to third-party analytics.
+
+## Advanced
+
+### Identify a logged-in user
+
+If you know who the visitor is (they're logged in on your site), tell the widget so it can personalise:
+
+```html
+<script>
+  window.keloa = window.keloa || { q: [] };
+  window.keloa.q.push(['identify', {
+    email: 'tayfun@acme.com',
+    name: 'Tayfun Kayahan',
+    external_id: 'user_123',
+  }]);
+</script>
+<script async src="https://app.keloa.cx/widget/v1/loader.js"
+        data-account="your-workspace-slug"></script>
+```
+
+Identification merges with existing contacts by email.
+
+### Pre-fill a message
+
+To open the widget with a drafted message (e.g. from a "Chat about this product" button):
+
+```js
+window.keloa.q.push(['open', { draft: 'Hi, I have a question about the X-100' }]);
+```
+
+## Troubleshooting
+
+| Issue | Check |
+| --- | --- |
+| Bubble doesn't appear | Right-click → Inspect → look for `loader.js` in the Network tab. Check the `data-account` slug matches your workspace. |
+| Bubble appears but won't open | CSP header blocking the iframe — allow `app.keloa.cx` as a frame source. |
+| Messages land but no AI reply | Check an AI agent is attached to the channel in **Integrations → Webchat**. |

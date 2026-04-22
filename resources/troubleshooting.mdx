@@ -1,0 +1,72 @@
+---
+title: "Troubleshooting"
+description: "The most common issues and their fixes."
+---
+
+The fastest path to a working Keloa is catching problems at the connection boundary. Most issues fall into five categories:
+
+## Widget isn't showing up
+
+1. Open your site in an incognito window.
+2. Right-click → Inspect → Network tab → reload.
+3. Look for `loader.js`. If missing, the script tag didn't run — check it's in the page source before `</body>`.
+4. If `loader.js` is 404, your `data-account` slug is wrong. Find the correct one in **Settings → Widget**.
+5. If `loader.js` loads but the bubble doesn't appear, check for CSP headers blocking `app.keloa.cx`.
+
+## AI isn't replying
+
+1. Open the channel in **Integrations**. Status should be **connected**.
+2. Scroll down — is an AI agent attached? If not, pick one.
+3. Open the agent in **AI agents**. Status should be **live**, not **paused**.
+4. Check your credit usage in **Settings → Plan &amp; billing**. If at 100%, the AI is paused until next cycle or top-up.
+5. Use the **Try this agent** panel to confirm the agent itself works. If *that* fails, re-check the system prompt.
+
+## Answers are wrong or generic
+
+Root cause is almost always knowledge:
+
+1. Open **Knowledge**. Are sources marked **synced**?
+2. Use **Try this agent** and ask the bad question. Check **Sources** — what passages did it use?
+3. If the wrong passage was retrieved, add a **Q&amp;A pair** that answers the question directly.
+4. If the right passage was retrieved but the AI ignored it, tighten the system prompt: *"Answer from the knowledge provided. If information conflicts, prefer Q&amp;A pairs."*
+5. If no passage was retrieved, the knowledge is missing — add it.
+
+## Email not arriving
+
+Inbound (→ Keloa):
+
+1. Send a test to the **inbound address** Keloa gave you (e.g. `acme-abc@inbound.keloa.cx`). If that arrives, the issue is the forwarding rule at your mail provider, not Keloa.
+2. If the inbound address doesn't receive, check spam and any filters at Keloa's side — usually fine.
+
+Outbound (Keloa → customer):
+
+1. Check the domain is **verified** in **Settings → Email domains**.
+2. Use [mail-tester.com](https://mail-tester.com) — send a test from Keloa to the address mail-tester gives you. Score should be 9+/10.
+3. If DKIM fails, re-check the `CNAME` records exactly as Keloa shows them.
+
+## WhatsApp / Instagram / Messenger channel broken
+
+If the status shows **Error**, the Meta token has expired or permissions were revoked.
+
+1. **Integrations** → the channel card → **Reconnect**.
+2. Sign in with a Meta user that admins the business/page/Instagram account.
+3. Re-grant the permissions.
+
+If reconnect fails, check `business.facebook.com → Business settings → Business integrations → Keloa`. It should exist and have the right Pages selected. Add any missing page and re-try.
+
+## Conversations arrive but notifications don't
+
+1. In your browser, open site settings for `app.keloa.cx` → **Notifications** → **Allow**.
+2. Check **Profile → Notifications** — desktop + email toggles are on for the event you expect.
+3. In macOS, check **System Settings → Notifications → your browser** is allowed.
+
+## Still stuck?
+
+Email [support@keloa.cx](mailto:support@keloa.cx) with:
+
+- your workspace slug
+- the exact thing you did
+- what you expected vs what happened
+- a screenshot if there's UI involved
+
+We read every message.

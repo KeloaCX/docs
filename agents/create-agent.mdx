@@ -1,0 +1,59 @@
+---
+title: "Create an agent"
+description: "Add a new AI agent for a specific channel, topic, or brand."
+---
+
+Your workspace already has one agent from onboarding. Add more when you want a different personality, scope, or set of tools.
+
+<Steps>
+  <Step title="Open AI agents">
+    Sidebar → **AI agents** → **New agent**.
+  </Step>
+
+  <Step title="Name and greeting">
+    - **Name** — what customers see in the widget header. Keep it short and humanish ("Kay", not "KeloaSupportBot").
+    - **Greeting** — the first message on webchat. One friendly line.
+  </Step>
+
+  <Step title="Pick a model">
+    Most workspaces do fine on the default model. Upgrade to a bigger model only if answers feel shallow after you've improved knowledge and the prompt.
+  </Step>
+
+  <Step title="Write the system prompt">
+    The system prompt is the single biggest lever. See [System prompt](/agents/system-prompt) for templates and advice.
+
+    If you leave it blank, Keloa generates a starter from your workspace context.
+  </Step>
+
+  <Step title="Attach knowledge">
+    New agent = empty knowledge. Add sources in the agent's **Knowledge** tab, or go to **Knowledge → New source** and pick this agent.
+
+    See [Knowledge](/knowledge/overview).
+  </Step>
+
+  <Step title="Enable tools (optional)">
+    Under **Tools**, enable what this agent is allowed to do — lookup a Shopify order, hand off to a teammate, fetch a tracking number, etc. See [Tools](/agents/tools).
+  </Step>
+
+  <Step title="Set status to live">
+    Flip the status to **live** and save. The agent will answer on any channel you attach it to.
+
+    <Tip>Leave it on **paused** while you iterate — it'll draft replies but not send.</Tip>
+  </Step>
+</Steps>
+
+## Attach to a channel
+
+An agent does nothing until it's linked to a channel or flow. Open **Integrations** → click the channel → choose this agent as the default.
+
+Or build a flow where a **Trigger** node sends messages to this agent ([Flows](/flows/overview)).
+
+## Editing an agent
+
+From **AI agents**, click **⋯ → Edit** on any agent card. Changes take effect immediately on the next incoming message.
+
+## Deleting an agent
+
+**⋯ → Delete** removes the agent and unlinks it from any channel. Conversations already handled keep their history — nothing retro-deletes.
+
+You can't delete the last agent on a channel without picking a replacement first.

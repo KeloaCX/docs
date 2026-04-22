@@ -1,0 +1,59 @@
+---
+title: "Contact profile"
+description: "Everything you know about a person on one page."
+---
+
+The contact profile is a full customer picture — previous conversations, company, custom fields, attached files.
+
+## Opening a profile
+
+- From **Contacts**, click any row.
+- From the **Inbox**, the right-hand drawer shows a mini profile; click the contact name to open the full page.
+
+## What's on the page
+
+| Section | Details |
+| --- | --- |
+| **Header** | Name, avatar, key channels (email / phone), primary language |
+| **Tags** | Contact-level tags (editable) |
+| **Company** | Linked company, if any |
+| **Conversations** | Every conversation with this contact, across channels, with status |
+| **Custom fields** | Anything you or a flow has written (e.g. `plan`, `signup_date`) |
+| **Files** | Attachments they've ever sent |
+
+## Editing
+
+Click any field to edit in place:
+
+- Name and email — click, change, save.
+- Tags — type to add, × to remove.
+- Company — pick from the dropdown or create a new one.
+- Custom fields — **+ Add field**, pick a key and value.
+
+Changes save on blur.
+
+## Custom fields
+
+Custom fields are free-form key/value pairs on a contact. Use them to store anything you want to reference later — subscription tier, preferred language, CRM ID.
+
+Flows can **read** custom fields in a **Condition** node, and **write** them with an **Action** node (set contact field). Integrations can also populate them (e.g. Shopify writes `shopify_customer_id`).
+
+## Per-channel identity
+
+Below the header, you'll see one or more **channel identities** — how we recognize this contact on each channel:
+
+- Email address (email channel)
+- Phone number (WhatsApp)
+- Instagram / Messenger user ID
+- Shopify customer ID
+- Webchat visitor UUID (before they share an email)
+
+These are read-only. To merge duplicates, use **⋯ → Merge** on the profile.
+
+## Previous conversations
+
+The **Conversations** list shows everything — open, resolved, on every channel. Click any row to jump into the conversation. A small badge shows channel type.
+
+## Export
+
+**⋯ → Export JSON** exports the full contact — profile, conversations, messages, files — as a portable JSON file. Used for GDPR data requests.

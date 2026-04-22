@@ -1,55 +1,56 @@
-# Mintlify Starter Kit
+# Keloa docs
 
-Use the starter kit to get your docs deployed and ready to customize.
+Source for the Keloa user documentation, hosted on [Mintlify](https://mintlify.com).
+Published at **[docs.keloa.cx](https://docs.keloa.cx)**.
 
-Click the green **Use this template** button at the top of this repo to copy the Mintlify starter kit. The starter kit contains examples with
+Keloa is a multi-tenant AI-first omnichannel customer engagement platform:
+a unified inbox across webchat, email, WhatsApp, Instagram, Messenger, and
+Shopify, with a per-workspace AI agent grounded in your own knowledge base.
 
-- Guide pages
-- Navigation
-- Customizations
-- API reference pages
-- Use of popular components
+## Structure
 
-**[Follow the full quickstart guide](https://starter.mintlify.com/quickstart)**
+```
+index.mdx           — landing page
+quickstart.mdx      — 15-minute setup
+onboarding.mdx      — walkthrough of first-run wizard
+concepts.mdx        — core concepts
 
-## AI-assisted writing
+inbox/              — inbox, replying, macros, assignments, resolving
+agents/             — creating, prompting, tools, testing AI agents
+knowledge/          — website crawl, files, snippets, Q&A pairs
+flows/              — triggers, conditions, messages/actions, handoff, publishing
+channels/           — web widget, email, WhatsApp, Instagram, Messenger, Shopify
+contacts/           — contact and company profiles
+analytics/          — metrics and breakdowns
+settings/           — workspace, members, assignment rules, widget, tools, data & privacy, security
+billing/            — plans, usage & credits, managing subscription
+account/            — personal profile, password & 2FA, invitations
+resources/          — FAQ, troubleshooting, glossary
+```
 
-Set up your AI coding tool to work with Mintlify:
+Navigation lives in `docs.json` under `navigation.tabs`.
+
+## Local preview
 
 ```bash
-npx skills add https://mintlify.com/docs
-```
-
-This command installs Mintlify's documentation skill for your configured AI tools like Claude Code, Cursor, Windsurf, and others. The skill includes component reference, writing standards, and workflow guidance.
-
-See the [AI tools guides](/ai-tools) for tool-specific setup.
-
-## Development
-
-Install the [Mintlify CLI](https://www.npmjs.com/package/mint) to preview your documentation changes locally. To install, use the following command:
-
-```
 npm i -g mint
-```
-
-Run the following command at the root of your documentation, where your `docs.json` is located:
-
-```
 mint dev
 ```
 
-View your local preview at `http://localhost:3000`.
+Then open <http://localhost:3000>.
 
-## Publishing changes
+## Contributing
 
-Install our GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app) to propagate changes from your repo to your deployment. Changes are deployed to production automatically after pushing to the default branch.
+- Keep docs end-user focused — not technical/API docs.
+- Prefer task-oriented pages ("How to X") over feature lists.
+- Use short paragraphs and tables over prose where possible.
+- Match existing voice: direct, friendly, pragmatic.
 
-## Need help?
+## Logo and branding
 
-### Troubleshooting
+Logo files live in `logo/` (wordmark, light and inverse) and `favicon.svg` (mark only).
+Channel icons are in `images/channels/`. All sourced from `keloacx-website/public/assets`.
 
-- If your dev environment isn't running: Run `mint update` to ensure you have the most recent version of the CLI.
-- If a page loads as a 404: Make sure you are running in a folder with a valid `docs.json`.
+## Publishing
 
-### Resources
-- [Mintlify documentation](https://mintlify.com/docs)
+Changes pushed to `main` auto-deploy via the Mintlify GitHub app.

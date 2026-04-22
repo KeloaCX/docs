@@ -1,0 +1,96 @@
+---
+title: "Knowledge overview"
+description: "Teach your AI agent your business. Four source types, one source of truth."
+---
+
+**Knowledge** is the content your AI is allowed to answer from. Without knowledge, your agent is polite and generic; with good knowledge, it's specific, accurate, and cites sources.
+
+## Four kinds of sources
+
+<CardGroup cols={2}>
+  <Card title="Website crawl" icon="globe" href="/knowledge/website-crawl">
+    Paste a URL. Keloa crawls the site and indexes every page.
+  </Card>
+  <Card title="File upload" icon="file" href="/knowledge/file-upload">
+    Drop in PDFs, DOCX, TXT, or Markdown.
+  </Card>
+  <Card title="Text snippet" icon="align-left" href="/knowledge/text-snippet">
+    Paste plain text — a policy, a pricing sheet, a FAQ.
+  </Card>
+  <Card title="Q&A pairs" icon="comments" href="/knowledge/qa-pairs">
+    Write canonical question / answer rows. The highest-precision format.
+  </Card>
+</CardGroup>
+
+## How knowledge works
+
+When a message arrives:
+
+1. Keloa converts the incoming question into a semantic vector.
+2. It searches your knowledge and pulls the top-matching passages.
+3. Those passages + system prompt + conversation go to the AI.
+4. The AI answers, citing the passages used.
+
+You see those citations in the conversation's **Sources** panel.
+
+## Scoping by agent
+
+Every knowledge source belongs to a specific **AI agent**. So you can:
+
+- keep product pages with the pre-sales agent
+- keep policy PDFs with the returns agent
+- keep an internal snippet on a dedicated "internal support" agent and never show it externally
+
+Change the agent a source is attached to any time — it re-indexes in seconds.
+
+## Statuses
+
+A source moves through these states:
+
+| Status | Meaning |
+| --- | --- |
+| **Queued** | Created, waiting for worker |
+| **Syncing** | Being crawled or parsed right now |
+| **Synced** | Indexed and live — the agent can use it |
+| **Failed** | Something went wrong. Click **Retry** or open the source to see details |
+
+## Your storage budget
+
+Each plan includes a knowledge allowance in MB. You'll see a bar at the top of the **Knowledge** page showing usage vs cap.
+
+| Plan | Storage | Pages/source |
+| --- | --- | --- |
+| Starter | 5 MB | 50 |
+| Growth | 50 MB | 500 |
+| Business | 500 MB | 5 000 |
+| Scale | 5 GB | Unlimited |
+
+If you hit the cap, add a bigger plan or delete sources you no longer need.
+
+## Quality beats quantity
+
+Surprising truth: 20 well-written Q&amp;A pairs will outperform a 2 000-page crawl for the **top 80% of customer questions**. A focused, up-to-date knowledge base answers faster and more accurately than a huge messy one.
+
+Our rule of thumb:
+
+1. Start with a **website crawl** for broad coverage.
+2. Add **Q&amp;A pairs** for the 20 most common questions.
+3. Add **file uploads** for policies and specs that don't live on the public site.
+4. Prune stale sources every quarter.
+
+## Next
+
+<CardGroup cols={2}>
+  <Card title="Add a website crawl" icon="globe" href="/knowledge/website-crawl">
+    The fastest broad coverage.
+  </Card>
+  <Card title="Write Q&A pairs" icon="comments" href="/knowledge/qa-pairs">
+    Hand-tuned, highest precision.
+  </Card>
+  <Card title="Manage sources" icon="folder-open" href="/knowledge/managing-sources">
+    Recrawl, retry, delete, reassign.
+  </Card>
+  <Card title="Test your agent" icon="flask" href="/agents/test-agent">
+    Confirm new knowledge shifts replies the right way.
+  </Card>
+</CardGroup>

@@ -1,0 +1,72 @@
+---
+title: "Channels overview"
+description: "Connect the places your customers already message you — Keloa unifies them into one inbox."
+---
+
+Every "place" where you receive customer messages is a **channel**. Keloa supports six out of the box, and you can connect any number of each (e.g. two WhatsApp numbers, three email inboxes).
+
+## Supported channels
+
+<CardGroup cols={2}>
+  <Card title="Website widget" icon="comment" href="/channels/web-widget">
+    One script tag. Branded chat bubble on your site. Fastest to set up.
+  </Card>
+  <Card title="Email" icon="envelope" href="/channels/email">
+    Forward support@yours to Keloa; replies go back through your domain.
+  </Card>
+  <Card title="WhatsApp Business" icon="whatsapp" href="/channels/whatsapp">
+    Via WhatsApp Business API. Needs a verified business.
+  </Card>
+  <Card title="Instagram" icon="instagram" href="/channels/instagram">
+    DMs and story replies via Meta's Instagram Messaging API.
+  </Card>
+  <Card title="Messenger" icon="facebook-messenger" href="/channels/messenger">
+    Connect the Facebook Page you already use.
+  </Card>
+  <Card title="Shopify" icon="shopify" href="/channels/shopify">
+    Store chat + order, product and tracking tools for the AI.
+  </Card>
+</CardGroup>
+
+## Where to connect channels
+
+Sidebar → **Integrations**. You'll see every supported channel as a card. Each shows:
+
+- **Connect / Disconnect** button
+- status (connected / disconnected / pending setup)
+- last-synced timestamp
+- tools this channel unlocks (e.g. Shopify unlocks order lookup)
+
+## Channel status
+
+| Status | Meaning |
+| --- | --- |
+| **Connected** | Messages are flowing both ways. |
+| **Pending setup** | Created in Keloa, waiting for external verification (e.g. Meta webhook confirmation, email domain DNS). |
+| **Disconnected** | Was connected; now paused. No messages flow. |
+| **Error** | Something broke (expired token, revoked permission). Click to fix. |
+
+## Channel limits per plan
+
+| Plan | Channels |
+| --- | --- |
+| Starter | 1 |
+| Growth | 3 |
+| Business | 10 |
+| Scale | Unlimited |
+
+Each connection counts — two WhatsApp numbers is two channels.
+
+## One AI agent per channel (by default)
+
+Every channel has a **default AI agent** that handles inbound messages. Pick it when you connect, or change later in the channel's settings.
+
+Advanced: use flows to override the default — e.g. send VIP conversations to a different agent.
+
+## Real-time
+
+Every channel feeds the same real-time **Inbox**. You'll hear a ping and see a desktop notification (when allowed) within a second of a message arriving.
+
+## Privacy
+
+All channel traffic is logged in the EU. When you disconnect a channel, inbound messages stop immediately. Historical conversations stay unless you delete them in **Data &amp; privacy**.
