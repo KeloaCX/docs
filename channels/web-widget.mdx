@@ -1,100 +1,175 @@
 ---
 title: "Website widget"
-description: "Put a branded chat bubble on any website with one script tag."
+description: "Drop a branded chat bubble on any website with one script tag."
 ---
 
-The widget is the fastest channel to ship. One line of HTML and visitors can chat with your AI agent from any page.
+The widget is the fastest channel to ship: one snippet on your site and visitors can chat with your AI agent immediately. The webchat channel is created automatically for every workspace, so there's nothing to "connect" — just paste the snippet.
 
 ## Install
 
 <Steps>
   <Step title="Grab your snippet">
-    Settings → **Widget** → copy the embed snippet. It looks like:
+    Settings → **Widget** → scroll to **Embed snippet** and click **Copy snippet**. It looks like this (the loader URL points at your environment, the production CDN by default):
 
     ```html
-    <script async
-            src="https://app.keloa.cx/widget/v1/loader.js"
-            data-account="your-workspace-slug"
-            data-agent="default"></script>
+    <script>
+    (function(){
+    if(!window.Keloa){window.Keloa={q:[]};window.Keloa.init=function(c){window.Keloa.q.push(c)}}
+    var s=document.createElement('script');
+    s.src='https://app.keloa.cx/widget/v1/loader.js';
+    s.setAttribute('data-account','your-workspace-slug');
+    s.setAttribute('data-agent','default');
+    if(document.readyState==='complete'){document.body.appendChild(s)}
+    else{window.addEventListener('load',function(){document.body.appendChild(s)})}
+    })();
+    </script>
     ```
+
+    The `data-account` value is your workspace slug. `data-agent` defaults to `default` (your first AI agent); pass an agent name to scope the widget to a specific agent.
   </Step>
 
   <Step title="Paste before &lt;/body&gt;">
-    In your site's template, drop the snippet just before the closing `</body>` tag. Every page will now show the widget.
+    Drop the snippet just before the closing `</body>` tag of your site. Every page that includes it will show the widget.
 
     Framework-specific notes:
-    - **WordPress** — Appearance → Theme File Editor → `footer.php`, or use an insert-header plugin.
+    - **WordPress** — Appearance → Theme File Editor → `footer.php`, or any insert-header plugin.
     - **Webflow / Squarespace / Wix** — Settings → Custom code → Footer.
-    - **Next.js** — add to `app/layout.tsx` inside `<body>`.
-    - **Shopify (theme)** — `theme.liquid` before `</body>`. (If you're using the Shopify channel, see [Shopify](/channels/shopify).)
+    - **Next.js** — `app/layout.tsx` inside `<body>`, or use `next/script` with `strategy="afterInteractive"`.
+    - **Shopify (theme)** — `theme.liquid` before `</body>`.
   </Step>
 
   <Step title="Test">
-    Open your site in an incognito window. A chat bubble should appear in the bottom-right. Click it, say hi, and watch the conversation arrive in your **Inbox**.
+    Open your site in an incognito window. A chat bubble appears in the bottom-right (or bottom-left, if you changed it). Click it, say hi, and watch the conversation arrive in your **Inbox**.
   </Step>
 </Steps>
 
-## Appearance
+<Tip>
+Don't want to touch your site yet? Click **Open preview** in **Settings → Widget** to launch the widget on a sandboxed host page that mirrors your saved settings.
+</Tip>
 
-Open **Settings → Widget** to customise:
+## Configuration
 
-- **Theme colour** — bubble and header background
-- **Greeting** — first message shown when the widget opens
-- **Avatar** — optional image for the agent
-- **Languages** — EN, NL (per-visitor auto-detected)
-- **Position** — bottom-right (default) or bottom-left
+Everything below lives at **Settings → Widget**. Changes save on click and apply on the next loader fetch (CDN cache 60 seconds).
 
-Changes preview live in the right pane.
+### Look & feel
 
-## Preview without publishing
+- **Theme color** — bubble and header background. Hex.
+- **Launcher position** — `right` (default) or `left`.
+- **Greeting** — fallback intro text used when no intro bubbles are configured.
 
-**Settings → Widget → Open preview** launches the widget on a sandbox page — useful for testing new greetings or colours without touching your site.
+### Identity
+
+- **Display name (header)** — overrides the AI agent's name in the widget header. Falls back to the agent name, then the workspace name.
+- **Bot avatar** — comes from the AI agent's avatar (set under **AI agents → edit**), with the brand logo as fallback.
+
+### Intro bubbles
+
+Up to 5 short "hello" bubbles shown when the widget opens. If empty, the **Greeting** field is used instead.
+
+### Suggested questions
+
+Up to 6 one-tap chips visitors can pick instead of typing. Auto-seeded from your onboarding site scan and editable any time.
+
+### Privacy URL
+
+Optional link rendered in the widget footer. Use it to point at your privacy policy.
+
+### Origin allowlist
+
+Empty means the widget loads on any site that includes the snippet. Add domains to restrict it. Useful when a third party copies your snippet onto an unrelated site.
+
+### Working hours (Business+)
+
+Working hours configured in **Settings → Workspace → Business hours** are visible to the AI via the system prompt and surfaced in the widget when the customer asks about availability. Outside hours, the AI sets expectations on response time rather than promising live help.
+
+The hours field is a per-day window with a workspace timezone (`Europe/Amsterdam` by default). Enabling and editing this field requires the `working_hours` cap, available on Business and Scale plans.
+
+### Proactive triggers (Business+)
+
+Auto-open the widget with a contextual greeting. Fires once per visitor session.
+
+- **After (seconds on page)** — auto-open after the visitor has been on the page for *N* seconds.
+- **Or scroll depth (%)** — auto-open after the visitor scrolls past *N*% of the page.
+- **Or exit intent** — auto-open when the cursor moves to leave the viewport (desktop only).
+- **Proactive message** — the bubble shown when a trigger fires. Leave empty to disable.
+
+The behaviour is gated by the `proactive_triggers` cap (Business and Scale).
+
+### Branding (Business+)
+
+Hide the small "Powered by Keloa" badge in the widget footer. Two-step gate: your plan must include the `widget_unbranded` cap **and** you must explicitly toggle **Hide branding** on.
+
+| Plan | Unbranded widget |
+| --- | --- |
+| Starter | No |
+| Growth | No |
+| Business | Yes |
+| Scale | Yes |
 
 ## Loading behaviour
 
-- The loader script is <6 KB. It's loaded `async` and does nothing until needed.
-- The full widget iframe is lazy-loaded the first time the bubble is hovered or clicked.
-- No impact on Core Web Vitals if you install it `async` as shown above.
+- The loader script is small, served `async`, and does nothing until the bubble is hovered or clicked.
+- The full widget iframe is lazy-loaded the first time the visitor interacts.
+- A first-party session token is stored in `localStorage` so returning visitors keep their conversation context. No cross-site cookies.
+- The public config endpoint (`/widget/v1/config`) is cached for 60 seconds at the edge.
 
-## Privacy and tracking
+## What the visitor experiences
 
-- No cross-site cookies.
-- A first-party session token is set in `localStorage` so returning visitors keep their conversation context.
-- No data is sent to third-party analytics.
+| What they see | Where it comes from |
+| --- | --- |
+| Bubble color, position | **Settings → Widget → Look & feel** |
+| Header name | **Display name** (or agent name, or workspace name) |
+| Avatar | **AI agent → Avatar** |
+| Intro bubbles | **Settings → Widget → Intro bubbles** |
+| Suggested questions | **Settings → Widget → Suggested questions** |
+| Replies | The AI agent attached to the channel, answering from your knowledge base |
+| Greeting language | Auto-detected from `navigator.language` (EN, NL, DE, FR, ES) |
+| "Powered by Keloa" footer | Hidden on Business+ when **Hide branding** is on |
 
 ## Advanced
 
 ### Identify a logged-in user
 
-If you know who the visitor is (they're logged in on your site), tell the widget so it can personalise:
+Tell the widget who the visitor is so the AI can personalise:
 
 ```html
 <script>
-  window.keloa = window.keloa || { q: [] };
-  window.keloa.q.push(['identify', {
+  window.Keloa = window.Keloa || { q: [] };
+  window.Keloa.q.push(['identify', {
     email: 'tayfun@acme.com',
     name: 'Tayfun Kayahan',
     external_id: 'user_123',
   }]);
 </script>
-<script async src="https://app.keloa.cx/widget/v1/loader.js"
-        data-account="your-workspace-slug"></script>
+<!-- ...followed by the snippet from Settings → Widget -->
 ```
 
 Identification merges with existing contacts by email.
 
 ### Pre-fill a message
 
-To open the widget with a drafted message (e.g. from a "Chat about this product" button):
+Open the widget with a drafted message (e.g. from a "Chat about this product" button):
 
 ```js
-window.keloa.q.push(['open', { draft: 'Hi, I have a question about the X-100' }]);
+window.Keloa.q.push(['open', { draft: 'Hi, I have a question about the X-100' }]);
 ```
+
+## Plan caps for the widget
+
+| Cap | Starter | Growth | Business | Scale |
+| --- | --- | --- | --- | --- |
+| Web chat widget | Yes | Yes | Yes | Yes |
+| Working hours integration | — | — | Yes | Yes |
+| Proactive triggers | — | — | Yes | Yes |
+| Hide "Powered by Keloa" | — | — | Yes | Yes |
+
+See [Billing & plans](/billing/plans) for the full picture.
 
 ## Troubleshooting
 
 | Issue | Check |
 | --- | --- |
-| Bubble doesn't appear | Right-click → Inspect → look for `loader.js` in the Network tab. Check the `data-account` slug matches your workspace. |
-| Bubble appears but won't open | CSP header blocking the iframe — allow `app.keloa.cx` as a frame source. |
-| Messages land but no AI reply | Check an AI agent is attached to the channel in **Integrations → Webchat**. |
+| Bubble doesn't appear | Right-click → Inspect → look for `loader.js` in the Network tab. Verify the `data-account` slug matches your workspace. |
+| Bubble appears but won't open | A CSP header is blocking the iframe. Allow `app.keloa.cx` (or your widget CDN host) as a frame source. |
+| Messages land but no AI reply | Check that an AI agent exists on the workspace. The widget falls back to the first agent if `data-agent="default"`. |
+| Branding toggle is greyed out | You're not on Business or Scale, or your plan was just upgraded and the page hasn't reloaded yet. |

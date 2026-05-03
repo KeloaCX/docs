@@ -1,77 +1,95 @@
 ---
 title: "Email"
-description: "Turn support@yours into an AI-handled inbox with branded replies."
+description: "Forward your support inbox to Keloa, reply from your own verified domain."
 ---
 
-Connect an email address (or several) so that messages to `support@yourdomain.com` land in Keloa, get an AI reply, and send back through your domain with your branding.
+Connect one or more email addresses (e.g. `support@yourdomain.com`, `hello@yourdomain.com`) so messages land in Keloa, the AI drafts or auto-sends a reply, and outbound mail goes back through *your* domain with SPF and DKIM passing.
 
-## Two parts: inbound and outbound
+Email runs on top of [Lettermint](https://lettermint.co) for both inbound parsing and authenticated outbound sending. As a workspace owner you don't talk to Lettermint directly: Keloa creates the resources for you when you add a domain or a channel.
 
-- **Inbound** — forward mail *to* Keloa so we receive it.
-- **Outbound** — verify your domain with Keloa so replies *from* you look legitimate (pass SPF/DKIM).
+## How it fits together
 
-Both are required for a working email channel.
+- **Inbound address** — every workspace gets one auto-generated alias on `@in.keloa.cx`, e.g. `acme-x9k2pq@in.keloa.cx`. This is the address you forward your real mailboxes *to*.
+- **Email domain** — your sending domain (e.g. `yourdomain.com`) verified via DNS so outbound replies pass SPF/DKIM.
+- **Email channel** — one mailbox you reply *as*, e.g. `support@yourdomain.com`. A workspace can have many channels, all routed through the same inbound alias.
 
-## Connect an email channel
+You need both an **email domain** (verified) and an **email channel** to send. You only need the inbound alias to receive.
 
-<Steps>
-  <Step title="Open the integration">
-    Sidebar → **Integrations** → **Email** → **Connect**.
-  </Step>
+## 1. Verify your sending domain
 
-  <Step title="Create an inbound address">
-    Keloa generates an address like `acme-abc123@inbound.keloa.cx`. This is where email should be *forwarded* (not the final sender address shown to customers — that comes in step 4).
-  </Step>
+Settings → **Channels** → **Email** → **Set up**, then **Email domains** → **Add domain**.
 
-  <Step title="Add a forwarding rule">
-    Set up your existing mailbox to forward to the inbound address above.
-    - **Google Workspace** → Admin → Gmail → Routing → Add rule → forward to Keloa.
-    - **Microsoft 365** → Exchange admin → Mail flow rule → redirect to Keloa.
-    - **cPanel / generic** → Mail → Forwarders.
+Enter just the domain — no `@`, no mailbox. E.g. `yourdomain.com`.
 
-    Send a test email to `support@yourdomain.com`. It should appear in the **Inbox** within seconds.
-  </Step>
+Keloa registers the domain with Lettermint and shows the DNS records to add at your DNS provider:
 
-  <Step title="Verify your sending domain">
-    Go to **Settings → Email domains → Add domain** and enter your domain (e.g. `yourdomain.com`).
+- **SPF** (`TXT`) — usually merged into your existing SPF if you have one.
+- **DKIM** (`CNAME` × 2) — points to Lettermint's signing keys.
 
-    Keloa shows three DNS records to add:
-    - SPF (`TXT`)
-    - DKIM (`CNAME` × 2)
+The status starts as `pending`. Add the records, give them 5 to 30 minutes to propagate, then click **Verify**. When all records resolve, the status flips to `verified`.
 
-    Add them at your DNS provider. Click **Verify** once propagated (usually 5–30 minutes).
-  </Step>
+<Tip>
+If verification keeps failing, recopy the records from the Keloa UI rather than retyping. Trailing dots and copy-paste artifacts are the most common cause.
+</Tip>
 
-  <Step title="Set the sender address">
-    Once the domain is verified, pick the visible sender — e.g. `support@yourdomain.com`. Replies from Keloa will come from that address, threaded with the original, with your workspace signature.
-  </Step>
-</Steps>
+## 2. Add an email channel
 
-## Reply behaviour
+Settings → **Channels** → **Email** → **Add address**.
 
-- Each conversation is one email thread — replies are threaded on `Message-ID`.
-- Your workspace signature (Settings → Workspace → Signature) is appended automatically.
-- Quoted text from customers is collapsed in the inbox so you only see the new content.
+Enter the visible mailbox you'll reply *as* (e.g. `support@yourdomain.com`). The domain part must match a verified email domain — Keloa blocks the form otherwise.
+
+After saving, Keloa shows your workspace's `inbound_address`, e.g. `acme-x9k2pq@in.keloa.cx`. **This is the address you forward inbound mail to.** It's shared across every email channel in the workspace, so you only set up one forwarding rule per real mailbox.
+
+## 3. Forward your real mailbox to Keloa
+
+Set your existing mailbox provider to forward (or BCC) every incoming message to your workspace's `inbound_address`.
+
+- **Google Workspace** — Admin → Apps → Gmail → Routing → Add rule → forward to the inbound address. Pick "Bypass spam filter" so Keloa sees everything.
+- **Microsoft 365** — Exchange admin → Mail flow → Rules → Redirect the message to.
+- **cPanel / generic** — Mail → Forwarders → Add forwarder.
+- **Forwarding from a dedicated address** — set up a forward rule on `support@yourdomain.com` itself in your provider's mailbox settings.
+
+Send a test mail to `support@yourdomain.com` from any external address. It should appear in your Keloa **Inbox** within seconds, and the AI will draft (or auto-send) a reply.
+
+## Multiple email channels per workspace
+
+You can add as many email channels as your plan allows (1 / 3 / 10 / unlimited). Common setups:
+
+- `support@` for general inquiries, `billing@` for invoices, `careers@` for hiring — three channels, one verified domain, one inbound alias, three forwarding rules.
+- Multiple brands on different verified domains — `support@brand-a.com`, `hi@brand-b.com` — every channel still routes through the same inbound alias.
+
+Each conversation remembers which channel it arrived on. Replies go out from that channel's address with that channel's sender name and signature.
+
+## Replying
+
+The AI replies on its own (auto-send) or drafts (you click **Send**) depending on confidence and your **Auto-send** setting. Either way:
+
+- **From** is your channel's email address (e.g. `support@yourdomain.com`), with optional sender name.
+- Replies thread on the original `Message-ID` so customer email clients keep them in one chain.
+- Workspace signature, set in **Settings → Workspace**, is appended automatically.
+- Quoted text from customers is collapsed in the inbox so operators only see the new content.
+- If the AI escalates, the templated handoff reply is sent through the same channel.
 
 ## What the AI does
 
-Everything it does on other channels: drafts replies, answers from your knowledge, uses tools, hands off via flows.
-
-Out-of-office and vacation auto-responders are detected and ignored — the AI won't get stuck in a loop.
+Same as on every other channel: drafts replies, answers from your knowledge base, uses tools, hands off via flows. Out-of-office and vacation auto-responders are detected and ignored so the AI won't get stuck in a loop.
 
 ## Attachments
 
-Up to 25 MB per email, inline or attached. Images preview in the inbox; PDFs download on click.
+Inbound attachments up to 25 MB per email are stored against the message. Images preview in the inbox, PDFs and other files download on click.
 
 ## Disconnecting
 
-**Integrations → Email → Disconnect** stops new forwards from being accepted. Remove your forwarding rule at the source as well to avoid bounces.
+Settings → **Channels** → **Email** → **Disconnect** stops new mail on that specific address from creating a Keloa conversation. Remove the forwarding rule on the source mailbox too, otherwise inbound mail still hits the alias and counts against your conversation limit.
+
+Removing the underlying email *domain* also removes every channel using it.
 
 ## Troubleshooting
 
 | Issue | Fix |
 | --- | --- |
-| Emails not arriving | Send a test to the inbound address. If that works, the forwarding rule is the issue. |
-| Outbound rejected as spam | DKIM not verified. Re-check DNS records. |
-| Replies threading as new conversations | Your forwarder is stripping `In-Reply-To` — check it's passing raw headers. |
-| Auto-responder loops | They're auto-detected and suppressed. If one slips through, mark that conversation as **spam**. |
+| Mails not arriving | Send a test directly to your `inbound_address` (e.g. `acme-x9k2pq@in.keloa.cx`). If that works, the forwarding rule is the issue. |
+| Outbound rejected as spam | DKIM not verified, or SPF conflict on the sending domain. Re-check DNS records. |
+| Replies thread as new conversations | Your forwarder is stripping `In-Reply-To`. Switch from "redirect" to "forward as attachment" or "raw forward". |
+| Auto-responder loops | Auto-detected and suppressed. If one slips through, mark the conversation as spam. |
+| `From` shows "via keloa.cx" in Gmail | Expected when only DKIM is set up but `Return-Path` alignment is missing. Verify SPF too. |

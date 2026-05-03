@@ -8,35 +8,35 @@ To send email *from* Keloa using your own domain (`support@yourdomain.com`), you
 ## Add a domain
 
 <Steps>
-  <Step title="Open Email domains">
-    Sidebar → **Settings** → **Email domains** → **Add domain**.
+  <Step title="Open Email settings">
+    Sidebar → **Settings** → **Channels** → **Email** → **Set up**, then **Email domains** → **Add domain**.
   </Step>
 
   <Step title="Enter the domain">
-    Just the domain — no `@`, no mailbox. E.g. `yourdomain.com`.
+    Just the domain — no `@`, no mailbox. E.g. `yourdomain.com`. Keloa registers it with [Lettermint](https://lettermint.co), our authenticated email provider.
   </Step>
 
   <Step title="Add DNS records">
-    Keloa shows three records to add at your DNS provider:
+    Keloa shows the records to add at your DNS provider, typically:
 
     - **SPF** (`TXT` record) — usually merged into your existing SPF if any.
-    - **DKIM** (`CNAME` × 2) — points to Keloa's signing keys.
+    - **DKIM** (`CNAME` × 2) — points to Lettermint's signing keys.
 
-    The Keloa UI has a **Copy** button on each record. Paste into your DNS provider as-is.
+    Each record has a **Copy** button. Paste into your DNS provider as-is.
   </Step>
 
   <Step title="Wait for propagation">
-    Usually 5–30 minutes. Some providers (looking at you, some legacy ones) take hours. Use [dnschecker.org](https://dnschecker.org) to watch propagation.
+    Usually 5 to 30 minutes. Some legacy providers take hours. Use [dnschecker.org](https://dnschecker.org) to watch propagation.
   </Step>
 
   <Step title="Verify">
-    Back in Keloa, click **Verify**. Status flips to **verified** when all three records resolve.
+    Back in Keloa, click **Verify**. Status flips to `verified` when all records resolve.
   </Step>
 </Steps>
 
 ## Using the verified domain
 
-Once verified, open **Integrations → Email → Sender address** and pick `support@yourdomain.com` (or any mailbox on that domain). Replies go out from there, with your workspace signature.
+Once verified, add an [email channel](/channels/email#2-add-an-email-channel) — pick the visible mailbox you'll reply *as* (e.g. `support@yourdomain.com`). Replies go out from there with your channel's sender name and signature.
 
 ## Plan limits
 

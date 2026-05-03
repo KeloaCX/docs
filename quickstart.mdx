@@ -28,21 +28,31 @@ This guide takes a fresh workspace to a live AI agent answering real questions. 
   </Step>
 
   <Step title="Pick your first channel">
-    Choose **Webchat** for the fastest path — it requires no third-party approval. (WhatsApp, Instagram and Messenger need provider connections, see [Channels](/channels/overview).)
+    Choose **Webchat** for the fastest path — it requires no third-party approval. **Email** is also live; see [Email](/channels/email) for the inbound-forwarding plus DNS-verification setup.
+
+    WhatsApp, Instagram, Messenger and Shopify are coming soon. See [Channels overview](/channels/overview).
 
     Keloa creates the channel, attaches your new agent, and drops you on the dashboard.
   </Step>
 
   <Step title="Install the widget on your site">
-    Open **Settings → Widget** to grab your one-line embed snippet:
+    Open **Settings → Widget** and click **Copy snippet**. The snippet is a small async loader that injects `widget/v1/loader.js` once the page is ready:
 
     ```html
-    <script async src="https://app.keloa.cx/widget/v1/loader.js"
-            data-account="your-workspace-slug"
-            data-agent="default"></script>
+    <script>
+    (function(){
+    if(!window.Keloa){window.Keloa={q:[]};window.Keloa.init=function(c){window.Keloa.q.push(c)}}
+    var s=document.createElement('script');
+    s.src='https://app.keloa.cx/widget/v1/loader.js';
+    s.setAttribute('data-account','your-workspace-slug');
+    s.setAttribute('data-agent','default');
+    if(document.readyState==='complete'){document.body.appendChild(s)}
+    else{window.addEventListener('load',function(){document.body.appendChild(s)})}
+    })();
+    </script>
     ```
 
-    Paste it before `</body>` on any page. Refresh and a chat bubble appears in the bottom-right.
+    Paste it before `</body>` on any page. Refresh and a chat bubble appears in the bottom-right (or bottom-left, if you've changed the launcher position).
 
     <Tip>Test without touching your site: **Settings → Widget → Open preview**.</Tip>
   </Step>

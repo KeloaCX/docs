@@ -1,72 +1,79 @@
 ---
 title: "Channels overview"
-description: "Connect the places your customers already message you — Keloa unifies them into one inbox."
+description: "Connect the places your customers already message you. Keloa unifies them into one inbox."
 ---
 
-Every "place" where you receive customer messages is a **channel**. Keloa supports six out of the box, and you can connect any number of each (e.g. two WhatsApp numbers, three email inboxes).
+Every "place" where you receive customer messages is a **channel**. Today Keloa is live on web chat and email. WhatsApp, Instagram, Messenger and Shopify are on the roadmap.
 
-## Supported channels
+## Live channels
 
 <CardGroup cols={2}>
   <Card title="Website widget" icon="comment" href="/channels/web-widget">
-    One script tag. Branded chat bubble on your site. Fastest to set up.
+    One script tag, branded chat bubble on your site. Fastest to set up.
   </Card>
   <Card title="Email" icon="envelope" href="/channels/email">
-    Forward support@yours to Keloa; replies go back through your domain.
-  </Card>
-  <Card title="WhatsApp Business" icon="whatsapp" href="/channels/whatsapp">
-    Via WhatsApp Business API. Needs a verified business.
-  </Card>
-  <Card title="Instagram" icon="instagram" href="/channels/instagram">
-    DMs and story replies via Meta's Instagram Messaging API.
-  </Card>
-  <Card title="Messenger" icon="facebook-messenger" href="/channels/messenger">
-    Connect the Facebook Page you already use.
-  </Card>
-  <Card title="Shopify" icon="shopify" href="/channels/shopify">
-    Store chat + order, product and tracking tools for the AI.
+    Forward `support@yours` to Keloa, replies go back through your verified domain.
   </Card>
 </CardGroup>
 
+## Coming soon
+
+<CardGroup cols={2}>
+  <Card title="WhatsApp Business" icon="whatsapp">
+    Via the WhatsApp Business Platform. Notify-me list open in **Settings → Channels**.
+  </Card>
+  <Card title="Instagram" icon="instagram">
+    DMs and story replies via Meta's Messaging API.
+  </Card>
+  <Card title="Messenger" icon="facebook-messenger">
+    Connect a Facebook Page to receive Messenger DMs.
+  </Card>
+  <Card title="Shopify" icon="shopify">
+    Store chat plus order, product, and tracking tools for the AI.
+  </Card>
+</CardGroup>
+
+If you want one of the upcoming channels prioritised, click **Notify me** on the channel card in **Settings → Channels** and we'll ping you the day it ships.
+
 ## Where to connect channels
 
-Sidebar → **Integrations**. You'll see every supported channel as a card. Each shows:
+Sidebar → **Settings** → **Channels**. Live channels show a **Connect** or **Set up** button. Coming-soon channels show **Notify me**.
 
-- **Connect / Disconnect** button
-- status (connected / disconnected / pending setup)
+Each connected channel shows:
+
+- **Connect / Disconnect** controls
+- status (`connected`, `pending_setup`, `disconnected`, `error`)
 - last-synced timestamp
-- tools this channel unlocks (e.g. Shopify unlocks order lookup)
+- a deep link into channel-specific settings
 
 ## Channel status
 
 | Status | Meaning |
 | --- | --- |
 | **Connected** | Messages are flowing both ways. |
-| **Pending setup** | Created in Keloa, waiting for external verification (e.g. Meta webhook confirmation, email domain DNS). |
-| **Disconnected** | Was connected; now paused. No messages flow. |
-| **Error** | Something broke (expired token, revoked permission). Click to fix. |
+| **Pending setup** | Created in Keloa, waiting for external verification (e.g. an email domain DNS check). |
+| **Disconnected** | Was connected, now paused. No messages flow. |
+| **Error** | Something broke (expired token, bounced DNS). Click to fix. |
 
 ## Channel limits per plan
 
-| Plan | Channels |
-| --- | --- |
-| Starter | 1 |
-| Growth | 3 |
-| Business | 10 |
-| Scale | Unlimited |
+| Plan | Channels | Email channels | Email domains |
+| --- | --- | --- | --- |
+| Starter | 1 | 1 | 1 |
+| Growth | 3 | 3 | 3 |
+| Business | 10 | 10 | 10 |
+| Scale | Unlimited | Unlimited | Unlimited |
 
-Each connection counts — two WhatsApp numbers is two channels.
+Each connection counts independently. Two email addresses on the same domain is two channels but one verified domain.
 
 ## One AI agent per channel (by default)
 
-Every channel has a **default AI agent** that handles inbound messages. Pick it when you connect, or change later in the channel's settings.
-
-Advanced: use flows to override the default — e.g. send VIP conversations to a different agent.
+Every channel has a **default AI agent** that handles inbound messages. Pick it when you connect, or change later in the channel's settings. Use flows to override the default for specific senders or topics.
 
 ## Real-time
 
-Every channel feeds the same real-time **Inbox**. You'll hear a ping and see a desktop notification (when allowed) within a second of a message arriving.
+Every channel feeds the same real-time **Inbox** via Reverb. Operators see new messages within a second.
 
 ## Privacy
 
-All channel traffic is logged in the EU. When you disconnect a channel, inbound messages stop immediately. Historical conversations stay unless you delete them in **Data &amp; privacy**.
+All channel traffic is logged in the EU. When you disconnect a channel, inbound messages stop immediately. Historical conversations stay unless you delete them in **Settings → Data &amp; privacy**.

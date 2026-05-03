@@ -3,7 +3,7 @@ title: "Widget appearance"
 description: "Style your web chat widget to match your brand."
 ---
 
-Tune how the widget looks on your site — colours, greeting, avatar, languages, position. Changes preview live on the right of the settings page.
+Tune how the widget looks on your site — colours, greeting, intro bubbles, suggested questions, position, and branding. Changes preview live on the right of the settings page.
 
 ## Open widget settings
 
@@ -13,45 +13,50 @@ Sidebar → **Settings** → **Widget**.
 
 | Setting | Details |
 | --- | --- |
-| **Theme colour** | Bubble and header background. Pick from swatches or enter a hex. |
-| **Greeting** | First message shown when a visitor opens the widget. Supports variables. |
-| **Avatar** | Optional image for the AI agent in the header. 64×64 px PNG or SVG. |
-| **Launcher text** | Optional small label next to the bubble (e.g. "Chat with us"). |
-| **Position** | Bottom-right (default) or bottom-left. |
-| **Show branding** | Whether to show "Powered by Keloa" in the footer. (Removable on Business+.) |
-| **Language** | English, Dutch — auto-detected per visitor. |
+| **Theme color** | Bubble and header background. Pick from the colour input or paste a hex. |
+| **Launcher position** | `right` (default) or `left`. |
+| **Greeting** | Fallback intro message. Used when no intro bubbles are set. |
+| **Display name (header)** | Overrides the AI agent name in the widget header. |
+| **Bot avatar** | Set on the AI agent itself (**AI agents → edit**). Brand logo is the fallback. |
+| **Intro bubbles** | Up to 5 short "hello" bubbles shown when the widget opens. |
+| **Suggested questions** | Up to 6 one-tap chips. Auto-seeded from your onboarding site scan. |
+| **Privacy policy URL** | Optional link in the widget footer. |
+| **Origin allowlist** | Empty = allowed everywhere. Add domains to restrict the widget to your sites only. |
+| **Hide branding** | Removes "Powered by Keloa" from the footer. **Business+ only.** |
+
+## Plan-gated features
+
+Two widget capabilities are locked behind plan caps:
+
+- **`hide_branding`** — requires the `widget_unbranded` cap. Available on Business and Scale.
+- **Proactive triggers** — requires the `proactive_triggers` cap. Available on Business and Scale.
+- **Working hours integration** — requires the `working_hours` cap. Available on Business and Scale. Configure in **Settings → Workspace → Business hours**.
+
+See [Billing & plans](/billing/plans) for the full cap matrix.
 
 ## Preview
 
-The live preview on the right updates as you type. Open the full-screen preview with **Open preview** — launches the widget on a sandbox page so you can click through a real conversation flow without touching your site.
+The live preview on the right updates as you type. Click **Open preview** to launch the widget on a sandboxed host page (`/widget/host-demo`) — useful for clicking through a real conversation flow without touching your site.
 
-## Greeting with variables
+## Languages
 
-Same variable system as macros:
-
-```text
-Hi there 👋 I'm {{agent.name}} from {{workspace.name}}. How can I help today?
-```
-
-`agent.name` is the default AI agent attached to the webchat channel. `workspace.name` is your workspace.
+The widget greeting is translated automatically into English, Dutch, German, French and Spanish. The visitor's locale is detected from `navigator.language`, with the brand language as fallback. The greeting you type in **Settings → Widget → Greeting** is used as the operator-customised version for your brand's primary locale.
 
 ## Accessibility
 
-- The widget ships WCAG 2.1 AA-compliant contrast.
-- The launcher is focusable via keyboard (`Tab`), and the chat panel is operable with arrow keys.
-- Screen reader announcements are present for every state change.
+- WCAG 2.1 AA-compliant contrast on default theme colours.
+- The launcher is focusable via keyboard (`Tab`) and the chat panel is operable with arrow keys.
+- Screen reader announcements fire on every state change.
 
 ## Mobile behaviour
 
-- On mobile, the widget opens full-screen.
-- The launcher stays below any bottom navigation you may have — set a `margin-bottom` offset in **Advanced** if you need to.
+- The widget opens full-screen on mobile breakpoints.
+- The launcher offset honours iOS safe areas.
 
-## Advanced
+## Identifying logged-in users
 
-- **CSS offset** — add a margin if your site has a sticky bottom bar.
-- **Restrict to paths** — show the widget only on certain URLs (comma-separated globs).
-- **Identify anonymous visitors** — see the [widget docs](/channels/web-widget) for the JS API.
+If your site authenticates visitors, you can pass identity data to the widget. See the [widget docs](/channels/web-widget#identify-a-logged-in-user).
 
 ## Save
 
-Changes save on click. The next time the script loads on your site (usually within seconds thanks to a CDN cache), visitors see the new style.
+Changes save on click. The next loader fetch on your site picks up the change (CDN cache 60 seconds).
