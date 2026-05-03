@@ -1,0 +1,85 @@
+---
+title: "Shopify catalog"
+description: "Sync your storefront's pages, blog articles, and products into your AI's knowledge base."
+---
+
+Adding a **Shopify** knowledge source ingests your storefront content into the AI's training data, so the agent can answer pre-sales questions like *"Do you ship to Belgium?"*, *"What's the price range for X?"*, or *"What does the About page say about your sustainability story?"* — without you copy-pasting any of it.
+
+This is separate from the [Shopify channel integration](/channels/shopify), which gives your AI live tools (order lookup, product search). You can use either one or both — they read from the same connection.
+
+## Before you start
+
+- Connect your Shopify store first under **Settings → Integrations → Shopify**. The same Admin API access token powers both knowledge sync and the live tools.
+- The token must include these scopes for sync to work:
+  - `read_online_store_pages` — required for the Pages stream (default).
+  - `read_content` — required for the Articles stream (opt-in).
+  - `read_products` — required for the Products stream (opt-in).
+
+## Add a Shopify source
+
+<Steps>
+  <Step title="Open Knowledge">
+    Sidebar → **Knowledge** → **Add source** → **Shopify catalog**.
+  </Step>
+
+  <Step title="Pick which streams to sync">
+    | Stream | Default | What it ingests |
+    | --- | --- | --- |
+    | **Pages** | On | Your storefront's static pages (About, FAQ, Shipping, etc.) |
+    | **Articles** | Off | Blog articles from any blog on your store |
+    | **Products** | Off | Product titles, descriptions, variants, vendor, type |
+  </Step>
+
+  <Step title="Wait for the first sync">
+    Keloa kicks off an immediate ingest. Each piece of content lands as its own page in your knowledge base, complete with citations back to your storefront.
+  </Step>
+
+  <Step title="Verify in your AI agent">
+    Open any agent → **Knowledge** tab. You should see your Shopify content alongside any other sources you've added. Search for a phrase from your About page — the AI now grounds its replies in your live storefront content.
+  </Step>
+</Steps>
+
+## Visibility rules
+
+Keloa respects your storefront's published state when deciding what the AI can quote in customer-facing replies:
+
+| Content | Storefront state | Visibility |
+| --- | --- | --- |
+| Page or article | `published_at` is set | **Public** — AI can cite in replies |
+| Page or article | Draft / unpublished | **Internal** — agent-facing only |
+| Product | `status: active` | **Public** — AI can cite in replies |
+| Product | `draft` or `archived` | **Internal** — not used for replies |
+
+This means your unpublished blog drafts won't accidentally end up in a customer reply.
+
+## Re-sync cadence
+
+- Automatic re-sync runs every **6 hours** in the background.
+- You can also trigger a manual re-sync any time: **Knowledge → expand the Shopify row → Sync now**.
+- Each re-sync upserts new and changed pieces of content, and removes anything you've deleted from your storefront. Citations stay stable on URLs that didn't change.
+
+## Limits
+
+| | Value |
+| --- | --- |
+| **Streams** | `pages` (default), `articles` (opt-in), `products` (opt-in) |
+| **Sync mode** | Incremental — re-runs only refresh what changed |
+| **Sync cadence** | Every 6 hours, plus on-demand |
+| **Multi-store** | One Shopify store per workspace |
+| **Product URLs** | Built from `handle` + your `*.myshopify.com` domain |
+| **Article URLs** | Built when the blog handle is available |
+
+## Disconnect
+
+To stop syncing, go to **Settings → Integrations → Shopify → Disconnect**. The Shopify knowledge source is removed and its vectors are wiped from the AI's index. Historical conversations stay intact — only the AI's training data changes.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Shopify channel" icon="shopify" href="/channels/shopify">
+    Live tools: order lookup, product search, customer enrichment.
+  </Card>
+  <Card title="Managing sources" icon="folder" href="/knowledge/managing-sources">
+    Re-sync cadence, deletion, vector cleanup.
+  </Card>
+</CardGroup>

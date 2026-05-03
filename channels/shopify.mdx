@@ -3,36 +3,48 @@ title: "Shopify"
 description: "Connect your Shopify store so the AI can look up orders, products, and tracking."
 ---
 
-<Note>
-**Coming soon.** The Shopify integration is not yet live. The flow below is the planned setup. Use the [web widget](/channels/web-widget) on your storefront in the meantime — it works on any Shopify theme.
-</Note>
+The Shopify integration unlocks **store tools** for your AI agent — order lookup, product search, customer history — and powers a separate [Shopify knowledge sync](/knowledge/shopify) that ingests your storefront content into the AI's training data.
 
-The Shopify integration does two things:
+## Connect your store
 
-1. Lets you **embed the widget** on your storefront (like webchat, but pre-configured).
-2. Unlocks **store tools** for your AI agent — look up orders, search products, fetch tracking, answer pre-sales questions from live product data.
-
-## Install the Shopify app
+The connection uses a **Shopify custom app** with an Admin API access token. This works on every Shopify plan and doesn't require a public app review.
 
 <Steps>
-  <Step title="Start the install">
-    Sidebar → **Integrations** → **Shopify** → **Connect** → enter your `*.myshopify.com` domain.
-
-    Keloa redirects you to Shopify's app install page.
+  <Step title="Create a custom app in Shopify">
+    Shopify admin → **Settings** → **Apps and sales channels** → **Develop apps** → **Create an app**. Name it "Keloa" (or anything you'll recognize).
   </Step>
 
-  <Step title="Authorize">
-    Review the permissions Keloa needs — read orders, products, customers, write app-block on storefront. Click **Install**.
+  <Step title="Set the API scopes">
+    Click **Configure Admin API scopes** and enable:
+
+    | Scope | Used for |
+    | --- | --- |
+    | `read_orders` | Order lookup tool |
+    | `read_products` | Product search tool + Products knowledge sync |
+    | `read_customers` | Customer enrichment in the inbox |
+    | `read_online_store_pages` | Pages knowledge sync |
+    | `read_content` | Articles knowledge sync |
+
+    Save. You can leave Storefront API scopes alone — Keloa doesn't use them.
   </Step>
 
-  <Step title="Return to Keloa">
-    Shopify redirects back. Your store is now connected.
+  <Step title="Install the app and copy the token">
+    Click **Install app**. Shopify generates an **Admin API access token** — copy it now (you can't see it again later).
   </Step>
 
-  <Step title="Add the chat block to your theme (optional)">
-    In your Shopify admin → Online Store → Themes → Customize → **+ Add block** → **Keloa chat**. Saves you pasting the widget snippet into `theme.liquid`.
+  <Step title="Paste credentials into Keloa">
+    In Keloa, sidebar → **Settings → Integrations → Shopify → Connect store**. Enter:
+
+    - Your shop domain (`your-store.myshopify.com`)
+    - The Admin API access token from the previous step
+
+    Keloa verifies the token by fetching shop info. On success, the integration card flips to **Connected**.
   </Step>
 </Steps>
+
+<Tip>
+The same connection powers the [Shopify knowledge sync](/knowledge/shopify). You don't need a second app — as long as the scopes above are granted, both surfaces work.
+</Tip>
 
 ## Store tools for the AI
 
@@ -57,13 +69,9 @@ All of this runs inside the same conversation — the customer never sees a form
 
 ## Knowledge from catalog (optional)
 
-For pre-sales questions, you can add a **Shopify catalog** knowledge source:
+For pre-sales questions, you can also sync your storefront content (pages, blog articles, products) into the AI's training data. See the [Shopify knowledge sync guide](/knowledge/shopify) for setup.
 
-- Sidebar → **Knowledge** → **New source** → **Shopify catalog**.
-- Picks products from your connected store and indexes title, description, variants.
-- Refreshed daily.
-
-Great for *"Do you have this in blue?"* or *"What's the price range for X?"*
+Great for *"Do you have this in blue?"*, *"What's your return policy?"*, or *"What does the About page say?"*
 
 ## What we don't touch
 
@@ -82,6 +90,8 @@ Historical conversations stay in Keloa — only live tools and webhooks are seve
 | Issue | Fix |
 | --- | --- |
 | "App not found" on install | Make sure you entered the full `.myshopify.com` domain. |
+| Token rejected on connect | Double-check the token was copied right after install (Shopify hides it after). Re-generate by **Uninstall + Install** the custom app. |
+| Product search returns nothing | Likely a missing `read_products` scope. Edit the custom app scopes, re-install, paste the new token. |
 | AI can't find an order | Order lookup needs both order number **and** email matching the order. Make sure your system prompt asks for both. |
 | Tracking tool returns empty | Order not yet fulfilled. Tracking only exists post-fulfillment. |
-| Chat block not in theme editor | Some themes cache the block list. Remove and re-add the app, or re-save the theme. |
+| Knowledge sync didn't pick up Pages | Verify `read_online_store_pages` scope. For articles, you also need `read_content`. |
