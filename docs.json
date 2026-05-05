@@ -102,6 +102,7 @@
               "settings/widget-appearance",
               "settings/tools",
               "settings/email-domains",
+              "settings/dns-records",
               "settings/data-and-privacy",
               "settings/security"
             ]

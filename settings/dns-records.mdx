@@ -1,0 +1,53 @@
+---
+title: "DNS records"
+description: "What each DNS record we ask you to publish does and why."
+---
+
+When you add an email domain in Keloa, we generate a small set of DNS records for you to publish at your DNS provider. Each record has a specific job — most of the records are for outbound deliverability, and one optional record opens inbound mail.
+
+## DKIM — proves the email is really from you
+
+DKIM lets receiving mail servers verify that messages claiming to come from your domain were actually sent by Keloa. Without it, your replies are far more likely to land in spam.
+
+- **Type:** `TXT`
+- **Name:** `<selector>._domainkey.<your-domain>`
+- **Content:** `v=DKIM1; k=rsa; p=<long base64 public key>`
+
+The `p=` value is long — over 400 characters. Use the **Copy** button on the Content field rather than selecting by hand; it's easy to miss characters at the boundary.
+
+## SPF — declares who is allowed to send for your domain
+
+SPF tells receiving servers which mail providers are authorised to send on your behalf. If you already have an SPF record (one starting with `v=spf1`), you must **merge** our entry into it instead of adding a second one. Two `v=spf1` records on the same name break SPF entirely.
+
+- **Type:** `TXT`
+- **Name:** the domain itself (e.g. `yourdomain.com`, or `@` at most providers)
+- **Content:** `v=spf1 include:lettermint.co ~all` (or merged with your existing record)
+
+## DMARC — tells receivers what to do with failures
+
+DMARC ties SPF and DKIM together and tells receiving servers how to treat messages that fail authentication. We start with a permissive policy (`p=none`) so you can monitor before tightening.
+
+- **Type:** `TXT`
+- **Name:** `_dmarc.<your-domain>`
+- **Content:** `v=DMARC1; p=none; …`
+
+## Return path — where bounce reports go
+
+A small CNAME that lets Keloa receive bounce and complaint reports under your domain. This improves deliverability and helps us keep your sending reputation clean. Without it, Gmail will show "via keloa.ai" next to your sender name.
+
+- **Type:** `CNAME`
+- **Name:** `<bounce-subdomain>.<your-domain>`
+- **Content:** `bounce.keloa.ai` (or whatever's shown in the app)
+
+## MX — receives inbound mail at this domain (optional)
+
+The MX record tells the world that mail for this domain should be delivered to Keloa. Required only if you want this domain to also **receive** inbound mail. If you only send from it, skip this one.
+
+- **Type:** `MX`
+- **Name:** the domain itself
+- **Priority:** `10`
+- **Content:** the inbound target shown in the app
+
+## "Copy as zone file"
+
+The **Setup guide** button on each domain in Settings opens a panel with a "Copy as zone file" action. It copies all records as a BIND-formatted zone snippet — handy if you don't run DNS yourself and need to forward the records to whoever does.
