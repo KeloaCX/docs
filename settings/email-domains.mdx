@@ -3,7 +3,7 @@ title: "Email domains"
 description: "Verify your sending domain so replies pass SPF/DKIM and don't land in spam."
 ---
 
-To send email *from* Keloa using your own domain (`support@yourdomain.com`), you have to prove you own that domain. This is standard email auth: SPF and DKIM records at your DNS provider.
+To send email *from* Keloa using your own domain (`support@yourdomain.com`), you have to prove you own that domain. This is standard email auth: a handful of DNS records at your DNS provider.
 
 ## Add a domain
 
@@ -17,12 +17,15 @@ To send email *from* Keloa using your own domain (`support@yourdomain.com`), you
   </Step>
 
   <Step title="Add DNS records">
-    Keloa shows the records to add at your DNS provider, typically:
+    Keloa shows the records to add at your DNS provider. Each row has labels for **Name** and **Content**, plus a **Copy** button per field. The records typically include:
 
-    - **SPF** (`TXT` record) — usually merged into your existing SPF if any.
-    - **DKIM** (`CNAME` × 2) — points to Lettermint's signing keys.
+    - **DKIM** (`TXT`) — Lettermint's signing key.
+    - **Bounce return path** (`CNAME`) — points to Lettermint's bounce handler.
+    - **DMARC** (`TXT`) — alignment policy, starts permissive.
+    - **SPF** (`TXT`) — optional, merged into your existing SPF if any.
+    - **Inbound MX** (`MX`) — optional, only if this domain should also receive mail.
 
-    Each record has a **Copy** button. Paste into your DNS provider as-is.
+    Click **Setup guide** for plain-language explanations of each record and a "Copy as zone file" option.
   </Step>
 
   <Step title="Wait for propagation">
@@ -30,9 +33,11 @@ To send email *from* Keloa using your own domain (`support@yourdomain.com`), you
   </Step>
 
   <Step title="Verify">
-    Back in Keloa, click **Verify**. Status flips to `verified` when all records resolve.
+    Back in Keloa, click **Re-verify**. Status flips to `verified` when all records resolve.
   </Step>
 </Steps>
+
+For per-record details, see [DNS records](/settings/dns-records).
 
 ## Using the verified domain
 
@@ -59,7 +64,7 @@ DNS records can drift (e.g. provider migration). Click **Re-verify** any time to
 
 | Issue | Fix |
 | --- | --- |
-| Verify keeps failing | DNS not propagated yet, or record copied with a trailing `.`. Recopy from Keloa. |
+| Verify keeps failing | DNS not propagated yet, or record copied with a trailing `.`. Use the **Copy** button instead of selecting by hand. |
 | SPF conflict | You already have an SPF record with a different provider. Merge them: one `v=spf1` record with all `include:` entries. |
 | Replies still in spam | Verify DKIM — it's the strongest signal. Also ensure your **From** name matches your brand, not a random username. |
-| Gmail shows "via keloa.ai" | Expected when only DKIM is set up but not a `Return-Path` alignment. Not harmful, and usually goes away after SPF is right too. |
+| Gmail shows "via keloa.ai" | Expected when only DKIM is set up but not a `Return-Path` alignment. Not harmful, and usually goes away after the bounce CNAME is right too. |
