@@ -16,7 +16,7 @@ The widget is the fastest channel to ship: one snippet on your site and visitors
     (function(){
     if(!window.Keloa){window.Keloa={q:[]};window.Keloa.init=function(c){window.Keloa.q.push(c)}}
     var s=document.createElement('script');
-    s.src='https://app.keloa.cx/widget/v1/loader.js';
+    s.src='https://app.keloa.ai/widget/v1/loader.js';
     s.setAttribute('data-account','your-workspace-slug');
     s.setAttribute('data-agent','default');
     if(document.readyState==='complete'){document.body.appendChild(s)}
@@ -170,6 +170,6 @@ See [Billing & plans](/billing/plans) for the full picture.
 | Issue | Check |
 | --- | --- |
 | Bubble doesn't appear | Right-click → Inspect → look for `loader.js` in the Network tab. Verify the `data-account` slug matches your workspace. |
-| Bubble appears but won't open | A CSP header is blocking the iframe. Allow `app.keloa.cx` (or your widget CDN host) as a frame source. |
+| Bubble appears but won't open | A CSP header is blocking the iframe. Allow `app.keloa.ai` (or your widget CDN host) as a frame source. |
 | Messages land but no AI reply | Check that an AI agent exists on the workspace. The widget falls back to the first agent if `data-agent="default"`. |
 | Branding toggle is greyed out | You're not on Business or Scale, or your plan was just upgraded and the page hasn't reloaded yet. |

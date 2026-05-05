@@ -137,17 +137,17 @@
       "anchors": [
         {
           "anchor": "Website",
-          "href": "https://keloa.cx",
+          "href": "https://keloa.ai",
           "icon": "globe"
         },
         {
           "anchor": "Status",
-          "href": "https://status.keloa.cx",
+          "href": "https://status.keloa.ai",
           "icon": "signal-bars"
         },
         {
           "anchor": "Contact",
-          "href": "mailto:support@keloa.cx",
+          "href": "mailto:support@keloa.ai",
           "icon": "envelope"
         }
       ]
@@ -161,13 +161,13 @@
     "links": [
       {
         "label": "Support",
-        "href": "mailto:support@keloa.cx"
+        "href": "mailto:support@keloa.ai"
       }
     ],
     "primary": {
       "type": "button",
       "label": "Open Keloa",
-      "href": "https://app.keloa.cx"
+      "href": "https://app.keloa.ai"
     }
   },
   "contextual": {

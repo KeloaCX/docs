@@ -11,7 +11,7 @@ The fastest path to a working Keloa is catching problems at the connection bound
 2. Right-click → Inspect → Network tab → reload.
 3. Look for `loader.js`. If missing, the script tag didn't run — check it's in the page source before `</body>`.
 4. If `loader.js` is 404, your `data-account` slug is wrong. Find the correct one in **Settings → Widget**.
-5. If `loader.js` loads but the bubble doesn't appear, check for CSP headers blocking `app.keloa.cx`.
+5. If `loader.js` loads but the bubble doesn't appear, check for CSP headers blocking `app.keloa.ai`.
 
 ## AI isn't replying
 
@@ -35,7 +35,7 @@ Root cause is almost always knowledge:
 
 Inbound (→ Keloa):
 
-1. Send a test to the **inbound address** Keloa gave you (e.g. `acme-abc@inbound.keloa.cx`). If that arrives, the issue is the forwarding rule at your mail provider, not Keloa.
+1. Send a test to the **inbound address** Keloa gave you (e.g. `acme-abc@inbound.keloa.ai`). If that arrives, the issue is the forwarding rule at your mail provider, not Keloa.
 2. If the inbound address doesn't receive, check spam and any filters at Keloa's side — usually fine.
 
 Outbound (Keloa → customer):
@@ -56,13 +56,13 @@ If reconnect fails, check `business.facebook.com → Business settings → Busin
 
 ## Conversations arrive but notifications don't
 
-1. In your browser, open site settings for `app.keloa.cx` → **Notifications** → **Allow**.
+1. In your browser, open site settings for `app.keloa.ai` → **Notifications** → **Allow**.
 2. Check **Profile → Notifications** — desktop + email toggles are on for the event you expect.
 3. In macOS, check **System Settings → Notifications → your browser** is allowed.
 
 ## Still stuck?
 
-Email [support@keloa.cx](mailto:support@keloa.cx) with:
+Email [support@keloa.ai](mailto:support@keloa.ai) with:
 
 - your workspace slug
 - the exact thing you did

@@ -1,7 +1,7 @@
 # Keloa docs
 
 Source for the Keloa user documentation, hosted on [Mintlify](https://mintlify.com).
-Published at **[docs.keloa.cx](https://docs.keloa.cx)**.
+Published at **[docs.keloa.ai](https://docs.keloa.ai)**.
 
 Keloa is a multi-tenant AI-first omnichannel customer engagement platform:
 a unified inbox across webchat, email, WhatsApp, Instagram, Messenger, and

@@ -9,7 +9,7 @@ Email runs on top of [Lettermint](https://lettermint.co) for both inbound parsin
 
 ## How it fits together
 
-- **Inbound address** — every workspace gets one auto-generated alias on `@in.keloa.cx`, e.g. `acme-x9k2pq@in.keloa.cx`. This is the address you forward your real mailboxes *to*.
+- **Inbound address** — every workspace gets one auto-generated alias on `@in.keloa.ai`, e.g. `acme-x9k2pq@in.keloa.ai`. This is the address you forward your real mailboxes *to*.
 - **Email domain** — your sending domain (e.g. `yourdomain.com`) verified via DNS so outbound replies pass SPF/DKIM.
 - **Email channel** — one mailbox you reply *as*, e.g. `support@yourdomain.com`. A workspace can have many channels, all routed through the same inbound alias.
 
@@ -38,7 +38,7 @@ Settings → **Channels** → **Email** → **Add address**.
 
 Enter the visible mailbox you'll reply *as* (e.g. `support@yourdomain.com`). The domain part must match a verified email domain — Keloa blocks the form otherwise.
 
-After saving, Keloa shows your workspace's `inbound_address`, e.g. `acme-x9k2pq@in.keloa.cx`. **This is the address you forward inbound mail to.** It's shared across every email channel in the workspace, so you only set up one forwarding rule per real mailbox.
+After saving, Keloa shows your workspace's `inbound_address`, e.g. `acme-x9k2pq@in.keloa.ai`. **This is the address you forward inbound mail to.** It's shared across every email channel in the workspace, so you only set up one forwarding rule per real mailbox.
 
 ## 3. Forward your real mailbox to Keloa
 
@@ -88,8 +88,8 @@ Removing the underlying email *domain* also removes every channel using it.
 
 | Issue | Fix |
 | --- | --- |
-| Mails not arriving | Send a test directly to your `inbound_address` (e.g. `acme-x9k2pq@in.keloa.cx`). If that works, the forwarding rule is the issue. |
+| Mails not arriving | Send a test directly to your `inbound_address` (e.g. `acme-x9k2pq@in.keloa.ai`). If that works, the forwarding rule is the issue. |
 | Outbound rejected as spam | DKIM not verified, or SPF conflict on the sending domain. Re-check DNS records. |
 | Replies thread as new conversations | Your forwarder is stripping `In-Reply-To`. Switch from "redirect" to "forward as attachment" or "raw forward". |
 | Auto-responder loops | Auto-detected and suppressed. If one slips through, mark the conversation as spam. |
-| `From` shows "via keloa.cx" in Gmail | Expected when only DKIM is set up but `Return-Path` alignment is missing. Verify SPF too. |
+| `From` shows "via keloa.ai" in Gmail | Expected when only DKIM is set up but `Return-Path` alignment is missing. Verify SPF too. |
