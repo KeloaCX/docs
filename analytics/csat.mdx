@@ -1,0 +1,84 @@
+---
+title: "CSAT analytics"
+description: "Customer satisfaction — average score, distribution, response rate, what drives the lows."
+---
+
+CSAT (customer satisfaction) is the single number that summarises how your customers feel about the support they got. Keloa collects it via a one-tap survey after resolution and surfaces it in **Analytics → CSAT**.
+
+## What's measured
+
+A 1-5 score on every conversation that gets a customer rating:
+
+- **5** — great, fully helped
+- **4** — helpful
+- **3** — neutral
+- **2** — poor
+- **1** — bad experience
+
+Plus an optional comment.
+
+## Headline numbers
+
+The top of the page shows three cards:
+
+| Metric | What it tells you |
+| --- | --- |
+| **Average score** | Mean of every rated conversation in the window (out of 5) |
+| **Response rate** | Share of resolved conversations that got rated |
+| **Total ratings** | Count of ratings — small denominators mean noisy averages |
+
+A delta pill shows movement vs the previous window of the same length.
+
+## Score distribution
+
+A bar chart from 1 to 5. A healthy support team is heavy on 4s and 5s; a thick lower tail is where to look. If your average is 4.3 but you have a stubborn 8% on 1-2, the average is hiding pain.
+
+## Trend over time
+
+Daily average across the window. Watch for:
+
+- **Sudden drops** — usually correspond to an outage, a policy change, or a bad release.
+- **Slow declines** — knowledge is going stale or expectations are creeping up. Refresh top knowledge sources and check whether your AI is over-promising.
+
+## Breakdowns
+
+Switch the chart to break by:
+
+- **Channel** — which surface drives the worst experience.
+- **AI vs human** — are human replies rated higher than AI? If yes by a lot, look at where the AI replies and whether those topics belong to it.
+- **Agent (assignee)** — useful for coaching individual teammates.
+- **AI agent** — when running multiple agents, see which one rates best.
+- **Tag** — usually the most actionable. Low CSAT on `returns` tells you the policy bites; low CSAT on `shipping` tells you the carrier is the problem.
+
+## Comments
+
+Negative ratings often come with a free-text comment. The page lists the most recent 1-2 ratings with comments at the bottom; click through to read the conversation in context.
+
+Read every 1 and 2. They're a free customer-research stream.
+
+## Why the response rate matters
+
+A 4.7 average from 4% of customers is much weaker evidence than 4.3 from 35%. To increase response rate:
+
+- Send the survey on **resolution by a human**, not on every auto-close.
+- Skip the survey for spam, "no action needed", and duplicates ([Resolving](/inbox/resolving)).
+- Phrase the resolve message warmly — *"Glad we could help — how was that?"* gets more responses than the survey alone.
+
+## Configure CSAT
+
+CSAT is enabled per flow's **Resolve** node, or globally via support if you want every resolved conversation to ask. See [Resolving conversations](/inbox/resolving) for the per-conversation behaviour.
+
+## Plan availability
+
+CSAT collection is available on **Growth and above**. The CSAT analytics page is available on every plan, but if no CSAT is configured the page shows an empty state with setup instructions.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Analytics overview" icon="chart-bar" href="/analytics/overview">
+    Volume, response time, AI deflection.
+  </Card>
+  <Card title="Resolving conversations" icon="check" href="/inbox/resolving">
+    Where CSAT actually fires from.
+  </Card>
+</CardGroup>

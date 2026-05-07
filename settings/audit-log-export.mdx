@@ -1,0 +1,72 @@
+---
+title: "Audit log export"
+description: "Download every privileged action on your workspace as CSV — for compliance, security review, or forensics."
+---
+
+The **audit log** records every meaningful action on your workspace: invites, role changes, channel connects, knowledge edits, exports, deletions, and more. The export ships you the full history as CSV so you can hand it to compliance, archive it monthly, or load it into your SIEM.
+
+<Note>
+Audit log export is a **Scale**-plan feature (paywall key `audit_export.use`). Lower plans can read the audit log inline at **Settings → Security → Audit log** but can't download the CSV.
+</Note>
+
+## What's recorded
+
+The audit log captures, at minimum:
+
+- **Members & roles** — invites, accepted invites, role changes, removals.
+- **Channels** — connect/disconnect, key rotations.
+- **Knowledge** — sources added/deleted, full re-syncs, Q&A pair edits.
+- **Flows** — publish, unpublish, version changes.
+- **Settings** — auto-recharge toggle, daily digest toggle, auto-send toggle.
+- **Privacy** — data exports, contact deletions, retention policy changes.
+- **Webhooks** — endpoint create/delete.
+
+Each entry stores: timestamp, actor (user or `system` for automated actions), action key, target type & id, IP address, and a JSON `changes` blob with the before/after values.
+
+## Export the log
+
+1. Go to **Settings → Security → Audit log**.
+2. Click **Export CSV**.
+3. The download starts immediately — `keloa-audit-log-YYYY-MM-DD.csv`.
+
+The export streams row-by-row server-side, so it works on workspaces with hundreds of thousands of entries without timing out.
+
+## CSV columns
+
+| Column | Example |
+| --- | --- |
+| `Timestamp` | `2026-05-07T09:42:11+00:00` (ISO-8601, UTC) |
+| `Actor` | `Sanne van Dijk` (or `system` for automated actions) |
+| `Action` | `member.invite`, `knowledge_source.delete`, `developers.webhook.create`, ... |
+| `Target type` | `User`, `KnowledgeSource`, `WebhookEndpoint`, ... |
+| `Target id` | UUID of the affected resource |
+| `IP` | IPv4 or IPv6 of the actor's request |
+| `Changes` | JSON blob of the diff (before → after) |
+
+The export is ordered newest-first.
+
+## Permissions
+
+- The **Export CSV** button is visible to anyone who can read the audit log.
+- Triggering an export requires **billing manager** (currently equivalent to **admin**).
+
+## Common uses
+
+- **Monthly compliance archive** — schedule a calendar reminder, export, drop in your secure store.
+- **Security review** — when investigating a suspicious change, filter the CSV by actor or target id.
+- **SIEM ingestion** — load the CSV into Splunk, Datadog, or Elastic for cross-system correlation.
+
+## Retention
+
+The audit log itself is retained for the lifetime of your workspace — entries are never auto-deleted, even when the underlying records (a deleted contact, a removed channel) go away. The audit log is the receipt that an action happened.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Security" icon="shield-check" href="/settings/security">
+    2FA, SSO, session, brute-force protection.
+  </Card>
+  <Card title="Data &amp; privacy" icon="lock" href="/settings/data-and-privacy">
+    Data exports, deletions, retention policies.
+  </Card>
+</CardGroup>

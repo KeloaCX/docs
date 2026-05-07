@@ -1,0 +1,72 @@
+---
+title: "Response time"
+description: "First-response and resolution medians, percentiles, and where the slow queue actually lives."
+---
+
+How fast you reply is most customers' single biggest signal. Keloa tracks two clocks per conversation — **first response** and **resolution** — and surfaces both as percentile distributions in **Analytics → Response time**.
+
+## The two clocks
+
+| Clock | Starts | Stops |
+| --- | --- | --- |
+| **First response** | Customer's first message lands | First reply (AI or human) is sent |
+| **Resolution** | Customer's first message lands | Conversation is resolved |
+
+Both clocks pause when the SLA policy says to (out-of-hours, waiting on customer). See [SLA timers](/inbox/sla) for the pause rules.
+
+## Percentile cards
+
+Top of the page:
+
+- **First response — median (P50)** with a delta vs the previous window.
+- **First response — 90th percentile (P90)** — the slowest 10% of replies.
+- **Resolution — median (P50)**.
+
+Median tells you what most customers experience. P90 tells you the long-tail story — when P50 is good but P90 is awful, your bad days are catastrophic. Both numbers matter.
+
+## Distributions
+
+A histogram per clock with bucketed durations. The shape is informative:
+
+- **Tight peak around the median** — consistent service.
+- **Long right tail** — a small set of very slow tickets are dragging the average. Drill into them.
+- **Bimodal (two peaks)** — typically AI vs human; the AI replies in seconds, human replies after the queue. Good signal that AI deflection is working.
+
+## Breakdowns
+
+Slice each chart by:
+
+- **Channel** — webchat is usually fastest; email is slowest. If your email median is over 4 hours during business hours, a queue ritual is missing.
+- **Assignee** — workload distribution. Wide variance is a sign of poor routing or one teammate carrying a backlog.
+- **Tag** — *"refunds always take 3 days"* is a process problem, not a queue problem.
+- **AI vs human** — quantifies how much the AI buys you. Most teams see AI medians in seconds and human medians in tens of minutes.
+- **Hour of day / day of week** — when peaks land. A heatmap chart underneath shows volume by hour-of-week so you can spot the shift you're under-staffed on.
+
+## Hour-of-week heatmap
+
+A 7-by-24 grid (Mon-Sun × 0-23h) coloured by conversation volume. Use it to plan staffing — if Tuesdays at 14:00 are your hottest hour, that's the shift to cover first. Tap a cell to filter the page to that hour.
+
+## SLA breach overlay
+
+When you have an [SLA policy](/inbox/sla) configured (Business+), each percentile chart shows your target as a vertical line. P90 to the right of the SLA line means your top 10% are breaching — a clear signal to either staff up or relax the policy.
+
+## Common interpretations
+
+- **First response P50 < 5 min, P90 > 1 hour** — most customers see fast replies; a handful are stuck. Look at unassigned + low-priority queues.
+- **P50 jumps sharply between weeks** — usually a staffing change. Cross-reference the agent breakdown.
+- **Resolution P50 high but first response P50 low** — fast acknowledgements but slow follow-through. Often a knowledge or process gap, not a speed gap.
+
+## Plan availability
+
+Headline percentile cards and channel breakdown are available on every plan. The hour-of-week heatmap and SLA overlay are **Business+** (paywall key `advanced_analytics.use`).
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="SLA timers" icon="clock" href="/inbox/sla">
+    Set the targets the lines on these charts compare against.
+  </Card>
+  <Card title="Assignment rules" icon="shuffle" href="/settings/assignment-rules">
+    Get conversations to the right person on the first try.
+  </Card>
+</CardGroup>

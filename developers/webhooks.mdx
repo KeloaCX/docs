@@ -1,0 +1,129 @@
+---
+title: "Webhooks"
+description: "Receive signed POSTs from Keloa as conversations, messages, and usage events happen."
+---
+
+<Note>
+**Coming soon.** The public Developer API is on the roadmap. Outbound webhook endpoints are already wired in the app, but the event taxonomy below is not yet stable. [See roadmap](https://keloa.ai/roadmap).
+</Note>
+
+Webhooks let Keloa push events to your stack instead of you polling. You register an HTTPS URL and pick the events you care about; Keloa POSTs a signed JSON payload to that URL each time one of those events happens.
+
+## Register an endpoint
+
+Today, in-app:
+
+1. Open **Settings → Developers**.
+2. Click **New endpoint**.
+3. Give it a **label** so it's easy to identify (`prod-orders-pipeline`, `slack-relay`, ...).
+4. Paste the **HTTPS URL** that should receive POSTs.
+5. Pick the **events** to subscribe to.
+6. Save.
+
+A unique **signing secret** (`whsec_...`) is generated. Copy it into the receiver — you'll need it to verify each request.
+
+## Pause and revoke
+
+- **Pause** stops deliveries without losing the endpoint or its secret. Useful when your downstream is down.
+- **Delete** removes the endpoint and rotates its secret.
+
+Both actions are logged in the [audit log](/settings/audit-log-export).
+
+## Planned event types
+
+| Event | Fires when |
+| --- | --- |
+| `message.created` | Any new message — customer, AI, operator, internal note |
+| `conversation.resolved` | A conversation transitions to resolved |
+| `conversation.reopened` | A resolved conversation reopens |
+| `conversation.assigned` | Assignee changes |
+| `agent.handoff` | The AI hands a conversation to a human |
+| `usage.alert` | Credits cross a configured threshold |
+| `subscription.changed` | Plan or status changes (Stripe-driven) |
+
+The exact schema per event is **not yet stable**. Subscribe to the [roadmap](https://keloa.ai/roadmap) for the freeze announcement.
+
+## Payload shape (planned)
+
+```json
+{
+  "id": "evt_01HZF...",
+  "type": "message.created",
+  "created_at": "2026-05-07T09:42:11.000Z",
+  "account_id": "01HZ...",
+  "data": {
+    "message": {
+      "id": "01HZ...",
+      "conversation_id": "01HZ...",
+      "role": "customer",
+      "content": "Hi, where's my order?",
+      "created_at": "2026-05-07T09:42:10.500Z"
+    }
+  }
+}
+```
+
+Top-level fields (`id`, `type`, `created_at`, `account_id`, `data`) are planned to stay stable; the inner `data` shape per event will be versioned alongside the API.
+
+## Verify the signature
+
+Every POST includes:
+
+- `Keloa-Signature` — HMAC-SHA256 of the raw request body, hex-encoded.
+- `Keloa-Timestamp` — Unix seconds when the event was sent.
+
+Verification (Node.js):
+
+```js
+import crypto from 'node:crypto';
+
+function verify(rawBody, signature, timestamp, secret) {
+  // Reject anything older than 5 minutes — replay protection.
+  if (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) {
+    return false;
+  }
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest('hex');
+  return crypto.timingSafeEqual(
+    Buffer.from(expected),
+    Buffer.from(signature),
+  );
+}
+```
+
+Always verify against the **raw** request body, not a parsed/re-serialised one — JSON re-encoding changes whitespace and breaks the signature.
+
+## Delivery semantics
+
+- **At-least-once.** Network retries can re-deliver. Use the `id` field to dedupe.
+- **Exponential backoff.** Failed deliveries (non-2xx, timeouts) retry with backoff for ~24 hours, then give up.
+- **Order is not guaranteed.** Two events for the same conversation may arrive out of order. Use the `created_at` field if order matters.
+- **Timeout.** Your endpoint has 5 seconds to respond with any 2xx. Anything slower or non-2xx counts as a delivery failure.
+
+## Best practices
+
+- **Respond fast.** Acknowledge with 200 immediately, then process the payload async on your side. Don't run heavy work inside the request.
+- **Verify every payload.** Don't trust unsigned/unverifiable POSTs.
+- **Idempotent handlers.** Use the event `id` to skip duplicates.
+- **One endpoint per consumer.** A separate endpoint per system is easier to monitor and pause independently.
+
+## Last delivered
+
+The endpoint list shows `last_delivered_at` per row — useful to spot a silent receiver. If it stops updating, something on your side is rejecting.
+
+## Plan availability
+
+Webhook endpoints are managed in-app today. API-side management lands when the public API ships. Per-plan endpoint and event-rate caps will be detailed on the [pricing page](https://keloa.ai/pricing) at that time.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Developers overview" icon="code" href="/developers/overview">
+    The full planned API surface.
+  </Card>
+  <Card title="API tokens" icon="key" href="/developers/api-tokens">
+    Auth for the planned API.
+  </Card>
+</CardGroup>

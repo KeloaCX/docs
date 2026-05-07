@@ -1,0 +1,61 @@
+---
+title: "Internal notes"
+description: "Talk to your team inside a conversation — without ever sending the customer a thing."
+---
+
+Internal notes are private annotations on a conversation. They live in the same timeline as customer messages but are only ever visible to your team. Use them to hand off context, ask a teammate a question, or record what you tried before the customer reads the next reply.
+
+<Note>
+Internal notes are available on **Growth** and above (paywall key `tickets.add_internal_note`). Starter shows the composer toggle but blocks posting.
+</Note>
+
+## Add a note
+
+In any conversation, toggle **Note** in the composer (or press <kbd>n</kbd>). The composer turns yellow so you can't confuse it with a customer reply.
+
+Write your message, then send with <kbd>Cmd</kbd>/<kbd>Ctrl</kbd> + <kbd>Enter</kbd>. The note appears inline in the timeline, tagged **Internal**, with your avatar.
+
+The customer never sees it. Nothing is sent to email, WhatsApp, or any other channel.
+
+## Mention a teammate
+
+Type `@` to open a teammate picker. Pick a name; the note now mentions them.
+
+Mentioned teammates get:
+
+- A real-time desktop notification (if they've granted permission).
+- An email summarising the note + a deep link back to the conversation.
+- The conversation surfaces in their **Mentioning me** filter in the inbox.
+
+You can mention several people in one note. Useful for triaging a thorny ticket: `@Sanne @Joost — both of you should weigh in on the refund here`.
+
+## What to use notes for
+
+- **Handoff context** — *"Customer already tried the reset twice; tried clearing cache. Next step is checking with engineering."*
+- **Asking a colleague** — *"@Joost is the policy still 30 days for damaged items?"*
+- **Recording an off-platform action** — *"Refunded €120 manually in Stripe, ref ch_3abc."*
+- **Notes-to-self** — *"Follow up Monday if no reply."*
+
+## What not to use notes for
+
+- A reply to the customer. Toggle **Note** off and use the regular composer.
+- Long discussions. Notes scale poorly past 3-4 back-and-forths — move to Slack or a quick call and link back.
+
+## Markdown
+
+Notes support basic Markdown: `**bold**`, `_italic_`, `` `inline code` ``, and `- bulleted lists`. Useful when you're pasting log lines or short snippets.
+
+## Permissions
+
+Anyone on the workspace can add a note. Notes can't be edited after sending — if you need to correct one, add a follow-up note. Deleting a note requires admin role and is logged in the audit log.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Replying to conversations" icon="reply" href="/inbox/replying">
+    Composer, AI drafts, keyboard shortcuts.
+  </Card>
+  <Card title="Members &amp; roles" icon="users" href="/settings/members-and-roles">
+    Who's on the workspace, and who can do what.
+  </Card>
+</CardGroup>

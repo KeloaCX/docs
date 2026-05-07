@@ -1,0 +1,76 @@
+---
+title: "Developers overview"
+description: "API tokens, webhooks, and the planned shape of the public Keloa API."
+---
+
+<Note>
+**Coming soon.** The public Developer API is on the roadmap. The page below outlines the planned surface so you can plan integrations. [See roadmap](https://keloa.ai/roadmap).
+</Note>
+
+Keloa already powers a Developers area inside the app — workspace admins manage outbound webhook endpoints today. The full public API (with stable tokens, versioned routes, and SDKs) is the next step. This section documents what's planned so you can architect against it.
+
+## What exists today
+
+Inside the app, **Settings → Developers** ships:
+
+- **Outbound webhooks** — admins register HTTPS endpoints, pick events, and receive signed POSTs as those events fire. Built. See [Webhooks](/developers/webhooks) for the planned event taxonomy and payload shape.
+
+What's *not* shipped yet (covered in detail on the linked pages):
+
+- A versioned, stable, public REST API surface.
+- API tokens with scoped abilities suitable for production use.
+- Official SDKs.
+
+If you need integration today, the supported paths are:
+
+- The **[Custom HTTP tool](/agents/tools-custom-http)** — let your AI agent call your endpoints from inside a conversation. Already shipped.
+- The **[Shopify integration](/channels/shopify)** — orders, products, tracking lookup. Already shipped.
+- **Outbound webhooks** — push Keloa events to your stack. Already shipped.
+
+## The planned API shape
+
+When the public API ships, expect:
+
+- **Base URL** — `https://api.keloa.ai/v1`.
+- **Auth** — bearer tokens issued in **Settings → API tokens**, sent as `Authorization: Bearer keloa_...`.
+- **Tenancy** — every token is scoped to a single workspace. Cross-workspace operations require multiple tokens.
+- **Rate limits** — per-token, returned as `X-RateLimit-*` headers; sensible defaults for SMB usage.
+- **Format** — JSON in/out, ISO-8601 timestamps in UTC, UUIDs for every resource.
+- **Pagination** — cursor-based with a `next_cursor` field; no offset/limit.
+- **Errors** — standard `{ error: { code, message, ... } }` envelope.
+
+These choices follow what the app already uses internally, so the surface should feel consistent with what you see in the dashboard.
+
+## Resources we plan to expose
+
+- `accounts` (read-only — your workspace metadata).
+- `contacts` — list, create, update, delete; merge.
+- `conversations` — list, read, create message, resolve, reopen, set priority.
+- `messages` — read, create on a conversation.
+- `agents` — read, list (modification stays in the dashboard initially).
+- `knowledge_sources` — list, create, delete; trigger re-ingest.
+- `tags` — list, attach, detach.
+- `webhooks` — already supported via the in-app UI; will be addressable via API too.
+
+## What's stable today vs aspirational
+
+| Surface | Status |
+| --- | --- |
+| Outbound webhook endpoints (managed in-app) | **Live** |
+| Webhook signing (HMAC-SHA256) | **Live** |
+| API tokens UI | Roadmap |
+| Public REST API surface | Roadmap |
+| Official SDKs | Roadmap |
+
+Subscribe to updates on the [roadmap page](https://keloa.ai/roadmap) so you're notified when each lands.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="API tokens" icon="key" href="/developers/api-tokens">
+    Planned token management.
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/developers/webhooks">
+    Outbound events Keloa will push.
+  </Card>
+</CardGroup>

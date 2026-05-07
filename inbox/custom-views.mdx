@@ -1,0 +1,83 @@
+---
+title: "Custom inbox views"
+description: "Save the filter you keep typing — once, with a name and an icon, in your left rail."
+---
+
+The built-in inbox filters cover the basics (All, Mine, AI, SLA, Resolved). When your team needs something more specific — *"VIPs assigned to me, unanswered over 1 hour"* — save it as a **custom view**. It lands in the left rail right next to the built-ins, ready to click.
+
+<Note>
+Custom views are available on the **Business** plan and above (paywall key `tickets.create_custom_view`). Lower plans use the built-in filters.
+</Note>
+
+## Create a view
+
+1. In the inbox, set up the filter the way you want it — combine channel, tag, assignee, language, status, and so on.
+2. Click **Save view** at the top of the list.
+3. Give it a short **name** (this becomes the label in the rail).
+4. Optionally pick an **icon** to spot it at a glance.
+5. Choose **Private** (just for you) or **Shared with workspace** (everyone sees it in their rail).
+6. Save.
+
+The view now appears under **Views** in the left rail.
+
+## Filter fields
+
+You can combine any of:
+
+- **Channel** — webchat, email, WhatsApp, Instagram, Messenger.
+- **Status** — open, snoozed, resolved.
+- **Assignee** — me, anyone, unassigned, or a specific teammate.
+- **Tags** — one or many.
+- **Priority** — urgent, high, normal, low.
+- **Language** — auto-detected from the customer's messages.
+- **AI state** — handled by AI, escalated, AI off.
+- **SLA** — within 25% of breach, breached.
+- **Mentions me** — internal notes that `@`-mentioned you.
+
+Combine with AND. For OR-style splits, save multiple views.
+
+## Recipes
+
+A few that teams set up on day one:
+
+| Name | Filter |
+| --- | --- |
+| **VIPs unanswered** | tag `vip` AND status `open` AND first_response_at empty |
+| **My open in NL** | assignee `me` AND status `open` AND language `nl` |
+| **Refunds queue** | tag `refund` AND status `open` |
+| **AI escalated** | AI state `escalated` AND status `open` |
+| **Today's resolved** | status `resolved` AND resolved today |
+
+## Private vs shared
+
+**Private** views are yours alone. Use them for personal triage habits.
+
+**Shared** views show up in everyone's rail under the same name. Use them for team queues — *"Sales follow-up"*, *"Returns queue"* — so the whole team works the same buckets.
+
+Sharing or unsharing later: open the view → **Edit** → toggle **Shared with workspace**.
+
+## Editing and reordering
+
+- Hover a view in the rail → **⋯** → **Edit** to change filter, name, or icon.
+- Drag views to reorder them.
+- **⋯ → Delete** removes the view (shared views require admin role).
+
+## Pair with assignment rules
+
+Custom views are read-only filters — they don't change conversations. To *route* incoming work to the right people, pair a view with an [assignment rule](/settings/assignment-rules). Example:
+
+- Rule: `tag = refund → Specialty: returns`
+- View (shared): **Refunds queue** = `tag = refund AND status = open`
+
+The team that owns refunds opens its queue and sees only what it owns.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Tags &amp; filters" icon="tag" href="/inbox/tags-and-filters">
+    The fields you'll filter on most.
+  </Card>
+  <Card title="Assignment rules" icon="shuffle" href="/settings/assignment-rules">
+    Auto-route incoming work to the right teammate.
+  </Card>
+</CardGroup>

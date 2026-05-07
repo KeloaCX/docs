@@ -1,0 +1,145 @@
+---
+title: "Custom HTTP tool"
+description: "Let your AI agent call your endpoints — order lookups, internal APIs, anything that speaks JSON over HTTPS."
+---
+
+The **Custom HTTP tool** lets your AI agent call any JSON HTTPS endpoint you own. Bind it once, and the agent can hit your shipping tracker, your CRM, your loyalty backend, or whatever lives behind your stack — and use the response in its reply.
+
+This is the practical answer to "Does Keloa have an API integration with X?" If X has an HTTPS JSON endpoint, the answer is yes.
+
+## How it fits together
+
+Three layers:
+
+1. **The tool** — a single built-in capability called `http.custom`. Available on every account.
+2. **A binding** — an instance of the tool with your URL, method, headers, and a description of *when* the agent should call it. Configured per workspace under **Integrations → Tools**.
+3. **An agent enable** — each AI agent picks which tool bindings it can use. Configured in **AI agents → edit agent → Tools**.
+
+You can make as many bindings as you need (one per endpoint), and each binding shows up as a separate tool the agent can choose from.
+
+## Create a binding
+
+1. Open **Integrations → Tools** → **New custom HTTP tool**.
+2. Fill in the form:
+
+| Field | What it does |
+| --- | --- |
+| **Tool name** | Becomes the function name the LLM sees (`lookup_shipment`). Lowercase, snake_case. |
+| **When to use** | One sentence telling the LLM when to call this tool. The model reads this; clear writing here = correct calls. |
+| **HTTP method** | `GET`, `POST`, `PATCH`, `PUT`, or `DELETE`. |
+| **URL** | The endpoint, with `{token}` placeholders for any value the LLM should fill in (`https://api.acme.com/shipments/{tracking}`). |
+| **Headers** | One per line, `Key: Value` format. Use this for `Authorization: Bearer ...`. |
+| **Timeout (s)** | How long to wait for your endpoint. Default 8s, max ~30s. |
+
+3. Save. The binding appears in the tools list.
+
+## The URL template
+
+`{token}` placeholders anywhere in the URL become **required arguments** the LLM has to provide. Keloa parses them automatically:
+
+- `https://api.acme.com/orders/{order_id}` — agent must supply `order_id`.
+- `https://api.acme.com/orders?id={order_id}&email={email}` — agent must supply both.
+- `https://api.acme.com/health` — no placeholders, no required args. Agent can call it as a ping.
+
+For `POST`/`PATCH`/`PUT`, the agent can also send a JSON `body`. Describe what your endpoint expects in the **When to use** field so the model fills it correctly.
+
+## What the agent sees
+
+For a binding called `lookup_shipment` with URL `https://api.acme.com/shipments/{tracking}`, the LLM gets a function definition like:
+
+```json
+{
+  "name": "lookup_shipment",
+  "description": "Look up a shipment status by tracking number",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "tracking": {
+        "type": "string",
+        "description": "Value to substitute for the {tracking} placeholder in the URL."
+      }
+    },
+    "required": ["tracking"]
+  }
+}
+```
+
+This is why the `{token}` pattern matters — the LLM treats placeholder names as required, top-level inputs and asks the customer if it doesn't know one.
+
+## Auth headers
+
+Most internal APIs need a token. Pass it in the **Headers** box:
+
+```
+Authorization: Bearer prod_xxxxxxxxxxxx
+Accept: application/json
+```
+
+The headers travel with every call. Keloa stores them encrypted at rest and never logs them.
+
+## Bind the tool to an agent
+
+1. Open **AI agents → edit agent → Tools**.
+2. Toggle on the binding you just created.
+3. Save. The agent will now consider this tool on every customer message.
+
+You can also nudge the system prompt to be explicit:
+
+> *"When a customer asks about a shipment status, always call `lookup_shipment` with their tracking number before answering."*
+
+## Response handling
+
+Keloa caps the response body at 64 KB before returning it to the LLM. If your endpoint returns a larger payload, the agent gets the first 64 KB plus a `truncated: true` flag and a note telling it to use the partial data carefully or ask the customer to narrow the request.
+
+Non-2xx responses surface as `error` to the agent, so it falls back gracefully (system prompt rules + other tools) rather than reading an error body as the answer.
+
+## Safety
+
+- **HTTPS only.** Plain `http://` URLs are rejected.
+- **No internal hosts.** IP-literal hosts and `localhost` are blocked at execute time, even if they slip past validation. The AI can't hit AWS metadata or a private LAN through a stale binding.
+- **Per-account isolation.** Bindings live on your workspace; another tenant can't see or call them.
+- **One retry on transient failure.** Connection errors and 5xx with a 200 ms backoff. 4xx is *not* retried (it won't help).
+- **Audit log.** Create/delete of a binding is logged. Each call is recorded on the conversation alongside other tool calls; visible in the **Sources** drawer.
+
+## Common patterns
+
+**Order lookup**
+
+- URL: `https://api.shop.example.com/orders/{order_id}`
+- Method: `GET`
+- When to use: *"Look up an order by order number to find status, items, and shipping."*
+
+**Loyalty status**
+
+- URL: `https://api.brand.example.com/loyalty?email={email}`
+- Method: `GET`
+- When to use: *"Check the customer's loyalty tier and points balance when they ask about rewards."*
+
+**Internal knowledge query**
+
+- URL: `https://internal-tools.example.com/kb/search?q={query}`
+- Method: `GET`
+- Headers: `Authorization: Bearer ...`
+- When to use: *"Search our internal Confluence-like KB when a question can't be answered from public knowledge."*
+
+**Refund eligibility check**
+
+- URL: `https://api.shop.example.com/refunds/eligibility`
+- Method: `POST`
+- Headers: `Authorization: Bearer ...`
+- When to use: *"Before promising a refund, POST the order_id and reason to confirm eligibility."*
+
+## Plan availability
+
+The Custom HTTP tool itself is available on **every plan**. Workspace-level integration counts (which include Custom HTTP bindings + native integrations like Shopify) follow the per-plan **integrations cap** in [billing/plans](/billing/plans).
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Tools" icon="wrench" href="/agents/tools">
+    All tools your agent can use.
+  </Card>
+  <Card title="System prompt" icon="message-circle" href="/agents/system-prompt">
+    Tell the agent when to call which tool.
+  </Card>
+</CardGroup>

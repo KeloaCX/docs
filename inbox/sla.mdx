@@ -1,0 +1,81 @@
+---
+title: "SLA timers"
+description: "Set response and resolution targets per priority, surface conversations approaching breach, and keep your promises."
+---
+
+A **service-level agreement** (SLA) defines how fast you promise to reply and resolve. Keloa's SLA layer attaches a target to every conversation based on its priority, runs the clock, and pulls anything close to breach into a dedicated inbox view so it gets the attention it needs.
+
+<Note>
+SLA policies are available on the **Business** plan and above (paywall key `tickets.use_sla`). Lower plans see the priority field but no timers attach.
+</Note>
+
+## How the timer works
+
+Two clocks run on every conversation:
+
+- **First response** — starts when the customer's first message lands, stops when any team member (or the AI) sends a reply.
+- **Resolution** — starts at the same point, stops when the conversation is resolved.
+
+When a clock crosses 75% of its target, the conversation surfaces in the inbox **SLA** filter. At 100% it's flagged as **breached** and stays flagged for analytics.
+
+## Configure your policy
+
+Open **Settings → SLA policy**. You'll see a 4-by-2 grid: one row per priority (`urgent`, `high`, `normal`, `low`), one column for first-response, one for resolution. Values are in minutes.
+
+Defaults match what most SMB support teams promise:
+
+| Priority | First response | Resolution |
+| --- | --- | --- |
+| **Urgent** | 15 min | 2 hours |
+| **High** | 1 hour | 8 hours |
+| **Normal** | 4 hours | 24 hours |
+| **Low** | 24 hours | 72 hours |
+
+Two policy switches:
+
+- **Respect business hours** — pause the clock outside your configured business hours so an after-hours email doesn't breach overnight. See [Workspace settings](/settings/workspace) for hours setup.
+- **Pause on pending** — pause the clock when a conversation is waiting on the customer (tagged `pending` or `waiting-on-customer`). Resumes when they reply.
+
+## Setting priority on a conversation
+
+Open any conversation and click the priority pill in the header to change it. Priority can also be set automatically:
+
+- By an [assignment rule](/settings/assignment-rules) (e.g. *"VIPs get high priority"*).
+- By a flow's **Set priority** action.
+- By the AI agent if the system prompt says so.
+
+If no priority is set, conversations default to **normal**.
+
+## The SLA inbox view
+
+A built-in **SLA** filter in the left rail shows everything within 25% of breach, ordered by *time-to-breach* — the most urgent ticket is on top, every refresh.
+
+Your team works the SLA queue first thing in the morning and last thing before signing off. Easy ritual, no missed promises.
+
+## Breaches
+
+A breach doesn't pause anything. The conversation stays in the queue until it's replied/resolved, just with a red **SLA breached** badge.
+
+Breach data shows up in [Analytics → Response time](/analytics/response-time) so you can see whether the policy is realistic.
+
+## Plan availability
+
+| Plan | SLA timers |
+| --- | --- |
+| Starter | Off |
+| Growth | Off |
+| Business | On (default policy + customisation) |
+| Scale | On |
+
+Upgrade in **Settings → Billing** if your team needs SLAs.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Custom inbox views" icon="filter" href="/inbox/custom-views">
+    Build queues like "VIP unassigned over 1h".
+  </Card>
+  <Card title="Response time analytics" icon="clock" href="/analytics/response-time">
+    Where the time goes — by channel, agent, hour of day.
+  </Card>
+</CardGroup>

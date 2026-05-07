@@ -1,0 +1,60 @@
+---
+title: "Agent performance"
+description: "How each AI agent is doing — volume handled, deflection, escalations."
+---
+
+When you run more than one AI agent — say a sales agent on the website and a support agent in email — the **Agent performance** breakdown tells you which one is pulling its weight, which one is escalating too much, and which knowledge needs attention.
+
+## Where to find it
+
+**Analytics → Agents**. The section appears on every plan; the per-agent confidence and escalation-reason histograms below are gated to **Business+** (paywall key `advanced_analytics.use`).
+
+## Per-agent table
+
+| Column | What it tells you |
+| --- | --- |
+| **Agent** | Name and the LLM it's running on (`claude-sonnet-4`, `gpt-4o-mini`, ...) |
+| **Handled** | Conversations the agent participated in over the selected window |
+| **Deflection** | Conversations the agent resolved end-to-end with no human reply |
+| **Escalation rate** | Share of handled conversations that handed off to a teammate |
+| **Median confidence** | Median of the model's self-rated confidence per reply (0.0–1.0) |
+| **Credits used** | Reply credits this agent consumed |
+
+Sort by any column. Click an agent name to filter the entire dashboard to just that agent.
+
+## Reading the numbers
+
+- **High volume + high escalation** — the agent is taking calls it can't close. Usually a knowledge gap. Add Q&A pairs for the topics that escalate most ([Q&amp;A pairs](/knowledge/qa-pairs)).
+- **Low volume + high deflection** — the agent is being conservative and only answering what it's sure about. Either fine (high precision) or the system prompt is too restrictive — review what it refuses.
+- **High volume + low confidence median** — model is guessing more than it should. Tighten the system prompt's *"refuse if not sure"* line, or move the agent to a stronger model.
+
+## Escalation reasons (Business+)
+
+A bar chart of *why* each agent handed off:
+
+- **Low confidence** — model fell below the confidence threshold (default 70%). See [Confidence threshold](/agents/overview).
+- **Topic refused** — system prompt instructed the agent not to answer a topic.
+- **Tool failure** — a tool the agent needed (Shopify lookup, Custom HTTP) returned an error.
+- **Customer asked** — the customer explicitly requested a human.
+- **Manual** — a teammate took over via the **Take over** button.
+
+If **Low confidence** dominates, your knowledge base is the lever. If **Topic refused** dominates, the prompt is too narrow. If **Tool failure** dominates, check the integration's status page.
+
+## Confidence distribution (Business+)
+
+A 10-bucket histogram of confidence scores across every reply in the window. Healthy agents show a peak at the high end (0.7–1.0) with a long thin tail. A flat or bimodal distribution usually means the agent is being asked questions outside its knowledge.
+
+## Per-agent conversation drill-down
+
+Click any row → **View handled conversations**. The inbox opens filtered to that agent and date window. Read 5–10 to get a feel for what the numbers mean — analytics tells you *what*, conversations tell you *why*.
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Analytics overview" icon="chart-bar" href="/analytics/overview">
+    The headline KPIs.
+  </Card>
+  <Card title="AI agents" icon="bot" href="/agents/overview">
+    Create, configure, and tune.
+  </Card>
+</CardGroup>

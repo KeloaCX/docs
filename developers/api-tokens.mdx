@@ -1,0 +1,93 @@
+---
+title: "API tokens"
+description: "Mint scoped tokens to call the Keloa API on behalf of your workspace."
+---
+
+<Note>
+**Coming soon.** The public Developer API is on the roadmap. The page below outlines the planned surface so you can plan integrations. [See roadmap](https://keloa.ai/roadmap).
+</Note>
+
+API tokens authenticate machine-to-machine calls into Keloa. Each token belongs to a single workspace, carries a set of abilities (scopes), and can be revoked at any time without disrupting the rest.
+
+## Where to manage tokens
+
+Once shipped, tokens will live at **Settings → API tokens**. The page lists every active token with:
+
+- A short **label** you set when minting it.
+- The **abilities** it carries (read-only or scoped write).
+- The **last used** timestamp.
+- A **Revoke** action.
+
+The token value itself is shown **once** at creation — copy it into your secret store immediately. Keloa never displays it again.
+
+## Mint a token
+
+1. Open **Settings → API tokens**.
+2. Click **New token**.
+3. Pick a **label** that says where the token will live (`zapier-prod`, `internal-dashboard`, ...).
+4. Choose **abilities**:
+   - **Read** — list and read every resource.
+   - **Write contacts** — create/update contacts and tags.
+   - **Write conversations** — create messages, resolve, reopen, set priority.
+   - **Manage webhooks** — register/remove webhook endpoints.
+   - **Full access** — equivalent to an admin user (use sparingly).
+5. Click **Create**. Copy the token. Store it.
+
+## Use a token
+
+```http
+GET /v1/conversations?status=open HTTP/1.1
+Host: api.keloa.ai
+Authorization: Bearer keloa_pk_live_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Accept: application/json
+```
+
+Tokens are sent as a bearer token in the `Authorization` header. No API key in query strings, ever.
+
+## Token format
+
+Planned format (subject to change before public release):
+
+- Prefix `keloa_pk_live_` for production tokens.
+- Prefix `keloa_pk_test_` for test-mode tokens once test mode lands.
+- 32 random characters after the prefix.
+
+The prefix lets secret-scanners (GitHub, GitLab, Trivy) detect leaked tokens automatically.
+
+## Rotate tokens
+
+Treat rotation as a routine, not an emergency:
+
+1. Mint a new token with the same label + abilities.
+2. Roll your service to the new token.
+3. Revoke the old one once the new is live.
+
+There's no automatic expiry today; rotate on your own cadence (90-day is a reasonable default).
+
+## Revoke a token
+
+**Settings → API tokens → ⋯ → Revoke**. The token stops authenticating immediately. In-flight requests with the token return `401`.
+
+Revocations are logged in the [audit log](/settings/audit-log-export) with timestamp, actor, and the affected token label.
+
+## Best practices
+
+- **One token per consumer.** A separate token per integration (Zapier, your internal dashboard, your CI) means revoking one doesn't take the others down.
+- **Least privilege.** Pick the narrowest ability set that covers your use case. **Full access** is rarely needed.
+- **Rotate on personnel change.** When the operator who minted a token leaves, rotate it.
+- **Don't ship tokens to clients.** API tokens are server-side credentials. For browser/widget contexts, see the [chat widget loader](/channels/web-widget) which uses a public site key instead.
+
+## Plan availability
+
+API token management will be available on every plan when it ships, but rate limits and token counts may differ by tier. Final details posted on the [pricing page](https://keloa.ai/pricing).
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Developers overview" icon="code" href="/developers/overview">
+    The full planned API surface.
+  </Card>
+  <Card title="Webhooks" icon="webhook" href="/developers/webhooks">
+    Receive events instead of polling.
+  </Card>
+</CardGroup>

@@ -30,6 +30,9 @@
               "inbox/assignments",
               "inbox/macros",
               "inbox/tags-and-filters",
+              "inbox/internal-notes",
+              "inbox/sla",
+              "inbox/custom-views",
               "inbox/resolving"
             ]
           },
@@ -40,6 +43,7 @@
               "agents/create-agent",
               "agents/system-prompt",
               "agents/tools",
+              "agents/tools-custom-http",
               "agents/test-agent"
             ]
           },
@@ -90,7 +94,10 @@
           {
             "group": "Analytics",
             "pages": [
-              "analytics/overview"
+              "analytics/overview",
+              "analytics/agent-performance",
+              "analytics/csat",
+              "analytics/response-time"
             ]
           },
           {
@@ -104,7 +111,16 @@
               "settings/email-domains",
               "settings/dns-records",
               "settings/data-and-privacy",
-              "settings/security"
+              "settings/security",
+              "settings/audit-log-export"
+            ]
+          },
+          {
+            "group": "Developers",
+            "pages": [
+              "developers/overview",
+              "developers/api-tokens",
+              "developers/webhooks"
             ]
           },
           {
