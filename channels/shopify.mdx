@@ -1,13 +1,25 @@
 ---
 title: "Shopify"
-description: "Connect your Shopify store so the AI can look up orders, products, and tracking."
+description: "Route Shopify storefront chat into the Keloa inbox."
 ---
 
-The Shopify integration unlocks **store tools** for your AI agent — order lookup, product search, customer history — and powers a separate [Shopify knowledge sync](/knowledge/shopify) that ingests your storefront content into the AI's training data.
+<Tip>
+Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
+</Tip>
 
-## Connect your store
+<Note>
+**Coming soon.** Shopify-as-a-channel — receiving inbound storefront chat into Keloa — is not yet shipped. The flow below describes the planned setup.
+</Note>
 
-The connection uses a **Shopify custom app** with an Admin API access token. This works on every Shopify plan and doesn't require a public app review.
+<Info>
+Looking for product catalog ingestion or order/product lookup tools? That's the **Shopify integration**, which is live today. See the [Shopify knowledge source](/knowledge/shopify) for catalog sync and the Shopify integration in **Settings → Integrations** for order, product, and tracking tools your AI agent can call.
+</Info>
+
+This page covers the planned **Shopify channel** — meaning inbound chat conversations from your Shopify storefront flowing into the Keloa inbox alongside email and the web widget. For Shopify as an AI tool source (orders, products, tracking) or as a knowledge source (storefront pages, articles, products), use the integration instead.
+
+## Connect your store (planned flow)
+
+The connection will use a **Shopify custom app** with an Admin API access token. This works on every Shopify plan and doesn't require a public app review.
 
 <Steps>
   <Step title="Create a custom app in Shopify">
@@ -43,12 +55,12 @@ The connection uses a **Shopify custom app** with an Admin API access token. Thi
 </Steps>
 
 <Tip>
-The same connection powers the [Shopify knowledge sync](/knowledge/shopify). You don't need a second app — as long as the scopes above are granted, both surfaces work.
+The same connection will power the [Shopify knowledge sync](/knowledge/shopify) and the AI tools (orders, products, tracking) — one app, multiple surfaces.
 </Tip>
 
-## Store tools for the AI
+## Store tools for the AI (live today via integration)
 
-After connect, these tools appear in **Integrations → Tools** and can be toggled on your agent:
+Once the Shopify integration is connected, these tools appear in **Integrations → Tools** and can be toggled on your agent:
 
 | Tool | What it does |
 | --- | --- |
@@ -67,9 +79,9 @@ Enable them per-agent in **AI agents → edit → Tools**.
 
 All of this runs inside the same conversation — the customer never sees a form or a hop.
 
-## Knowledge from catalog (optional)
+## Knowledge from catalog (live today)
 
-For pre-sales questions, you can also sync your storefront content (pages, blog articles, products) into the AI's training data. See the [Shopify knowledge sync guide](/knowledge/shopify) for setup.
+For pre-sales questions, sync your storefront content (pages, blog articles, products) into the AI's training data. See the [Shopify knowledge sync guide](/knowledge/shopify) for setup.
 
 Great for *"Do you have this in blue?"*, *"What's your return policy?"*, or *"What does the About page say?"*
 

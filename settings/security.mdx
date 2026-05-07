@@ -7,31 +7,22 @@ Security settings live in **Settings → Security**. What's available depends on
 
 ## Two-factor authentication (2FA)
 
-Every user can enable 2FA on their own account (see [Password &amp; 2FA](/account/password-and-2fa)). Admins can **require** 2FA for all members of a workspace:
-
-- **Settings → Security → Require 2FA** → toggle on.
-- Members without 2FA are prompted to set it up on next login.
+Every user can enable 2FA on their own account (see [Password &amp; 2FA](/account/password-and-2fa)). 2FA is backed by Fortify with TOTP authenticator apps and one-time recovery codes.
 
 Available on all plans.
 
 ## Single sign-on (SSO)
 
-Available on **Scale** plan.
+<Note>
+**Coming soon** — Scale plan. Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
+</Note>
 
-Supported protocols:
+When SSO ships, the planned protocols are:
 
 - **SAML 2.0** (Okta, Azure AD, JumpCloud, etc.)
 - **OIDC** (Google Workspace, generic OIDC providers)
 
-Set up in **Settings → Security → SSO**:
-
-1. Pick protocol.
-2. Enter your IdP metadata.
-3. Keloa gives you the ACS URL and entity ID to paste into your IdP.
-4. Test with one user.
-5. Enforce for all members.
-
-Just-in-time provisioning: new users land with a configurable default role.
+Until then, secure your workspace with required 2FA and unique passwords per teammate.
 
 ## Audit log
 
@@ -44,18 +35,14 @@ Just-in-time provisioning: new users land with a configurable default role.
 - Retention policy changes
 - Data exports and contact deletions
 
-Each entry has timestamp, operator, IP address, and user agent. Export to CSV for compliance reporting.
+Each entry has timestamp, operator, IP address, and user agent.
 
-Available on **Business** and **Scale**.
+The audit log itself is available on **Business** and **Scale**. **CSV export** of the audit log is **Scale only**.
 
 ## Session management
 
-- Sessions expire after **30 days** of inactivity (configurable down to 24 hours on Business+).
+- Sessions follow Laravel's default lifetime (30 days of inactivity).
 - Force sign-out all sessions from **Settings → Security → Revoke all sessions**.
-
-## IP allowlist
-
-Scale only. Restrict inbox access to a list of IP ranges (your offices, VPN). Public channel webhooks still work — the allowlist only applies to the inbox UI.
 
 ## Brute-force protection
 

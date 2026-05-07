@@ -18,18 +18,20 @@ Every "place" where you receive customer messages is a **channel**. Today Keloa 
 
 ## Coming soon
 
+Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
+
 <CardGroup cols={2}>
-  <Card title="WhatsApp Business" icon="whatsapp">
+  <Card title="WhatsApp Business" icon="whatsapp" href="/channels/whatsapp">
     Via the WhatsApp Business Platform. Notify-me list open in **Settings → Channels**.
   </Card>
-  <Card title="Instagram" icon="instagram">
+  <Card title="Instagram" icon="instagram" href="/channels/instagram">
     DMs and story replies via Meta's Messaging API.
   </Card>
-  <Card title="Messenger" icon="facebook-messenger">
+  <Card title="Messenger" icon="facebook-messenger" href="/channels/messenger">
     Connect a Facebook Page to receive Messenger DMs.
   </Card>
-  <Card title="Shopify" icon="shopify">
-    Store chat plus order, product, and tracking tools for the AI.
+  <Card title="Shopify storefront chat" icon="shopify" href="/channels/shopify">
+    Inbound chat from your Shopify storefront. Shopify-as-an-integration (orders, products, knowledge sync) is **already live** — see [Shopify integration](/knowledge/shopify).
   </Card>
 </CardGroup>
 
@@ -57,14 +59,20 @@ Each connected channel shows:
 
 ## Channel limits per plan
 
-| Plan | Channels | Email channels | Email domains |
-| --- | --- | --- | --- |
-| Starter | 1 | 1 | 1 |
-| Growth | 3 | 3 | 3 |
-| Business | 10 | 10 | 10 |
-| Scale | Unlimited | Unlimited | Unlimited |
+| Plan | Channels | Email channels | Email domains | Integrations |
+| --- | --- | --- | --- | --- |
+| Starter | 1 | — (locked) | — (locked) | 1 |
+| Growth | 3 | 3 | 3 | 3 |
+| Business | 10 | 10 | 10 | 10 |
+| Scale | Unlimited | Unlimited | Unlimited | Unlimited |
 
 Each connection counts independently. Two email addresses on the same domain is two channels but one verified domain.
+
+<Note>
+Email is a **Growth+** feature. Starter is widget-only — `email_channels` and `email_domains` are locked on Starter. Upgrade to Growth to add email channels.
+</Note>
+
+The **Integrations** column is a shared bucket for Shopify and custom HTTP endpoints — every connected integration counts against this cap.
 
 ## One AI agent per channel (by default)
 
