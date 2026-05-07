@@ -9,17 +9,13 @@ Keloa is built in the Netherlands and hosted in the EU. Everything privacy-relat
 
 ### Whole workspace
 
-**Export workspace → JSON** returns a machine-readable export of:
+**Export workspace → JSON** and **Export workspace → CSV** return a machine-readable snapshot of contacts, conversations, messages, knowledge sources, flows, and audit log entries. The CSV is a spreadsheet-friendly subset (contacts + conversations); the JSON is the full record.
 
-- All contacts and their custom fields
-- All conversations and messages
-- All knowledge sources and contents
-- All flows and their configurations
-- All audit-log entries
+Both download immediately for typical workspaces; very large workspaces are streamed in chunks.
 
-**Export workspace → CSV** returns a spreadsheet-friendly subset (contacts + conversations).
+### Audit log
 
-Delivered as a signed download link by email when ready (big workspaces may take minutes to an hour).
+Admins on the **Scale** plan can export the full audit log as CSV from **Settings → Security → Audit log → Export CSV**. The download streams every privacy action — exports, deletions, retention changes, role updates — with timestamp, actor, target, IP, and a JSON diff of changes. See [Audit log export](/settings/audit-log-export).
 
 ### Single contact
 
@@ -41,16 +37,14 @@ Effects:
 
 ## Retention
 
-Set how long resolved conversations are kept:
+Set how long resolved conversations are kept (in days). The setting lives at **Settings → Data &amp; privacy → Retention** and is stored per workspace.
 
-| Retention | Effect |
-| --- | --- |
-| **Forever** (default) | Kept until you delete them |
-| **30 / 90 / 365 days after resolution** | Auto-deleted that many days after the last message on a resolved conversation |
+- **0 (default)** — keep forever; nothing auto-deletes.
+- **N days** — resolved conversations older than `N` days are removed by a daily job. Pick a value that matches your DPA commitment.
 
-Retention runs daily. Messages, attachments, and any AI metadata are removed.
+Retention runs daily. Messages, attachments, and any AI metadata on the conversation are removed.
 
-Setting a retention policy **does not** retroactively delete older data. It applies to conversations resolved after the policy was set. To delete older data, use **Delete contact** or **Bulk delete by date** (Business+).
+Setting a retention policy **does not** retroactively delete older data. It applies as the cleanup job runs each day. To delete a specific person's data immediately, use **Delete contact**.
 
 ## Data residency
 
@@ -58,7 +52,7 @@ Setting a retention policy **does not** retroactively delete older data. It appl
 - LLM providers (when used) are routed through their EU endpoints where available.
 - Zero-retention flags are set with every LLM provider — no prompts or completions are used for provider training.
 
-Full sub-processor list at [keloa.ai/legal/subprocessors](https://keloa.ai/legal/subprocessors).
+Full sub-processor list at [keloa.ai/legal/sub-processors](https://keloa.ai/legal/sub-processors).
 
 ## Encryption
 
@@ -77,7 +71,7 @@ Full sub-processor list at [keloa.ai/legal/subprocessors](https://keloa.ai/legal
 
 ## Audit log
 
-**Settings → Security → Audit log** records every privacy action — exports, deletions, retention changes — with timestamp, operator, and IP.
+**Settings → Security → Audit log** records every privacy action — exports, deletions, retention changes, role changes — with timestamp, operator, and IP. The audit log itself is visible on every paid plan; CSV export is **Scale-only**. See [Audit log export](/settings/audit-log-export) for details and [Security](/settings/security) for retention.
 
 ## Legal
 

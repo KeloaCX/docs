@@ -22,14 +22,16 @@ Quick filters at the top of the list:
 - **All** — every open conversation
 - **Mine** — assigned to you
 - **AI** — currently being handled by the AI (no teammate assigned)
-- **SLA** — conversations approaching response-time breach
+- **SLA** — conversations approaching response-time breach (Business+, see [SLA timers](/inbox/sla))
 - **Resolved** — already closed (useful for look-back)
+
+Need a filter the built-ins don't cover (*"VIPs unanswered over 1h"*)? Save your current filter as a **custom view** and it lands in the left rail. See [Custom inbox views](/inbox/custom-views).
 
 You can also search by contact name, email, or message content.
 
 ## Quick navigation
 
-Press <kbd>Cmd</kbd>+<kbd>K</kbd> on macOS or <kbd>Ctrl</kbd>+<kbd>K</kbd> on Windows/Linux from anywhere in Keloa to open the **command palette** — jump to the inbox, agents, knowledge, settings, or any other page in two keystrokes. The same panel opens from the **Search** button in the top bar.
+Open the **command palette** from the **Search** button in the top bar to jump to the inbox, agents, knowledge, settings, or any other page in two keystrokes.
 
 ## Real-time updates
 
@@ -46,22 +48,33 @@ Select multiple conversations with the checkboxes on the left. The bulk bar lets
 - **Assign** all selected to a teammate
 - **Tag** them in one shot
 - **Resolve** or reopen many at once
+- **Mark read** in one click
 
-Great for cleanup after a launch day.
+Great for cleanup after a launch day. Press <kbd>Esc</kbd> to clear the selection.
+
+## Collision detection
+
+Live presence indicators show when a teammate has a conversation open, so two people don't reply at the same time. Powered by Reverb — updates appear without refreshing.
 
 ## Next
 
-<CardGroup cols={2}>
+<CardGroup cols={3}>
   <Card title="Reply to conversations" icon="reply" href="/inbox/replying">
-    How to answer, with AI drafts and macros.
+    Composer, AI drafts, macros, keyboard shortcuts.
+  </Card>
+  <Card title="Internal notes" icon="note-sticky" href="/inbox/internal-notes">
+    Talk to your team inside a conversation. Growth+.
+  </Card>
+  <Card title="SLA timers" icon="stopwatch" href="/inbox/sla">
+    First-response and resolution targets per priority. Business+.
+  </Card>
+  <Card title="Custom inbox views" icon="filter" href="/inbox/custom-views">
+    Save the filter you keep typing. Business+.
   </Card>
   <Card title="Assignments" icon="user-plus" href="/inbox/assignments">
     Assign to yourself, a teammate, or let rules do it.
   </Card>
   <Card title="Macros" icon="bookmark" href="/inbox/macros">
     Saved replies, typed with `/`.
-  </Card>
-  <Card title="Tags &amp; filters" icon="tag" href="/inbox/tags-and-filters">
-    Organise the list the way your team thinks.
   </Card>
 </CardGroup>

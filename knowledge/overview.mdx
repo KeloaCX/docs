@@ -1,11 +1,11 @@
 ---
 title: "Knowledge overview"
-description: "Teach your AI agent your business. Four source types, one source of truth."
+description: "Teach your AI agent your business. Five source types, one source of truth."
 ---
 
 **Knowledge** is the content your AI is allowed to answer from. Without knowledge, your agent is polite and generic; with good knowledge, it's specific, accurate, and cites sources.
 
-## Four kinds of sources
+## Five kinds of sources
 
 <CardGroup cols={2}>
   <Card title="Website crawl" icon="globe" href="/knowledge/website-crawl">
@@ -19,6 +19,9 @@ description: "Teach your AI agent your business. Four source types, one source o
   </Card>
   <Card title="Q&A pairs" icon="comments" href="/knowledge/qa-pairs">
     Write canonical question / answer rows. The highest-precision format.
+  </Card>
+  <Card title="Shopify" icon="bag-shopping" href="/knowledge/shopify">
+    Pages, products, articles synced from your store.
   </Card>
 </CardGroup>
 
@@ -58,14 +61,28 @@ A source moves through these states:
 
 Each plan includes a knowledge allowance in MB. You'll see a bar at the top of the **Knowledge** page showing usage vs cap.
 
-| Plan | Storage | Pages/source |
-| --- | --- | --- |
-| Starter | 5 MB | 50 |
-| Growth | 50 MB | 500 |
-| Business | 500 MB | 5 000 |
-| Scale | 5 GB | Unlimited |
+| Plan | Storage | Pages / source | Pages / month |
+| --- | --- | --- | --- |
+| Starter | 2 MB | 25 (single URL only) | 25 |
+| Growth | 20 MB | 250 | 250 |
+| Business | 100 MB | 2 500 | 2 500 |
+| Scale | 1 GB | Unlimited | Unlimited |
 
 If you hit the cap, add a bigger plan or delete sources you no longer need.
+
+## Source-type availability per plan
+
+Not every source type unlocks at every tier:
+
+| Type | Starter | Growth | Business | Scale |
+| --- | --- | --- | --- | --- |
+| **Website crawl** | 1 site, single URL only | Unlimited, full-site | Unlimited, full-site | Unlimited, full-site |
+| **Text snippet** | 5 max | Unlimited | Unlimited | Unlimited |
+| **File upload** | 1 file, ≤ 5 MB each | Unlimited, ≤ 50 MB each | Unlimited, ≤ 100 MB each | Unlimited, ≤ 200 MB each |
+| **Q&A pairs** | Not available | Available | Available | Available |
+| **Shopify** | Not available | Available | Available | Available |
+
+Auto-recrawl scheduling: Starter is manual-only; Growth = monthly; Business = weekly; Scale = daily. See [Website crawl](/knowledge/website-crawl#keeping-content-fresh) for the cadence ladder.
 
 ## Quality beats quantity
 

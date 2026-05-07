@@ -16,9 +16,13 @@ Each agent has:
 | **Status** | `live` (answers automatically) or `paused` (only drafts) |
 | **System prompt** | The core instructions — tone, scope, rules, what to refuse |
 | **Languages** | Which languages it's allowed to reply in |
+| **Model** | The LLM the agent runs on (e.g. `claude-sonnet-4`, `gpt-4o-mini`) — set per agent via the LLM router |
 | **Temperature** | How creative vs deterministic (low = safer, high = more varied) |
-| **Knowledge sources** | Which crawls, files, and Q&amp;As it can draw from |
-| **Tools** | What it's allowed to do — look up orders, hand off, etc. |
+| **Confidence threshold** | The minimum self-rated confidence (0.0–1.0) for the agent to send a reply itself. Below it, the conversation hands off to a teammate. Default is 0.70. |
+| **Auto-send** | When on, the agent sends replies it's confident about; when off, it only drafts |
+| **Knowledge sources** | Which crawls, files, snippets, Q&amp;As, and Shopify feeds it can draw from |
+| **Tools** | What it's allowed to do — look up Shopify orders, call your custom HTTP endpoints, hand off, etc. |
+| **Avatar** | Profile image shown in the widget header and inbox |
 
 ## How an agent actually replies
 
@@ -39,6 +43,17 @@ If the agent is guessing when it shouldn't, that's almost always fixable by:
 
 1. Adding the answer to your knowledge (a Q&amp;A pair is fastest).
 2. Tightening the system prompt — *"If you don't find it in the knowledge, say you'll route to a teammate and hand off."*
+3. Raising the **confidence threshold** so borderline replies escalate instead of sending.
+
+## Confidence threshold
+
+Every reply gets a self-rated confidence score between 0 and 1. The agent's **confidence threshold** (default `0.70`) is the line below which the agent stops sending and escalates to a human via the configured handoff flow. Raise it to be stricter, lower it to be more aggressive.
+
+Confidence appears next to the AI badge on every assisted message in the inbox, and the distribution is plotted in [Agent performance](/analytics/agent-performance) so you can see whether the threshold is calibrated.
+
+## Model providers
+
+Keloa routes each agent through either Anthropic (Claude) or OpenAI (GPT) automatically based on the model selected. Both providers run with zero-retention flags so prompts and completions are never used for training.
 
 ## One agent or several?
 
@@ -61,6 +76,9 @@ Each agent can be attached to a different channel or different flow.
   </Card>
   <Card title="Tools" icon="wrench" href="/agents/tools">
     What your agent can do beyond answering.
+  </Card>
+  <Card title="Custom HTTP tool" icon="plug" href="/agents/tools-custom-http">
+    Wire any of your own endpoints into the agent's tool belt.
   </Card>
   <Card title="Test your agent" icon="flask" href="/agents/test-agent">
     Chat with an agent before letting it loose on customers.
