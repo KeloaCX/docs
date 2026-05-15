@@ -62,17 +62,17 @@ Each connected channel shows:
 | Plan | Channels | Email channels | Email domains | Integrations |
 | --- | --- | --- | --- | --- |
 | Starter | 1 | — (locked) | — (locked) | 1 |
-| Growth | 3 | 3 | 3 | 3 |
-| Business | 10 | 10 | 10 | 10 |
+| Growth | 2 | 3 | 1 | 2 |
+| Business | 5 | 6 | 3 | 4 |
 | Scale | Unlimited | Unlimited | Unlimited | Unlimited |
 
-Each connection counts independently. Two email addresses on the same domain is two channels but one verified domain.
+**Channels**, **email channels**, **email domains**, and **integrations** are four separate pools — they do not share a cap. A **channel** is any place customers message you (web widget, email, social). An **email channel** is one email address you reply as; it also counts as a channel. An **email domain** is a verified sending domain. An **integration** is a connected third-party app (Shopify, custom HTTP, Slack, Google Drive) that feeds data or runs actions — see [Core concepts](/concepts#integration). Two email addresses on the same domain is two email channels but one verified domain.
 
 <Note>
 Email is a **Growth+** feature. Starter is widget-only — `email_channels` and `email_domains` are locked on Starter. Upgrade to Growth to add email channels.
 </Note>
 
-The **Integrations** column is a shared bucket for Shopify and custom HTTP endpoints — every connected integration counts against this cap.
+The **Integrations** column counts every connected third-party app — Shopify, custom HTTP endpoints, Slack, and Google Drive — against one cap, separate from the channels cap.
 
 ## One AI agent per channel (by default)
 
