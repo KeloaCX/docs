@@ -25,9 +25,15 @@ Inbound messages from any channel land as a conversation in your **Inbox**.
 
 ## Channel
 
-A **channel** is a connection between Keloa and an outside system that carries messages — webchat, email, WhatsApp, Instagram, Messenger, or Shopify. Each channel has a status (*connected*, *pending setup*, *disconnected*) and can be bound to an AI agent.
+A **channel** is an *inbound conversation surface* — a place where customers message you. Web widget, email, WhatsApp, Instagram, Messenger, and Shopify storefront chat are all channels. Each channel has a status (*connected*, *pending setup*, *disconnected*) and can be bound to an AI agent. Your plan caps how many channels a workspace can connect.
 
 See [Channels](/channels/overview).
+
+## Integration
+
+An **integration** is a *connected third-party app* — Shopify, a custom HTTP endpoint, Slack, or Google Drive — that feeds data into Keloa or lets your AI agent run actions (look up an order, post to a channel, sync a knowledge folder). Integrations are **not** channels: a channel carries customer conversations, an integration carries data and actions. They are two separate plan caps, so connecting Shopify as an integration never uses up a channel slot. Shopify can appear in both pools — as an integration (orders, products, knowledge sync) and, once live, as a storefront-chat channel.
+
+See [Integrations](/channels/overview#channel-limits-per-plan) and [Shopify](/knowledge/shopify).
 
 ## AI agent
 
