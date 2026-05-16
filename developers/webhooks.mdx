@@ -1,121 +1,228 @@
 ---
 title: "Webhooks"
-description: "Receive signed POSTs from Keloa as conversations, messages, and usage events happen."
+description: "Receive signed POSTs from Keloa when conversation lifecycle events happen."
 ---
 
+Webhooks let Keloa push events to your stack instead of you polling. You register an HTTPS endpoint and pick the events you care about; Keloa POSTs a signed JSON payload to that endpoint each time one of those events fires.
+
+<Info>
+Webhooks are available on the **Business** and **Scale** plans. Business workspaces can register up to **10** endpoints, Scale up to **30**. Starter and Growth plans can't create webhook endpoints.
+</Info>
+
+Manage endpoints in the app: sidebar → **Settings → Integrations → the "Webhooks" tile**.
+
+## Create an endpoint
+
+<Steps>
+  <Step title="Open the Webhooks tile">
+    In Keloa, sidebar → **Settings → Integrations → Webhooks → New endpoint**.
+  </Step>
+
+  <Step title="Fill in the endpoint">
+    - **Label** — a name so it's easy to identify (`prod-orders-pipeline`, `slack-relay`, ...).
+    - **URL** — the `https://` URL that should receive POSTs. Plain HTTP is rejected.
+    - **Events** — pick the [events](#events) you want this endpoint to receive.
+  </Step>
+
+  <Step title="Copy the signing secret">
+    On creation Keloa shows a **signing secret** — format `whsec_` followed by 40 random characters. It is shown **exactly once**. Copy it into your receiver immediately; you'll need it to [verify each request](#verifying-the-signature).
+  </Step>
+</Steps>
+
 <Note>
-**Coming soon.** The public Developer API is on the roadmap. Outbound webhook endpoints are already wired in the app, but the event taxonomy below is not yet stable. [See roadmap](https://keloa.ai/roadmap).
+Lost the secret? You can **reveal** it again or **rotate** it later from the endpoint's actions menu. Rotating invalidates the old secret — update your receiver before deliveries start failing.
 </Note>
 
-Webhooks let Keloa push events to your stack instead of you polling. You register an HTTPS URL and pick the events you care about; Keloa POSTs a signed JSON payload to that URL each time one of those events happens.
+## Events
 
-## Register an endpoint
-
-Today, in-app:
-
-1. Open **Settings → Developers**.
-2. Click **New endpoint**.
-3. Give it a **label** so it's easy to identify (`prod-orders-pipeline`, `slack-relay`, ...).
-4. Paste the **HTTPS URL** that should receive POSTs.
-5. Pick the **events** to subscribe to.
-6. Save.
-
-A unique **signing secret** (`whsec_...`) is generated. Copy it into the receiver — you'll need it to verify each request.
-
-## Pause and revoke
-
-- **Pause** stops deliveries without losing the endpoint or its secret. Useful when your downstream is down.
-- **Delete** removes the endpoint and rotates its secret.
-
-Both actions are logged in the [audit log](/settings/audit-log-export).
-
-## Planned event types
+Keloa delivers five conversation lifecycle events:
 
 | Event | Fires when |
 | --- | --- |
-| `message.created` | Any new message — customer, AI, operator, internal note |
-| `conversation.resolved` | A conversation transitions to resolved |
-| `conversation.reopened` | A resolved conversation reopens |
-| `conversation.assigned` | Assignee changes |
-| `agent.handoff` | The AI hands a conversation to a human |
-| `usage.alert` | Credits cross a configured threshold |
-| `subscription.changed` | Plan or status changes (Stripe-driven) |
+| `conversation.opened` | A new conversation is created. |
+| `conversation.solved` | A conversation is marked solved. |
+| `conversation.closed` | A conversation is closed. |
+| `conversation.escalated` | A conversation is escalated to a human. Carries escalation fields. |
+| `conversation.rated` | A customer submits a CSAT rating. Carries CSAT fields. |
 
-The exact schema per event is **not yet stable**. Subscribe to the [roadmap](https://keloa.ai/roadmap) for the freeze announcement.
+## The payload
 
-## Payload shape (planned)
+Every delivery is a JSON object with a stable top-level envelope (`id`, `type`, `created_at`, `account_id`, `data`). The `data` object holds the `conversation` the event is about.
 
 ```json
 {
-  "id": "evt_01HZF...",
-  "type": "message.created",
-  "created_at": "2026-05-07T09:42:11.000Z",
-  "account_id": "01HZ...",
+  "id": "<event uuid>",
+  "type": "conversation.solved",
+  "created_at": "2026-05-16T10:30:00Z",
+  "account_id": "<uuid>",
   "data": {
-    "message": {
-      "id": "01HZ...",
-      "conversation_id": "01HZ...",
-      "role": "customer",
-      "content": "Hi, where's my order?",
-      "created_at": "2026-05-07T09:42:10.500Z"
+    "conversation": {
+      "id": "<uuid>",
+      "status": "solved",
+      "channel": "webchat",
+      "topic": "Refund request",
+      "priority": "normal",
+      "contact": { "id": "<uuid>", "name": "Jane Doe" },
+      "assignee_id": "<uuid|null>",
+      "created_at": "...",
+      "resolved_at": "...",
+      "closed_at": "..."
     }
   }
 }
 ```
 
-Top-level fields (`id`, `type`, `created_at`, `account_id`, `data`) are planned to stay stable; the inner `data` shape per event will be versioned alongside the API.
+### Event-specific fields
 
-## Verify the signature
+Two events add extra fields inside `data.conversation`:
 
-Every POST includes:
+**`conversation.escalated`**
 
-- `Keloa-Signature` — HMAC-SHA256 of the raw request body, hex-encoded.
-- `Keloa-Timestamp` — Unix seconds when the event was sent.
+| Field | Description |
+| --- | --- |
+| `escalated_to_id` | UUID of the human the conversation was escalated to. |
+| `escalation_reason` | Why the conversation was escalated. |
+| `escalated_at` | Timestamp of the escalation. |
 
-Verification (Node.js):
+**`conversation.rated`**
 
-```js
+| Field | Description |
+| --- | --- |
+| `csat_score` | The CSAT rating (integer). |
+| `csat_comment` | The optional comment the customer left. |
+| `rated_at` | Timestamp of the rating. |
+
+## Request headers
+
+Keloa sends these headers on every delivery:
+
+| Header | Value |
+| --- | --- |
+| `Content-Type` | `application/json` |
+| `User-Agent` | `Keloa-Webhooks/1` |
+| `X-Keloa-Event` | The event type, e.g. `conversation.solved`. |
+| `X-Keloa-Delivery-Id` | A per-event UUID. **Use this as your idempotency key** — retries reuse the same value. |
+| `X-Keloa-Webhook-Id` | The id of the endpoint the delivery was sent to. |
+| `X-Keloa-Signature` | `t=<unix>,v1=<hmac>` — see [Verifying the signature](#verifying-the-signature). |
+
+## Verifying the signature
+
+The `X-Keloa-Signature` header looks like this:
+
+```
+X-Keloa-Signature: t=1747391400,v1=3f9a...c12e
+```
+
+- `t` — the Unix timestamp (seconds) when the delivery was signed.
+- `v1` — an `HMAC-SHA256` hash, lowercase hex, keyed with the endpoint's signing secret.
+
+The signed string is the timestamp, a literal dot, and the **raw request body**:
+
+```
+<t>.<raw-request-body>
+```
+
+To verify a delivery your receiver MUST:
+
+1. Recompute the HMAC over `"<t>.<body>"` using the signing secret and compare it with `v1` using a **constant-time** comparison function.
+2. Reject the request if `t` is more than ~5 minutes (300 seconds) old — this is your replay defence.
+
+<Warning>
+Always verify against the **raw** request body, not a parsed and re-serialized one. JSON re-encoding changes whitespace and key order, which breaks the signature.
+</Warning>
+
+<CodeGroup>
+
+```js Node.js
 import crypto from 'node:crypto';
 
-function verify(rawBody, signature, timestamp, secret) {
-  // Reject anything older than 5 minutes — replay protection.
-  if (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) {
-    return false;
+// `rawBody` must be the exact bytes Keloa sent — not a re-serialized object.
+function verifyKeloaWebhook(rawBody, signatureHeader, secret) {
+  let t;
+  let v1;
+  for (const part of signatureHeader.split(',')) {
+    const [key, value] = part.split('=', 2);
+    if (key === 't') t = value;
+    if (key === 'v1') v1 = value;
   }
+
+  // Replay defence — reject anything older than 5 minutes.
+  if (!t || Math.abs(Date.now() / 1000 - Number(t)) > 300) {
+    throw new Error('Stale webhook');
+  }
+
   const expected = crypto
     .createHmac('sha256', secret)
-    .update(`${timestamp}.${rawBody}`)
+    .update(`${t}.${rawBody}`)
     .digest('hex');
-  return crypto.timingSafeEqual(
-    Buffer.from(expected),
-    Buffer.from(signature),
-  );
+
+  const expectedBuf = Buffer.from(expected);
+  const receivedBuf = Buffer.from(v1 ?? '');
+  if (
+    expectedBuf.length !== receivedBuf.length ||
+    !crypto.timingSafeEqual(expectedBuf, receivedBuf)
+  ) {
+    throw new Error('Bad signature');
+  }
 }
 ```
 
-Always verify against the **raw** request body, not a parsed/re-serialised one — JSON re-encoding changes whitespace and breaks the signature.
+```php PHP
+$timestamp = null;
+$v1 = null;
+foreach (explode(',', $request->header('X-Keloa-Signature')) as $part) {
+    [$k, $val] = explode('=', $part, 2);
+    if ($k === 't') { $timestamp = $val; }
+    if ($k === 'v1') { $v1 = $val; }
+}
 
-## Delivery semantics
+// Replay defence — reject anything older than 5 minutes.
+abort_if(abs(time() - (int) $timestamp) > 300, 400, 'Stale webhook');
 
-- **At-least-once.** Network retries can re-deliver. Use the `id` field to dedupe.
-- **Exponential backoff.** Failed deliveries (non-2xx, timeouts) retry with backoff for ~24 hours, then give up.
-- **Order is not guaranteed.** Two events for the same conversation may arrive out of order. Use the `created_at` field if order matters.
-- **Timeout.** Your endpoint has 5 seconds to respond with any 2xx. Anything slower or non-2xx counts as a delivery failure.
+$expected = hash_hmac('sha256', $timestamp.'.'.$request->getContent(), $signingSecret);
+abort_unless(hash_equals($expected, (string) $v1), 401, 'Bad signature');
+```
+
+</CodeGroup>
+
+## Idempotency
+
+Delivery is **at-least-once** — a retry can re-deliver an event you've already processed. Every delivery of the same event carries the same `X-Keloa-Delivery-Id`, so dedupe on that header: record the IDs you've handled and skip a delivery whose ID you've already seen.
+
+## Retries & auto-disable
+
+Delivery is queued. A non-2xx response or a timeout (10 seconds) is retried up to **5 attempts** with exponential backoff:
+
+| Attempt | Delay after previous |
+| --- | --- |
+| 1 | ≈1 minute |
+| 2 | ≈5 minutes |
+| 3 | ≈30 minutes |
+| 4 | ≈2 hours |
+| 5 | ≈6 hours |
+
+An endpoint that fails **20 deliveries in a row** is automatically **paused**. Fix your receiver, then re-enable the endpoint from its actions menu in the Webhooks tile.
+
+<Note>
+If an endpoint's URL becomes unsafe or unresolvable, Keloa's delivery-time security re-check fails that delivery **without retrying** it.
+</Note>
+
+## Security
+
+- Endpoint URLs must be `https://`. Plain HTTP is rejected.
+- Private, loopback, link-local, and reserved IP addresses are rejected at creation **and** re-checked at delivery time, so an endpoint can't be repointed at internal infrastructure after the fact.
+- Always [verify the signature](#verifying-the-signature) on every payload — never trust an unsigned or unverifiable POST.
+
+## Delivery log
+
+Each endpoint keeps a **delivery log** in the UI showing the most recent deliveries — event type, status, HTTP response code, and attempt count. Use it to spot a silent or failing receiver. Records are retained for **30 days**.
 
 ## Best practices
 
-- **Respond fast.** Acknowledge with 200 immediately, then process the payload async on your side. Don't run heavy work inside the request.
-- **Verify every payload.** Don't trust unsigned/unverifiable POSTs.
-- **Idempotent handlers.** Use the event `id` to skip duplicates.
-- **One endpoint per consumer.** A separate endpoint per system is easier to monitor and pause independently.
-
-## Last delivered
-
-The endpoint list shows `last_delivered_at` per row — useful to spot a silent receiver. If it stops updating, something on your side is rejecting.
-
-## Plan availability
-
-Webhook endpoints are managed in-app today. API-side management lands when the public API ships. Per-plan endpoint and event-rate caps will be detailed on the [pricing page](https://keloa.ai/pricing) at that time.
+- **Respond fast.** Acknowledge with a `2xx` immediately, then process the payload asynchronously. Don't run heavy work inside the request — you have 10 seconds before a delivery is counted as failed.
+- **Verify every payload.** Reject anything that fails signature or timestamp checks.
+- **Idempotent handlers.** Dedupe on `X-Keloa-Delivery-Id`.
+- **One endpoint per consumer.** A separate endpoint per system is easier to monitor, pause, and rotate independently.
 
 ## Related
 
