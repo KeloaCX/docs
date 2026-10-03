@@ -44,6 +44,8 @@ If you want one of the upcoming channels prioritised, click **Notify me** on the
 
 Sidebar → **Settings** → **Channels**. Live channels show a **Connect** or **Set up** button. Coming-soon channels show **Notify me**.
 
+Telegram is the exception: connect it under **Integrations** → **Telegram** (see [Telegram](/channels/telegram)).
+
 Each connected channel shows:
 
 - **Connect / Disconnect** controls
@@ -60,6 +62,8 @@ Each connected channel shows:
 | **Disconnected** | Was connected, now paused. No messages flow. |
 | **Error** | Something broke (expired token, bounced DNS). Click to fix. |
 
+Telegram bots use their own status names (Connected, Needs attention, Token revoked). See [Telegram → Bot status](/channels/telegram#bot-status).
+
 ## Channel limits per plan
 
 | Plan | Channels | Email channels | Email domains | Integrations |
@@ -70,6 +74,10 @@ Each connected channel shows:
 | Scale | Unlimited | Unlimited | Unlimited | Unlimited |
 
 **Channels**, **email channels**, **email domains**, and **integrations** are four separate pools — they do not share a cap. A **channel** is any place customers message you (web widget, email, social). An **email channel** is one email address you reply as; it also counts as a channel. An **email domain** is a verified sending domain. An **integration** is a connected third-party app (Shopify, custom HTTP, Slack, Google Drive) that feeds data or runs actions — see [Core concepts](/concepts#integration). Two email addresses on the same domain is two email channels but one verified domain.
+
+<Note>
+Telegram bots have their own limit (Growth 1, Business 3, Scale unlimited; locked on Starter) and don't count against **Channels** or **Integrations**. See [Telegram](/channels/telegram#prerequisites).
+</Note>
 
 <Note>
 Email is a **Growth+** feature. Starter is widget-only — `email_channels` and `email_domains` are locked on Starter. Upgrade to Growth to add email channels.

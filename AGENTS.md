@@ -14,7 +14,7 @@ Use these Keloa-specific terms exactly. They are wired into the product UI and t
 
 - **Workspace** — the tenant container. Not "project", not "team", not "org".
 - **AI agent** — an LLM-backed responder configured per workspace. Not "bot", not "assistant", not "chatbot".
-- **Channels** — the places messages come in. The two live channels are the **web widget** and **email**. WhatsApp, Instagram, Messenger, and Shopify-as-channel are on the roadmap.
+- **Channels** — the places messages come in. The live channels are the **web widget**, **email** and **Telegram**. WhatsApp, Instagram, Messenger, and Shopify-as-channel are on the roadmap.
 - **Integrations** — third-party data systems the AI calls or syncs from (Shopify is the canonical live integration; custom HTTP endpoints also count).
 - **Knowledge sources** — the four ingestable types: **website crawl**, **text snippet**, **file upload**, **Q&A pairs**. Shopify is a **fifth knowledge source** in the knowledge context only — separate from the Shopify integration that exposes order/product/tracking tools.
 - **Replies** — the user-facing word for what the AI sends. Use this in product copy.

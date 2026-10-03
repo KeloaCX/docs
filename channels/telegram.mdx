@@ -104,17 +104,17 @@ Keloa only handles **private chats**. If someone adds your bot to a group, the b
   </Step>
 
   <Step title="Check the inbox">
-    The panel shows **Message received!** with a link to the conversation. Your AI agent's answer is there too.
+    The panel shows **Message received!** with a link to the conversation. Your AI agent's answer is there too (if an AI agent answers this bot).
   </Step>
 </Steps>
 
 ## What the AI does
 
 - **One AI agent per bot.** The agent you picked under **Answered by** answers every chat with that bot. Change it any time on the bot's card. With **No AI agent**, your team answers every chat.
-- **Greeting on Start.** When a contact taps **Start**, the bot sends the AI agent's greeting: the one shown in the agent editor. It goes out at most once a day per chat and uses no replies.
+- **Greeting on Start.** When a contact taps **Start**, the bot sends the AI agent's greeting: the one shown in the agent editor. It goes out at most once a day per chat and doesn't count toward your plan's replies. With **No AI agent**, or while the AI agent isn't live, no greeting is sent.
 - **The conversation starts when the contact writes.** Tapping **Start** alone doesn't open a conversation in your inbox. Once the contact sends a real message, the conversation appears with a "started the chat" line, the greeting they saw, and their message.
 - **One answer per burst.** When a contact sends several messages in a row, or a photo album, the AI agent waits a few seconds and answers once, to their latest message.
-- **Telegram formatting.** Replies support **bold**, _italic_, `code` and links. Headings and tables are turned into plain text that reads well on a phone.
+- **Telegram formatting.** Replies support **bold**, _italic_, `code` and links. Headings become bold text and tables become simple rows that read well on a phone.
 - **Long answers are split** into several Telegram messages, about a second apart, so they arrive in order.
 - **Commands.** Only `/start` is special. Anything else a contact sends, `/help` included, reaches the AI agent as a normal message.
 
@@ -184,7 +184,7 @@ Each bot's card shows its status:
 | **Needs attention** | Another tool took over the bot's messages, or Telegram can't deliver to Keloa right now. The card says which. |
 | **Token revoked** | The token no longer works. [Replace it](#replace-a-token). |
 
-Keloa checks every bot automatically every few hours. Click **Check connection** on the card to check right away. When the token stops working or another tool takes over the bot, the workspace owners also get an email.
+Keloa checks every bot automatically every few hours. Click **Check connection** on the card to check right away. When the token stops working, another tool takes over the bot, or the bot is moved to another Keloa workspace, the workspace owners also get an email.
 
 If another tool took over the bot, the card offers **Move back to Keloa**. That tool then stops receiving the bot's messages.
 
@@ -203,6 +203,7 @@ The bot itself stays in Telegram, and existing conversations stay in your inbox.
 | The card says **Token revoked** | The token was regenerated in BotFather. [Replace the token](#replace-a-token). |
 | "This bot is connected to another tool" | The bot sends its messages somewhere else. Tick **Move this bot to Keloa** to connect anyway, or stop using the bot in the other tool first. If it happens after connecting, click **Move back to Keloa** on the card. |
 | "This bot is already connected to another Keloa workspace" | Disconnect it in that workspace. If you can't, revoke the token in BotFather (`/mybots` → your bot → **API Token** → **Revoke current token**) and connect again with the new token. |
+| The bot disappeared from Integrations, or you got an email that it moved to another Keloa workspace | Someone connected the bot to another workspace with a new token from BotFather, which disconnects it here. If that wasn't you, revoke the token in BotFather (`/mybots` → your bot → **API Token** → **Revoke current token**) and connect the bot again with the new token. |
 | Messages don't arrive | Click **Check connection** on the bot's card. Make sure the contact wrote to the right `@username` and didn't block the bot. |
 | The AI agent doesn't answer | Check **Answered by** on the bot's card, and that the AI agent is live. Without an AI agent, your team answers. |
 | Someone added the bot to a group | Group chats aren't supported, and the bot leaves the group. To stop group adds, send `/setjoingroups` to BotFather and turn it off for your bot. |
