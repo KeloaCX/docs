@@ -1,0 +1,210 @@
+---
+title: "Telegram"
+description: "Connect a Telegram bot so Telegram chats land in your Keloa inbox."
+---
+
+Telegram has no separate business app. Companies talk to their contacts through a **Telegram bot**: an account you create in Telegram with **@BotFather**. You connect that bot to Keloa, and every private chat with it arrives in your inbox as a conversation. Your AI agent answers, and teammates can step in at any time.
+
+Contacts find your bot by its `@username` or its `t.me` link, and they always send the first message.
+
+## Prerequisites
+
+- A **Telegram account** (the app on your phone or desktop, or Telegram Web).
+- A Keloa workspace on **Growth** or higher, and the **owner** or **admin** role.
+
+| Plan | Telegram bots |
+| --- | --- |
+| Starter | — (locked) |
+| Growth | 1 |
+| Business | 3 |
+| Scale | Unlimited |
+
+Telegram bots have their own limit. They don't count against your plan's channels cap. Bots you already connected keep working after a downgrade; only connecting a new one is blocked.
+
+## Create your Telegram bot
+
+Skip this part if your company already has a Telegram bot.
+
+<Steps>
+  <Step title="Open BotFather">
+    In Telegram, open a chat with [@BotFather](https://t.me/BotFather), Telegram's official tool for creating bots.
+  </Step>
+
+  <Step title="Create the bot">
+    Send `/newbot` and pick a name, for example your company name. Contacts see this name at the top of the chat.
+  </Step>
+
+  <Step title="Pick a username">
+    Pick a username that ends in `bot`, like `acme_support_bot`. It becomes your public link: `t.me/acme_support_bot`.
+  </Step>
+
+  <Step title="Copy the token">
+    BotFather replies with a token: numbers, a colon, then letters. Copy it. You paste it into Keloa in the next section.
+  </Step>
+</Steps>
+
+<Warning>
+The token gives full control of the bot. Treat it like a password: never post it in a chat, an email or a screenshot. Keloa stores it encrypted and never shows it again.
+</Warning>
+
+**Already have a bot?** In BotFather, send `/mybots`, pick your bot and tap **API Token** to see its current token.
+
+Don't send `/token` or tap **Revoke current token** unless you mean to: both create a new token and stop the old one immediately, wherever it runs. If you revoke the token of a connected bot, Keloa stops receiving its messages until you paste the new token under [Replace a token](#replace-a-token).
+
+## Connect Telegram
+
+<Steps>
+  <Step title="Open the integration">
+    Sidebar → **Integrations** → **Telegram** → **Connect**.
+  </Step>
+
+  <Step title="Paste the token">
+    Paste the bot token into **Bot token**. Keloa checks it with Telegram right away.
+  </Step>
+
+  <Step title="Check the preview">
+    Keloa shows the bot it found, with its name and `@username`. Make sure it's the right bot.
+  </Step>
+
+  <Step title="Name it (optional)">
+    **Name in Keloa** is only for your team, for example "Support NL". Contacts always see the bot's own name.
+  </Step>
+
+  <Step title="Pick the AI agent">
+    Under **Answered by**, pick the AI agent that replies to this bot, or **No AI agent (your team answers)**.
+  </Step>
+
+  <Step title="Connect">
+    Click **Connect**. The bot appears in the Telegram panel with its `t.me` link and a QR code.
+  </Step>
+</Steps>
+
+<Note>
+**"This bot is connected to another tool."** A Telegram bot delivers its messages to one place only. If the bot is already used by another tool (a chatbot builder, your own script), Keloa shows where its messages go now. Tick **Move this bot to Keloa** to connect anyway: messages then come to Keloa, and the other tool stops receiving them.
+</Note>
+
+## How contacts reach you
+
+- Share your bot's link, `https://t.me/<username>`, on your website, in emails or on social media. The Telegram panel in Keloa has a **Copy link** button and a QR code for print.
+- Contacts can also search for your bot's `@username` in Telegram.
+- A contact opens the chat, taps **Start** and writes. A bot can't start a chat itself, so the contact always writes first.
+- Telegram has no 24-hour reply window. You and your AI agent can reply to a contact at any time, as long as they haven't blocked the bot.
+
+Keloa only handles **private chats**. If someone adds your bot to a group, the bot leaves the group.
+
+## Test it
+
+<Steps>
+  <Step title="Open the test panel">
+    In **Integrations** → **Telegram**, click **Test it** on your bot.
+  </Step>
+
+  <Step title="Message your bot">
+    Scan the QR code with your phone, or click **Open in Telegram** or **Open Telegram Web**. Tap **Start**, then send a message, for example "Hi".
+  </Step>
+
+  <Step title="Check the inbox">
+    The panel shows **Message received!** with a link to the conversation. Your AI agent's answer is there too.
+  </Step>
+</Steps>
+
+## What the AI does
+
+- **One AI agent per bot.** The agent you picked under **Answered by** answers every chat with that bot. Change it any time on the bot's card. With **No AI agent**, your team answers every chat.
+- **Greeting on Start.** When a contact taps **Start**, the bot sends the AI agent's greeting: the one shown in the agent editor. It goes out at most once a day per chat and uses no replies.
+- **The conversation starts when the contact writes.** Tapping **Start** alone doesn't open a conversation in your inbox. Once the contact sends a real message, the conversation appears with a "started the chat" line, the greeting they saw, and their message.
+- **One answer per burst.** When a contact sends several messages in a row, or a photo album, the AI agent waits a few seconds and answers once, to their latest message.
+- **Telegram formatting.** Replies support **bold**, _italic_, `code` and links. Headings and tables are turned into plain text that reads well on a phone.
+- **Long answers are split** into several Telegram messages, about a second apart, so they arrive in order.
+- **Commands.** Only `/start` is special. Anything else a contact sends, `/help` included, reaches the AI agent as a normal message.
+
+Teammates reply from the inbox as on any other channel. While the AI agent writes, the contact sees "typing…" in Telegram.
+
+## Messages and media
+
+Contacts can send:
+
+| Type | In Keloa |
+| --- | --- |
+| Text | The message, with links |
+| Photos, videos, GIFs, video messages | Shown in the conversation, with the caption |
+| Voice messages and audio | Playable in the conversation |
+| Files | Downloadable from the conversation |
+| Stickers | Shown as an image (animated stickers as their emoji) |
+| Locations and venues | A location card with a map link |
+| Shared contacts | The name and phone number |
+| Polls and dice | A short text line |
+
+- **20 MB per file.** Telegram lets bots download files up to 20 MB. A larger file shows as too large in the conversation; ask the contact to send it another way.
+- **Unsafe file types** (for example programs and scripts) are never stored. The conversation says the file type isn't shown for security reasons.
+- **Edits.** When a contact edits a message, Keloa updates it in the conversation and marks it **Edited**. Hover the label to see the earlier text. The AI agent doesn't answer an edit again.
+- **Replies and forwards.** When a contact replies to an earlier message, Keloa shows the quoted message. Forwarded messages show who they came from.
+- **Outbound is text only.** You and your AI agent send text messages. Sending files or GIFs to Telegram isn't supported.
+- **Flood guard.** If one chat sends more than 30 messages in a minute, Keloa keeps the text but skips the files and the AI answer for those messages, and the conversation waits for a teammate.
+
+## Blocked bots
+
+A contact can block your bot in Telegram. When they do:
+
+- The conversation shows a banner, and the reply box is locked.
+- The AI agent stops answering that conversation.
+- A reply sent just before Keloa learned about the block shows as **Not delivered**.
+
+Once the contact unblocks the bot and writes again, the banner disappears and you can reply as usual.
+
+## Satisfaction surveys
+
+Keloa can ask Telegram contacts to rate the conversation after you resolve it. The contact gets a Telegram message with your question and five faces to tap; each face opens the short rating page. Telegram has no reply window, so any survey delay works.
+
+Turn Telegram surveys on or off in **Settings → Customer satisfaction → Channels**. Results show up in [CSAT](/analytics/csat) next to your other channels.
+
+## Replace a token
+
+Replace the token when you revoked it in BotFather, or when the bot's card says **Token revoked**.
+
+<Steps>
+  <Step title="Get the current token">
+    In BotFather, send `/mybots`, pick your bot and tap **API Token**. Copy the token shown there.
+  </Step>
+
+  <Step title="Paste it in Keloa">
+    In **Integrations** → **Telegram**, click **Replace token** on the bot's card, paste the token and click **Update token**.
+  </Step>
+</Steps>
+
+Messages flow again right away. The token must belong to the same bot: a token of another bot is refused. Replacing a token doesn't count against your plan's bot limit.
+
+## Bot status
+
+Each bot's card shows its status:
+
+| Status | Meaning |
+| --- | --- |
+| **Connected** | Messages flow both ways. |
+| **Needs attention** | Another tool took over the bot's messages, or Telegram can't deliver to Keloa right now. The card says which. |
+| **Token revoked** | The token no longer works. [Replace it](#replace-a-token). |
+
+Keloa checks every bot automatically every few hours. Click **Check connection** on the card to check right away. When the token stops working or another tool takes over the bot, the workspace owners also get an email.
+
+If another tool took over the bot, the card offers **Move back to Keloa**. That tool then stops receiving the bot's messages.
+
+## Disconnecting
+
+**Integrations** → **Telegram** → **Disconnect** on the bot's card. Keloa removes its webhook from Telegram and deletes the stored token, so messages stop arriving immediately.
+
+The bot itself stays in Telegram, and existing conversations stay in your inbox. To delete the bot completely, use `/deletebot` in BotFather.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| "That doesn't look like a bot token" | Copy the full token BotFather sent you: numbers, a colon, then letters, with no spaces. |
+| "Telegram didn't accept this token" | The token was revoked or mistyped. In BotFather, open `/mybots` → your bot → **API Token** and copy the token shown there. |
+| The card says **Token revoked** | The token was regenerated in BotFather. [Replace the token](#replace-a-token). |
+| "This bot is connected to another tool" | The bot sends its messages somewhere else. Tick **Move this bot to Keloa** to connect anyway, or stop using the bot in the other tool first. If it happens after connecting, click **Move back to Keloa** on the card. |
+| "This bot is already connected to another Keloa workspace" | Disconnect it in that workspace. If you can't, revoke the token in BotFather (`/mybots` → your bot → **API Token** → **Revoke current token**) and connect again with the new token. |
+| Messages don't arrive | Click **Check connection** on the bot's card. Make sure the contact wrote to the right `@username` and didn't block the bot. |
+| The AI agent doesn't answer | Check **Answered by** on the bot's card, and that the AI agent is live. Without an AI agent, your team answers. |
+| Someone added the bot to a group | Group chats aren't supported, and the bot leaves the group. To stop group adds, send `/setjoingroups` to BotFather and turn it off for your bot. |
+| A file shows as not shown or too large | Unsafe file types are never stored, and bots can't download files over 20 MB. Ask the contact to send the file another way, for example by email. |
+| Files show "Not downloaded: too many files from this chat" | The chat sent too many messages in a short time. Ask the contact to send the files again in a moment. |
