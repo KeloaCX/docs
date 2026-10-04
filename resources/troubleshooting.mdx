@@ -10,8 +10,19 @@ The fastest path to a working Keloa is catching problems at the connection bound
 1. Open your site in an incognito window.
 2. Right-click → Inspect → Network tab → reload.
 3. Look for `loader.js`. If missing, the script tag didn't run — check it's in the page source before `</body>`.
-4. If `loader.js` is 404, your `data-account` slug is wrong. Find the correct one in **Settings → Widget**.
+4. If `loader.js` is 404, the `agent` value in the loader URL is wrong, or that AI agent is paused. Copy the snippet again from **AI agents → your agent → Channels → Web widget**.
 5. If `loader.js` loads but the bubble doesn't appear, check for CSP headers blocking `app.keloa.ai`.
+6. If the console says `[Keloa] Widget blocked: origin '…' is not in the allowed domains list.`, add that exact host under **AI agents → your agent → Channels → Web widget → Allowed origins**. With identity verification on, the page must also be served over https on the standard port (development hosts such as `localhost` excepted).
+
+## Signed-in users aren't recognised
+
+If your site uses [identity verification](/developers/identity-verification) and users still chat anonymously:
+
+1. Open the browser's **Network** tab and find the request to `/widget/v1/identify`.
+2. A `401` response with `identity_invalid` names a `reason`, such as `expired`, `bad_signature` or `wrong_audience`. Look it up in the [reason code table](/developers/identity-verification#troubleshooting).
+3. `identity_disabled` means verification is **Off**, or the agent has no active secret or allowed origin.
+4. A `429` means too many identify calls. Call `Keloa('identify')` once per page, not on every render.
+5. Check the console for `[Keloa]` warnings about `getToken()`: your token endpoint must return the token, and answer `401` (not a redirect) when the user is signed out.
 
 ## AI isn't replying
 

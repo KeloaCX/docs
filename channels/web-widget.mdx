@@ -9,23 +9,21 @@ The widget is the fastest channel to ship: one snippet on your site and visitors
 
 <Steps>
   <Step title="Grab your snippet">
-    Settings → **Widget** → scroll to **Embed snippet** and click **Copy snippet**. It looks like this (the loader URL points at your environment, the production CDN by default):
+    Go to **AI agents**, open the agent, select the **Channels** tab and click **Copy snippet** under **Embed snippet** in the **Web widget** card. Each AI agent has its own widget and snippet. It looks like this:
 
     ```html
     <script>
     (function(){
-    if(!window.Keloa){window.Keloa={q:[]};window.Keloa.init=function(c){window.Keloa.q.push(c)}}
+    window.Keloa=typeof window.Keloa==='function'?window.Keloa:(function(o){var f=function(){f.q.push(arguments)};f.q=(o&&o.q)||[];f.init=function(c){f.q.push(c)};return f})(window.Keloa);
     var s=document.createElement('script');
-    s.src='https://app.keloa.ai/widget/v1/loader.js';
-    s.setAttribute('data-account','your-workspace-slug');
-    s.setAttribute('data-agent','default');
+    s.src='https://YOUR_WIDGET_HOST/widget/v1/loader.js?agent=YOUR_AGENT_ID';
     if(document.readyState==='complete'){document.body.appendChild(s)}
     else{window.addEventListener('load',function(){document.body.appendChild(s)})}
     })();
     </script>
     ```
 
-    The `data-account` value is your workspace slug. `data-agent` defaults to `default` (your first AI agent); pass an agent name to scope the widget to a specific agent.
+    Always copy the snippet from Keloa: it holds the exact loader URL. The `agent` value in that URL is your agent ID. The first line defines `Keloa(…)`, so your page can call it before the widget has loaded.
   </Step>
 
   <Step title="Paste before &lt;/body&gt;">
@@ -44,39 +42,42 @@ The widget is the fastest channel to ship: one snippet on your site and visitors
 </Steps>
 
 <Tip>
-Don't want to touch your site yet? Click **Open preview** in **Settings → Widget** to launch the widget on a sandboxed host page that mirrors your saved settings.
+Don't want to touch your site yet? The **Live preview** in the agent's **Web widget** card runs the widget on a sandboxed host page that mirrors your saved settings.
 </Tip>
 
 ## Configuration
 
-Everything below lives at **Settings → Widget**. Changes save on click and apply on the next loader fetch (CDN cache 60 seconds).
+Each AI agent has its own widget. Everything below is set per agent: go to **AI agents**, open the agent and select the **Channels** tab. The settings live in the **Web widget** card. Changes save automatically (the card shows **Auto-saving**, then **Saved**) and reach your site on the next loader fetch (CDN cache 60 seconds).
 
-### Look & feel
+### Appearance
 
-- **Theme color** — bubble and header background. Hex.
-- **Launcher position** — `right` (default) or `left`.
-- **Greeting** — fallback intro text used when no intro bubbles are configured.
+- **Brand color** — bubble and header background. Pick a colour or paste a hex value.
+- **Launcher position** — **Right** (default) or **Left**.
+- **Header display name** — the name in the widget header. Falls back to the AI agent's name.
+- **Welcome message** — the greeting shown when no intro bubbles are set. Leave it empty to use the built-in greeting.
+- **Quick questions** — up to 6 chips that visitors can tap on a fresh chat instead of typing. Auto-seeded from your onboarding site scan and editable any time.
+- **Business-hours message** — shown when the team is offline.
 
-### Identity
-
-- **Display name (header)** — overrides the AI agent's name in the widget header. Falls back to the agent name, then the workspace name.
-- **Bot avatar** — comes from the AI agent's avatar (set under **AI agents → edit**), with the brand logo as fallback.
+The widget avatar comes from the agent's **Profile** tab, with the brand logo as fallback.
 
 ### Intro bubbles
 
-Up to 5 short "hello" bubbles shown when the widget opens. If empty, the **Greeting** field is used instead.
+Up to 5 short "hello" bubbles shown when the widget opens. If the list is empty, the **Welcome message** is used instead.
 
-### Suggested questions
+### Privacy policy URL
 
-Up to 6 one-tap chips visitors can pick instead of typing. Auto-seeded from your onboarding site scan and editable any time.
+Optional link in the small footer of the widget. Use it to point at your privacy policy.
 
-### Privacy URL
+### Allowed origins
 
-Optional link rendered in the widget footer. Use it to point at your privacy policy.
+Set per AI agent, under **AI agents → your agent → Channels → Web widget → Allowed origins**. Empty means the widget loads on any site that includes the snippet. Add hosts to restrict it, which helps when a third party copies your snippet onto an unrelated site.
 
-### Origin allowlist
+- Enter a host without `https://`, a port or a path: `www.acme.com`. An exact host matches only itself, so `acme.com` doesn't cover `www.acme.com`.
+- `*.acme.com` matches every subdomain of `acme.com`, but not `acme.com` itself.
+- Only add a wildcard for a domain you control. Keloa refuses wildcards over public suffixes (from the [Public Suffix List](https://publicsuffix.org)) and over known shared-hosting platforms, such as `*.com`, `*.nl`, `*.co.uk`, `*.vercel.app`, `*.github.io` or `*.myshopify.com`. Keloa can't know every hosting platform, so a wildcard it accepts isn't proof that you control every site under it. For a site on a hosting platform, add its exact address (`acme.vercel.app`).
+- A host with non-ASCII letters is saved in its punycode form, which is what browsers send: `*.bücher.de` becomes `*.xn--bcher-kva.de`.
 
-Empty means the widget loads on any site that includes the snippet. Add domains to restrict it. Useful when a third party copies your snippet onto an unrelated site.
+With [identity verification](/developers/identity-verification) on, at least one allowed origin is required, and only https pages of these sites, on the standard https port (443), can show the widget. For development, `localhost`, `127.0.0.1`, `*.test` and `*.localhost` also work over http and on any port.
 
 ### Working hours (Business+)
 
@@ -86,18 +87,17 @@ The hours field is a per-day window with a workspace timezone (`Europe/Amsterdam
 
 ### Proactive triggers (Business+)
 
-Auto-open the widget with a contextual greeting. Fires once per visitor session.
+<Tip>
+Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
+</Tip>
 
-- **After (seconds on page)** — auto-open after the visitor has been on the page for *N* seconds.
-- **Or scroll depth (%)** — auto-open after the visitor scrolls past *N*% of the page.
-- **Or exit intent** — auto-open when the cursor moves to leave the viewport (desktop only).
-- **Proactive message** — the bubble shown when a trigger fires. Leave empty to disable.
-
-The behaviour is gated by the `proactive_triggers` cap (Business and Scale).
+<Note>
+**Coming soon.** Proactive triggers are not yet shipped: the **Web widget** card has no setting for them yet. They will auto-open the widget with a contextual greeting, for example after some time on the page, at a scroll depth or on exit intent.
+</Note>
 
 ### Branding (Business+)
 
-Hide the small "Powered by Keloa" badge in the widget footer. Two-step gate: your plan must include the `widget_unbranded` cap **and** you must explicitly toggle **Hide branding** on.
+Hide the small "Powered by Keloa" badge in the widget footer with the **Branding** switch in the **Web widget** card. Two-step gate: your plan must include the `widget_unbranded` cap **and** you must turn the switch on.
 
 | Plan | Unbranded widget |
 | --- | --- |
@@ -111,48 +111,36 @@ Hide the small "Powered by Keloa" badge in the widget footer. Two-step gate: you
 - The loader script is small, served `async`, and does nothing until the bubble is hovered or clicked.
 - The full widget iframe is lazy-loaded the first time the visitor interacts.
 - A first-party session token is stored in `localStorage` so returning visitors keep their conversation context. No cross-site cookies.
+- Conversations of [signed-in users](/developers/identity-verification) are never stored in the browser; they load from Keloa after the user's token is verified.
 - The public config endpoint (`/widget/v1/config`) is cached for 60 seconds at the edge.
 
 ## What the visitor experiences
 
 | What they see | Where it comes from |
 | --- | --- |
-| Bubble color, position | **Settings → Widget → Look & feel** |
-| Header name | **Display name** (or agent name, or workspace name) |
-| Avatar | **AI agent → Avatar** |
-| Intro bubbles | **Settings → Widget → Intro bubbles** |
-| Suggested questions | **Settings → Widget → Suggested questions** |
+| Bubble color, position | The agent's **Web widget** card → **Appearance** → **Brand color**, **Launcher position** |
+| Header name | The agent's **Web widget** card → **Header display name** (or the agent's name) |
+| Avatar | The agent's **Profile** tab |
+| Intro bubbles | The agent's **Web widget** card → **Intro bubbles** |
+| Quick questions | The agent's **Web widget** card → **Quick questions** |
 | Replies | The AI agent attached to the channel, answering from your knowledge base |
 | Greeting language | Auto-detected from `navigator.language` (EN, NL, DE, FR, ES) |
-| "Powered by Keloa" footer | Hidden on Business+ when **Hide branding** is on |
+| "Powered by Keloa" footer | Hidden on Business+ when the **Branding** switch is on |
 
 ## Advanced
 
-### Identify a logged-in user
+### Identify signed-in users
 
-Tell the widget who the visitor is so the AI can personalise:
+If your site or app has accounts, your backend can sign a short-lived token that tells the widget who the signed-in user is. Keloa verifies it on every request, so nobody can chat as one of your users. Your team sees the user's verified details in the inbox, and their conversations follow them across devices.
 
 ```html
 <script>
-  window.Keloa = window.Keloa || { q: [] };
-  window.Keloa.q.push(['identify', {
-    email: 'tayfun@acme.com',
-    name: 'Tayfun Kayahan',
-    external_id: 'user_123',
-  }]);
+  window.Keloa=typeof window.Keloa==='function'?window.Keloa:(function(o){var f=function(){f.q.push(arguments)};f.q=(o&&o.q)||[];f.init=function(c){f.q.push(c)};return f})(window.Keloa);
+  Keloa('identify', { getToken: () => fetchTokenFromYourBackend() });
 </script>
-<!-- ...followed by the snippet from Settings → Widget -->
 ```
 
-Identification merges with existing contacts by email.
-
-### Pre-fill a message
-
-Open the widget with a drafted message (e.g. from a "Chat about this product" button):
-
-```js
-window.Keloa.q.push(['open', { draft: 'Hi, I have a question about the X-100' }]);
-```
+Keloa only accepts identity in a token signed with your secret: an `identify` call with just an email or name is ignored. See [Identity verification](/developers/identity-verification) for setup, server code samples and security guidance.
 
 ## Plan caps for the widget
 
@@ -169,7 +157,9 @@ See [Billing & plans](/billing/plans) for the full picture.
 
 | Issue | Check |
 | --- | --- |
-| Bubble doesn't appear | Right-click → Inspect → look for `loader.js` in the Network tab. Verify the `data-account` slug matches your workspace. |
+| Bubble doesn't appear | Right-click → Inspect → look for `loader.js` in the Network tab. Verify the `agent` value in the loader URL matches your AI agent. An unknown or paused agent returns `404`. |
+| Widget blocked on your site | The console shows `[Keloa] Widget blocked: origin '…' is not in the allowed domains list.` Add the exact host under **Allowed origins**. With identity verification on, the page must also be served over https on the standard port (development hosts such as `localhost` excepted). |
+| Signed-in users chat anonymously | Check the `reason` in the `401 identity_invalid` response. See [Identity verification troubleshooting](/developers/identity-verification#troubleshooting). |
 | Bubble appears but won't open | A CSP header is blocking the iframe. Allow `app.keloa.ai` (or your widget CDN host) as a frame source. |
-| Messages land but no AI reply | Check that an AI agent exists on the workspace. The widget falls back to the first agent if `data-agent="default"`. |
+| Messages land but no AI reply | Check that the AI agent whose ID is in the loader URL is live, not paused. |
 | Branding toggle is greyed out | You're not on Business or Scale, or your plan was just upgraded and the page hasn't reloaded yet. |

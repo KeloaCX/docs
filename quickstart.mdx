@@ -36,16 +36,14 @@ This guide takes a fresh workspace to a live AI agent answering real questions. 
   </Step>
 
   <Step title="Install the widget on your site">
-    Open **Settings → Widget** and click **Copy snippet**. The snippet is a small async loader that injects `widget/v1/loader.js` once the page is ready:
+    Go to **AI agents**, open your agent, select the **Channels** tab and click **Copy snippet** in the **Web widget** card. The snippet is a small async loader that injects `widget/v1/loader.js` once the page is ready. It looks like this, with your own loader URL and agent ID:
 
     ```html
     <script>
     (function(){
-    if(!window.Keloa){window.Keloa={q:[]};window.Keloa.init=function(c){window.Keloa.q.push(c)}}
+    window.Keloa=typeof window.Keloa==='function'?window.Keloa:(function(o){var f=function(){f.q.push(arguments)};f.q=(o&&o.q)||[];f.init=function(c){f.q.push(c)};return f})(window.Keloa);
     var s=document.createElement('script');
-    s.src='https://app.keloa.ai/widget/v1/loader.js';
-    s.setAttribute('data-account','your-workspace-slug');
-    s.setAttribute('data-agent','default');
+    s.src='https://YOUR_WIDGET_HOST/widget/v1/loader.js?agent=YOUR_AGENT_ID';
     if(document.readyState==='complete'){document.body.appendChild(s)}
     else{window.addEventListener('load',function(){document.body.appendChild(s)})}
     })();
@@ -54,7 +52,7 @@ This guide takes a fresh workspace to a live AI agent answering real questions. 
 
     Paste it before `</body>` on any page. Refresh and a chat bubble appears in the bottom-right (or bottom-left, if you've changed the launcher position).
 
-    <Tip>Test without touching your site: **Settings → Widget → Open preview**.</Tip>
+    <Tip>Test without touching your site: the **Live preview** in the agent's **Web widget** card runs the widget on a sandboxed page.</Tip>
   </Step>
 
   <Step title="Chat with your agent">

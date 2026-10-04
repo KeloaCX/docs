@@ -19,21 +19,40 @@ You can reference dynamic values with `{{...}}`:
 
 | Variable | Renders |
 | --- | --- |
-| `{{contact.first_name}}` | Contact's first name, or "there" if we don't know it |
-| `{{contact.name}}` | Full name |
-| `{{contact.email}}` | Email address |
-| `{{contact.company}}` | Company name, if set |
-| `{{agent.name}}` | You, the replying teammate |
-| `{{workspace.name}}` | Your workspace name |
+| `{{contact.first_name}}` | Contact's first name. Left out when we don't know it |
+| `{{contact.last_name}}` | Contact's last name. Left out when we don't know it |
+| `{{contact.name}}` | Contact's full name |
+| `{{contact.email}}` | Contact's email address. Left out when there is none |
+| `{{contact.phone}}` | Contact's phone number. Left out when there is none |
+| `{{user.first_name}}` | First name of the teammate who sends it |
+| `{{user.name}}` | Name of the teammate who sends it |
+| `{{account.name}}` | Your business name |
+| `{{order.last.id}}` | The customer's latest order number (Shopify or WooCommerce) |
+| `{{contact.custom.<key>}}` | The contact's [custom field](/contacts/contact-profile#custom-fields) with that key. `{{company.custom.<key>}}` and `{{conversation.custom.<key>}}` work the same way |
+
+When a value is missing, the macro leaves it out and tidies the text around it. **Settings → Macros** lists every variable with what happens when it is missing.
 
 Example:
 
 ```text
-Hi {{contact.first_name}} — thanks for reaching out to {{workspace.name}}!
+Hi {{contact.first_name}}, thanks for reaching out to {{account.name}}!
 I've forwarded this to our returns team and we'll get back within 1 business day.
 
-— {{agent.name}}
+{{user.first_name}}
 ```
+
+### Contact details on website conversations
+
+On the web widget, Keloa can't tell who is typing unless your site signs them in with [identity verification](/developers/identity-verification). So on a website conversation a macro only fills in contact details the person chatting is known to own, by the same rules as flow messages:
+
+- `{{contact.email}}` shows the address when the visitor typed it in that conversation (in a message or the contact form) or in the contact form of one of their own earlier conversations your team merged into it, or when it is the verified email your site signed for the signed-in user of that conversation.
+- `{{contact.phone}}` shows the number when the visitor typed it in that conversation, or when your site signed it for the signed-in user of that conversation.
+
+Otherwise the macro leaves it out, as for a contact without one. The AI follows the same rule. This applies when you insert a macro in the composer and to the closing reply sent when a conversation is resolved. Other channels, such as email and WhatsApp, fill in the email address and phone number as usual.
+
+On an anonymous website conversation, a macro only uses what the visitor said in that conversation: the name and company placeholders only show what the visitor gave there (or in the contact form of one of their own earlier conversations your team merged into it), and every `{{contact.custom.<key>}}` and `{{company.custom.<key>}}`, your team's fields included, is left out, because the details on the contact may be someone else's. On a signed-in user's conversation, the name and company are the ones your site signed for that user, and custom fields only show when your site signed them for that user. See [Contact details on website conversations](/flows/messages-and-actions#contact-details-on-website-conversations).
+
+On a *mixed* website conversation, one a merge made before Keloa refused such merges mixed with another person's or another channel's conversation, every `{{ticket.custom.<key>}}` and `{{conversation.custom.<key>}}` is left out: the ticket fields may be that other person's. The same goes for ticket fields filled before such a merge moved a website conversation into an email or other conversation; a field your team fills in after it shows as usual. See [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule).
 
 ## Inserting a macro
 

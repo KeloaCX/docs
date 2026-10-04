@@ -1,0 +1,1006 @@
+---
+title: "Identity verification"
+description: "Let your own backend tell the web widget who a signed-in user is, so nobody can chat as one of your users."
+---
+
+Identity verification connects the **web widget** to the accounts on your own site or app. When someone is signed in there, your backend signs a short-lived token that says who they are. The widget hands that token to Keloa, and Keloa checks the signature on every widget request.
+
+On this page, a **user** is someone with an account on your site or app. In Keloa, each user becomes a [contact](/contacts/overview).
+
+Your team then sees the user's verified details in the **Inbox**, the user's conversations follow them to every device, and your AI agent can safely look up their data.
+
+## Why use it
+
+Without identity verification, everything the widget knows about a visitor comes from the visitor. Anyone can type someone else's email address into a conversation, and a visitor ID in a browser proves nothing about who is typing. Keloa's AI therefore never uses a contact's email address to look up customer data on an anonymous website conversation, whatever address the contact has. The store sections in your team's inbox are different: see [What your team sees](#what-your-team-sees).
+
+With identity verification:
+
+- **Nobody can chat as one of your users.** Keloa only accepts identity that your backend signed with a secret only you and Keloa know. There is no unsigned way to identify a visitor.
+- **Your team knows who they're talking to.** The context drawer shows the user ID, the profile and any extra attributes your site sends.
+- **Conversations follow the user.** A signed-in user sees their own conversations in the widget on every browser and device.
+- **The AI can use the verified email.** Tools that look up contact data by email (Shopify orders, and TRONVoice invoices, quotes and subscriptions) use it on that user's own conversations, and a TRONVoice link your team made from that user's conversation also counts for email written from that verified address.
+
+## How it works
+
+1. A user signs in to your site or app.
+2. Your **server** creates a token for that user: a JSON Web Token (JWT) with their user ID and profile, signed with HS256 and your secret.
+3. Your page passes the token to the widget with `Keloa('identify', { getToken })`: a function that fetches it from your own endpoint. The token is never part of the page's HTML.
+4. The widget sends the token with every request. Keloa verifies the signature, the expiry and the audience, then links the conversation to that user's contact.
+5. When the token expires or Keloa rejects it, the widget calls `getToken()` for a fresh one.
+6. When the user signs out, your page calls `Keloa('logout')`, the widget forgets them in that browser, and your other open tabs reload.
+
+Identity verification is set **per AI agent**. Each agent has its own embed snippet, its own secrets and its own setting.
+
+## Before you start
+
+- **A backend with signed-in users.** The token must be signed on your server. A static site or a page without accounts can't use identity verification.
+- **HTTPS.** With identity verification on, only https pages of your allowed sites, on the standard https port (443), can show the widget. For development, `localhost`, `127.0.0.1`, `*.test` and `*.localhost` also work over http and on any port.
+- **The right role.** Only workspace **owners** and **admins** can create or revoke secrets and change the mode. See [Members & roles](/settings/members-and-roles).
+- **The widget installed.** Your site already loads the embed snippet. See [Web widget](/channels/web-widget).
+
+## Set it up in Keloa
+
+<Steps>
+  <Step title="Open the agent's web widget settings">
+    Go to **AI agents**, open the agent whose widget runs on your site, and select the **Channels** tab. The **Web widget** card holds both **Allowed origins** and **Identity verification**.
+  </Step>
+
+  <Step title="Add your site under Allowed origins">
+    Under **Allowed origins**, click **Add origin** and enter each host that shows the widget, without `https://`, a port or a path. Changes save automatically.
+
+    - `app.acme.com` matches exactly that host. `acme.com` does not cover `www.acme.com`; add both if you need both.
+    - `*.acme.com` matches every subdomain of `acme.com`, but not `acme.com` itself.
+    - Only add a wildcard for a domain you control. Keloa refuses wildcards over public suffixes (from the [Public Suffix List](https://publicsuffix.org)) and over known shared-hosting platforms, such as `*.com`, `*.co.uk`, `*.vercel.app`, `*.github.io` or `*.myshopify.com`. Keloa can't know every hosting platform, so a wildcard it accepts isn't proof that you control every site under it. For a hosted site, add its exact address (`acme.vercel.app`).
+    - A host typed with non-ASCII letters is saved in its punycode form, which is what browsers send: `*.bücher.de` becomes `*.xn--bcher-kva.de`.
+
+    Identity verification needs at least one allowed origin. Once it's on, only these sites can show the widget, and you can't empty the list until you turn verification **Off** again.
+  </Step>
+
+  <Step title="Create a secret">
+    Under **Identity verification**, click **Create secret**. Keloa shows two values once:
+
+    - **Key ID (kid)** — public. It goes in the token header so Keloa knows which secret you used.
+    - **Secret** — private. It starts with `kis_`. Your server uses it, exactly as shown, as the HMAC key.
+
+    <Warning>
+    Keloa shows the secret only once. Copy it, store it in your server's environment or secrets manager, then click **I've stored it**. If you lose it, revoke it and create a new one. Never put the secret in a web page, a mobile app, a front-end bundle or a code repository.
+    </Warning>
+  </Step>
+
+  <Step title="Sign tokens and pass them to the widget">
+    Add the token signing, the token endpoint and the page code from the sections below. Under **How to set it up**, Keloa shows short versions of these samples that already contain your agent ID and key ID.
+
+    All samples call the token endpoint with `POST`, protect it with your framework's CSRF check and return the token as JSON (`{"token": "…"}`). If your endpoint returns another format, make sure `getToken()` reads that format and resolves to the token string.
+  </Step>
+
+  <Step title="Choose who can chat">
+    Under **Signed-in users**, pick a mode:
+
+    | Mode | Behaviour |
+    | --- | --- |
+    | **Off** | Every visitor chats anonymously. Keloa refuses every token. This is the default. |
+    | **Optional** | Signed-in users are verified, others chat anonymously. Use this on public sites with an account area. |
+    | **Required** | Only verified, signed-in users can chat. Use this only where the widget runs behind a login. |
+
+    The **Optional** and **Required** buttons stay unavailable until the agent has a secret and at least one allowed origin. Keloa asks for confirmation before it switches to **Required** or back to **Off**.
+  </Step>
+</Steps>
+
+## Sign the token on your server
+
+The token is a compact JWT signed with HMAC-SHA256 (`HS256`). Every sample below does the same thing:
+
+1. Build the header: `alg` `HS256`, `typ` `JWT` and `kid` set to your key ID.
+2. Build the claims: `user_id`, `aud` (your agent ID), `iat`, `exp` and the profile fields you want to share.
+3. Encode the header and the claims as JSON, then base64url **without padding** (no trailing `=`).
+4. Sign `<header>.<claims>` with your secret and append the base64url signature.
+
+Your agent ID is the `agent` value in your embed snippet's loader URL. Keep the secret, key ID and agent ID in configuration, never in code. Give tokens a short lifetime: 15 to 60 minutes is a good range, and Keloa refuses anything over 24 hours. Never let a token outlive the user's session on your site.
+
+<CodeGroup>
+
+```php PHP
+<?php
+
+// KELOA_IDENTITY_SECRET, KELOA_IDENTITY_KEY_ID and KELOA_AGENT_ID live in your
+// server's environment, never in the browser.
+function keloa_base64url(string $data): string
+{
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+}
+
+function keloa_identity_token(array $user): string
+{
+    $secret = (string) getenv('KELOA_IDENTITY_SECRET');
+    $keyId = (string) getenv('KELOA_IDENTITY_KEY_ID');
+    $agentId = (string) getenv('KELOA_AGENT_ID');
+    if ($secret === '' || $keyId === '' || $agentId === '') {
+        throw new RuntimeException('Keloa identity verification is not configured.');
+    }
+
+    $now = time();
+    $header = ['alg' => 'HS256', 'typ' => 'JWT', 'kid' => $keyId];
+    $claims = [
+        'user_id' => (string) $user['id'],
+        'aud' => $agentId,
+        'iat' => $now,
+        'exp' => $now + 1800, // 30 minutes, never more than 24 hours
+        'email' => $user['email'],
+        'email_verified' => $user['email_verified'] === true, // only when you proved ownership
+        'name' => $user['name'],
+    ];
+
+    $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR;
+    $signingInput = keloa_base64url(json_encode($header, $flags))
+        .'.'.keloa_base64url(json_encode($claims, $flags));
+    $signature = hash_hmac('sha256', $signingInput, $secret, true);
+
+    return $signingInput.'.'.keloa_base64url($signature);
+}
+```
+
+```php Laravel
+<?php
+
+// config/services.php
+//   'keloa' => [
+//       'agent_id' => env('KELOA_AGENT_ID'),
+//       'identity_key_id' => env('KELOA_IDENTITY_KEY_ID'),
+//       'identity_secret' => env('KELOA_IDENTITY_SECRET'),
+//       'identity_ttl' => (int) env('KELOA_IDENTITY_TTL', 1800),
+//       // The loader URL from your embed snippet, without "?agent=…".
+//       'loader_url' => env('KELOA_LOADER_URL'),
+//   ],
+
+namespace App\Services\Keloa;
+
+use App\Models\User;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use RuntimeException;
+use Throwable;
+
+class KeloaIdentityToken
+{
+    /** Keloa refuses tokens that live longer than a day. */
+    private const MAX_TTL_SECONDS = 86400;
+
+    public static function isConfigured(): bool
+    {
+        return filled(config('services.keloa.identity_secret'))
+            && filled(config('services.keloa.identity_key_id'))
+            && filled(config('services.keloa.agent_id'));
+    }
+
+    /**
+     * A token for the user, or null when there is no user or signing fails.
+     * Never throws, so a missing setting can't break your pages: the widget
+     * just stays anonymous.
+     */
+    public function tokenIfAllowed(?User $user): ?string
+    {
+        if ($user === null || ! static::isConfigured()) {
+            return null;
+        }
+
+        try {
+            return $this->tokenFor($user);
+        } catch (Throwable $e) {
+            report($e);
+
+            return null;
+        }
+    }
+
+    public function tokenFor(User $user): string
+    {
+        if (! static::isConfigured()) {
+            throw new RuntimeException('Keloa identity verification is not configured.');
+        }
+
+        $now = now()->getTimestamp();
+
+        $claims = [
+            'user_id' => (string) $user->getKey(),
+            'aud' => (string) config('services.keloa.agent_id'),
+            'iat' => $now,
+            'exp' => $now + $this->ttl(),
+            'email' => $user->email,
+            // Only true for an address the user confirmed. This is only correct if
+            // your app clears email_verified_at whenever the email changes: see
+            // "When users change their email" below.
+            'email_verified' => $user instanceof MustVerifyEmail && $user->hasVerifiedEmail(),
+            'name' => $user->name,
+            'language' => app()->getLocale(),
+            // Optional: 'company' => ['id' => (string) $user->team_id, 'name' => $user->team?->name],
+            // Optional: 'attributes' => ['plan' => $user->plan],
+        ];
+
+        $header = ['alg' => 'HS256', 'typ' => 'JWT', 'kid' => (string) config('services.keloa.identity_key_id')];
+        $signingInput = $this->encode($header).'.'.$this->encode($claims);
+        $signature = hash_hmac('sha256', $signingInput, (string) config('services.keloa.identity_secret'), true);
+
+        return $signingInput.'.'.$this->base64Url($signature);
+    }
+
+    /** Never longer than the user's session, nor than the day Keloa accepts. */
+    private function ttl(): int
+    {
+        $sessionSeconds = max((int) config('session.lifetime', 120), 1) * 60;
+
+        return max(60, min((int) config('services.keloa.identity_ttl', 1800), $sessionSeconds, self::MAX_TTL_SECONDS));
+    }
+
+    private function encode(array $data): string
+    {
+        return $this->base64Url(json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR));
+    }
+
+    private function base64Url(string $value): string
+    {
+        return rtrim(strtr(base64_encode($value), '+/', '-_'), '=');
+    }
+}
+```
+
+```js Node.js
+import { createHmac } from 'node:crypto';
+
+// KELOA_IDENTITY_SECRET stays on your server, never in the browser.
+const b64url = (value) => Buffer.from(value).toString('base64url'); // no padding
+
+export function keloaIdentityToken(user) {
+  const { KELOA_IDENTITY_SECRET, KELOA_IDENTITY_KEY_ID, KELOA_AGENT_ID } = process.env;
+  if (!KELOA_IDENTITY_SECRET || !KELOA_IDENTITY_KEY_ID || !KELOA_AGENT_ID) {
+    throw new Error('Keloa identity verification is not configured.');
+  }
+
+  const now = Math.floor(Date.now() / 1000);
+  const header = { alg: 'HS256', typ: 'JWT', kid: KELOA_IDENTITY_KEY_ID };
+  const claims = {
+    user_id: String(user.id),
+    aud: KELOA_AGENT_ID,
+    iat: now,
+    exp: now + 30 * 60, // 30 minutes, never more than 24 hours
+    email: user.email,
+    email_verified: user.emailVerified === true,
+    name: user.name,
+  };
+
+  const input = `${b64url(JSON.stringify(header))}.${b64url(JSON.stringify(claims))}`;
+  const signature = createHmac('sha256', KELOA_IDENTITY_SECRET).update(input).digest('base64url');
+
+  return `${input}.${signature}`;
+}
+```
+
+```python Python
+import base64
+import hashlib
+import hmac
+import json
+import os
+import time
+
+
+def _b64url(data: bytes) -> str:
+    return base64.urlsafe_b64encode(data).rstrip(b"=").decode()  # no padding
+
+
+def keloa_identity_token(user) -> str:
+    # On your server only, never in the browser.
+    secret = os.environ["KELOA_IDENTITY_SECRET"]
+    key_id = os.environ["KELOA_IDENTITY_KEY_ID"]
+    agent_id = os.environ["KELOA_AGENT_ID"]
+
+    now = int(time.time())
+    header = {"alg": "HS256", "typ": "JWT", "kid": key_id}
+    claims = {
+        "user_id": str(user.id),
+        "aud": agent_id,
+        "iat": now,
+        "exp": now + 30 * 60,  # 30 minutes, never more than 24 hours
+        "email": user.email,
+        "email_verified": user.email_verified is True,
+        "name": user.name,
+    }
+
+    signing_input = ".".join(
+        _b64url(json.dumps(part, separators=(",", ":")).encode()) for part in (header, claims)
+    )
+    signature = hmac.new(secret.encode(), signing_input.encode(), hashlib.sha256).digest()
+
+    return signing_input + "." + _b64url(signature)
+```
+
+```ruby Ruby
+require "base64" # Ruby 3.4 and later: add gem "base64" to your Gemfile
+require "json"
+require "openssl"
+
+module KeloaIdentity
+  module_function
+
+  def b64url(data)
+    Base64.urlsafe_encode64(data, padding: false)
+  end
+
+  # KELOA_IDENTITY_SECRET stays on your server, never in the browser.
+  def token_for(user)
+    secret = ENV.fetch("KELOA_IDENTITY_SECRET")
+    key_id = ENV.fetch("KELOA_IDENTITY_KEY_ID")
+    agent_id = ENV.fetch("KELOA_AGENT_ID")
+
+    now = Time.now.to_i
+    header = { alg: "HS256", typ: "JWT", kid: key_id }
+    claims = {
+      user_id: user.id.to_s,
+      aud: agent_id,
+      iat: now,
+      exp: now + 30 * 60, # 30 minutes, never more than 24 hours
+      email: user.email,
+      email_verified: user.email_verified == true,
+      name: user.name
+    }
+
+    signing_input = "#{b64url(header.to_json)}.#{b64url(claims.to_json)}"
+    signature = OpenSSL::HMAC.digest("SHA256", secret, signing_input)
+
+    "#{signing_input}.#{b64url(signature)}"
+  end
+end
+```
+
+```go Go
+package keloa
+
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/json"
+	"errors"
+	"os"
+	"strconv"
+	"time"
+)
+
+type User struct {
+	ID            int64
+	Email         string
+	EmailVerified bool
+	Name          string
+}
+
+func b64url(data []byte) string {
+	return base64.RawURLEncoding.EncodeToString(data) // no padding
+}
+
+// IdentityToken signs a Keloa identity token. The secret stays on your server.
+func IdentityToken(user User) (string, error) {
+	secret := os.Getenv("KELOA_IDENTITY_SECRET")
+	keyID := os.Getenv("KELOA_IDENTITY_KEY_ID")
+	agentID := os.Getenv("KELOA_AGENT_ID")
+	if secret == "" || keyID == "" || agentID == "" {
+		return "", errors.New("keloa identity verification is not configured")
+	}
+
+	now := time.Now().Unix()
+	header, err := json.Marshal(map[string]string{"alg": "HS256", "typ": "JWT", "kid": keyID})
+	if err != nil {
+		return "", err
+	}
+	claims, err := json.Marshal(map[string]any{
+		"user_id":        strconv.FormatInt(user.ID, 10),
+		"aud":            agentID,
+		"iat":            now,
+		"exp":            now + 30*60, // 30 minutes, never more than 24 hours
+		"email":          user.Email,
+		"email_verified": user.EmailVerified,
+		"name":           user.Name,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	input := b64url(header) + "." + b64url(claims)
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(input))
+
+	return input + "." + b64url(mac.Sum(nil)), nil
+}
+```
+
+</CodeGroup>
+
+<Note>
+Use the secret as a plain string, including its `kis_` prefix. Don't hex-decode or base64-decode it before signing.
+</Note>
+
+### When users change their email
+
+`email_verified` must be `false` for an address the user hasn't confirmed, including a new address right after they change it. The Laravel sample above signs `true` only when your `User` model implements `Illuminate\Contracts\Auth\MustVerifyEmail` and `email_verified_at` is set, so it is only correct if your app clears `email_verified_at` whenever the email changes. Whether it does depends on your own code:
+
+- Breeze's `ProfileController` and the current Laravel starter kits clear it on every email change.
+- Fortify's and Jetstream's `UpdateUserProfileInformation` action only clears it when your `User` implements `MustVerifyEmail`. Jetstream's default `User` doesn't.
+- Custom profile forms, admin tools, imports, seeders and social sign-in code can set `email_verified_at` or leave it in place.
+
+Check your own flow: change a test user's email and make sure `email_verified_at` is empty until they click the confirmation link sent to the new address. In any framework, also require the user's **current password** to change their email. Otherwise anyone at a signed-in browser can switch the account to an address they control, confirm it and take the account over, including the user's conversations in the widget.
+
+### Add a token endpoint
+
+The widget gets every token from this endpoint: once when a signed-in page loads, and again whenever the current token expires or Keloa rejects it. Give it an endpoint on your own site that:
+
+- only answers a **signed-in** session, and answers `401` (not a redirect to your login page) otherwise;
+- accepts `POST` with your framework's **CSRF protection**, so only your own pages can call it;
+- sends no CORS headers, and stays out of any CORS configuration that reflects the request's origin with credentials;
+- is rate limited, for example to 30 requests per minute per user;
+- returns the token as JSON (`{"token": "…"}`) with `Cache-Control: no-store, private`;
+- doesn't keep an idle session alive: while a signed-in chat is open, the widget calls it in the background whenever its token expires, so these calls must not count as user activity or extend the session, and the endpoint answers `401` once the user has been idle longer than your timeout.
+
+This endpoint is the only place a token ever leaves your server: never render one into a page.
+
+<CodeGroup>
+
+```php Laravel
+<?php
+
+// routes/web.php (the web group gives you the session and CSRF protection)
+Route::post('/keloa/identity-token', KeloaIdentityTokenController::class)
+    ->middleware(['auth', 'throttle:30,1']) // a JSON request from a guest gets 401, not a redirect
+    ->name('keloa.identity-token');
+
+// app/Http/Controllers/KeloaIdentityTokenController.php
+namespace App\Http\Controllers;
+
+use App\Services\Keloa\KeloaIdentityToken;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class KeloaIdentityTokenController extends Controller
+{
+    public function __invoke(Request $request, KeloaIdentityToken $tokens): JsonResponse
+    {
+        $token = $tokens->tokenIfAllowed($request->user());
+        abort_if($token === null, 503);
+
+        return response()
+            ->json(['token' => $token])
+            ->header('Cache-Control', 'no-store, private');
+    }
+}
+```
+
+```js Express
+// Mount this behind your session middleware and your CSRF middleware.
+app.post('/keloa/identity-token', (req, res) => {
+  res.set('Cache-Control', 'no-store, private');
+  if (!req.user) {
+    return res.status(401).json({ error: 'unauthenticated' });
+  }
+  res.json({ token: keloaIdentityToken(req.user) });
+});
+```
+
+```python Flask
+from flask import jsonify
+from flask_login import current_user
+
+
+@app.post("/keloa/identity-token")  # protected by Flask-WTF's CSRFProtect
+def keloa_identity_token_endpoint():
+    if not current_user.is_authenticated:
+        response = jsonify(error="unauthenticated")
+        response.status_code = 401
+    else:
+        response = jsonify(token=keloa_identity_token(current_user))
+    response.headers["Cache-Control"] = "no-store, private"
+    return response
+```
+
+```ruby Rails
+# config/routes.rb
+#   post "/keloa/identity-token", to: "keloa_identity_tokens#create"
+
+class KeloaIdentityTokensController < ApplicationController
+  # ApplicationController's protect_from_forgery checks the X-CSRF-Token header.
+  def create
+    response.headers["Cache-Control"] = "no-store, private"
+    return head :unauthorized unless current_user
+
+    render json: { token: KeloaIdentity.token_for(current_user) }
+  end
+end
+```
+
+```go Go
+// Wrap this handler in your CSRF middleware (for example gorilla/csrf).
+func IdentityTokenHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control", "no-store, private")
+	if r.Method != http.MethodPost {
+		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	user, ok := currentUser(r) // your own session lookup
+	if !ok {
+		http.Error(w, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	token, err := keloa.IdentityToken(user)
+	if err != nil {
+		http.Error(w, "unavailable", http.StatusServiceUnavailable)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"token": token})
+}
+```
+
+</CodeGroup>
+
+<Note>
+**Idle timeouts.** Most frameworks renew the session on every request, this endpoint's included, so a tab with the chat open would keep an idle user signed in. If you sign users out after a period of inactivity, keep that timer yourself: record the time of the user's last request in the session on every route except this endpoint, and have this endpoint end the session and answer `401` once that time is older than your timeout. In Laravel, also keep this route from saving the session back (its `StartSession` renews the stored session and its cookie), so a refresh never moves the session's own expiry either.
+</Note>
+
+## Hand the token to the widget
+
+Put this on every page where a user is signed in. It can go before or after your embed snippet: the first line is the same small stub your snippet starts with, so `Keloa(…)` works before the widget has loaded.
+
+```html
+<script>
+  window.Keloa=typeof window.Keloa==='function'?window.Keloa:(function(o){var f=function(){f.q.push(arguments)};f.q=(o&&o.q)||[];f.init=function(c){f.q.push(c)};return f})(window.Keloa);
+
+  Keloa('identify', {
+    // Called right away, and again whenever the token expires or is rejected.
+    getToken: function () {
+      var csrf = document.querySelector('meta[name="csrf-token"]');
+      return fetch('/keloa/identity-token', {
+        method: 'POST',
+        credentials: 'same-origin',
+        cache: 'no-store',
+        headers: { Accept: 'application/json', 'X-CSRF-Token': csrf ? csrf.content : '' }
+      }).then(function (response) {
+        var type = response.headers.get('Content-Type') || '';
+        if (!response.ok || response.redirected || type.indexOf('application/json') === -1) throw new Error('Not signed in');
+        return response.json();
+      }).then(function (body) {
+        if (!body || typeof body.token !== 'string' || body.token === '') throw new Error('No token');
+        return body.token;
+      });
+    }
+  });
+</script>
+```
+
+Adjust where the CSRF value comes from to your framework. Laravel and Rails read it from the `csrf-token` meta tag, as above (header names are case-insensitive, so `X-CSRF-Token` works for both). Django reads it from the `csrftoken` cookie and expects it in the `X-CSRFToken` header.
+
+<Warning>
+**Never render a token into the page.** Pass `getToken` only, so the token only ever travels in your token endpoint's response. Browsers and frameworks bring back earlier pages without asking your server: the back/forward cache, the copies Livewire `wire:navigate`, Turbo Drive and other single-page navigation keep in memory, a disk cache, a CDN or a full-page cache. A token written into such a page would sign the widget in again on **Back**, even after the user signed out. With `getToken` alone, a restored page asks your endpoint, which answers `401` (or a CSRF error) once the session is gone, and the widget ends the signed-in session.
+</Warning>
+
+### When the user signs out
+
+Call `Keloa('logout')` whenever the user signs out. The widget stops showing the signed-in user's conversations, clears what it kept in that browser and starts a new anonymous visitor. The conversations stay open in your inbox.
+
+`Keloa('logout')` only acts in the browser tab that calls it, and it doesn't invalidate tokens on Keloa's side: a token your backend already issued stays valid until its `exp`. So also tell your other open tabs, and let them reload. A reloaded tab is rendered by your server as signed out, so it shows neither the widget's signed-in conversations nor your own app's private pages. Put this on every page, signed in or not, and call `keloaSignOut()` when the user signs out:
+
+```html
+<script>
+  window.Keloa=typeof window.Keloa==='function'?window.Keloa:(function(o){var f=function(){f.q.push(arguments)};f.q=(o&&o.q)||[];f.init=function(c){f.q.push(c)};return f})(window.Keloa);
+
+  (function () {
+    if (window.keloaSignOut) return; // once per tab, also when the script runs again
+    var channel = null;
+    try { channel = new BroadcastChannel('keloa-identity'); } catch (e) { channel = null; }
+    var reload = function () { window.Keloa('logout'); window.location.reload(); };
+
+    // Another tab signed out: forget the user here too, and reload this tab.
+    if (channel) { channel.onmessage = function (e) { if (e.data === 'logout') { reload(); } }; }
+    window.addEventListener('storage', function (e) { if (e.key === 'keloa-logout') { reload(); } });
+
+    // This tab signs out: forget the user, then tell every other tab.
+    window.keloaSignOut = function () {
+      window.Keloa('logout');
+      if (channel) { channel.postMessage('logout'); return; }
+      try { localStorage.setItem('keloa-logout', String(Date.now())); } catch (e) {}
+    };
+  })();
+</script>
+```
+
+Where to call `keloaSignOut()`:
+
+- **Sign-out with a full page load** (a form `POST` and a redirect): call it on the page the user lands on. Flash a value on the redirect, for example `keloa_logout`, and only call it when that value is present.
+- **Single-page apps** (React, Vue, Inertia, Livewire `wire:navigate`, Turbo): always call it when the user signs out, right after your sign-out request succeeds. The widget lives on across page swaps, so nothing else tells it. Do this even when your sign-out also loads a new page.
+
+Each open tab is also covered when its token runs out: once the session is gone, `getToken()` gets `401` and the widget ends the signed-in session. Keep tokens short-lived to bound what a tab that missed the message can do, and revoke the secret if you need to cut off every token at once (see [Rotate or revoke a secret](#rotate-or-revoke-a-secret)).
+
+### Laravel Blade partial
+
+A complete partial for a Laravel layout, built on the `KeloaIdentityToken` class and the endpoint above. It:
+
+- identifies signed-in users with `getToken` alone, so no token is ever part of the HTML;
+- signs the widget out when the user signs out, and reloads every other open tab that showed a signed-in page;
+- reloads a page the browser restores from its back/forward cache after it identified someone;
+- loads the widget.
+
+It renders nothing until `KELOA_AGENT_ID` and `KELOA_LOADER_URL` are set, and the widget stays anonymous if signing fails. The script runs again on every Livewire `wire:navigate` or Turbo page swap, which is how it notices that the session is gone.
+
+```blade
+{{-- resources/views/partials/keloa-widget.blade.php --}}
+@if (config('services.keloa.agent_id') && config('services.keloa.loader_url'))
+@php
+    $keloaSignedIn = auth()->check() && \App\Services\Keloa\KeloaIdentityToken::isConfigured();
+    $keloaRefreshUrl = route('keloa.identity-token', absolute: false);
+    $keloaLoaderUrl = config('services.keloa.loader_url').'?agent='.urlencode((string) config('services.keloa.agent_id'));
+@endphp
+<script>
+    (function () {
+        window.Keloa=typeof window.Keloa==='function'?window.Keloa:(function(o){var f=function(){f.q.push(arguments)};f.q=(o&&o.q)||[];f.init=function(c){f.q.push(c)};return f})(window.Keloa);
+
+        @auth
+        window.__keloaEverSignedIn = true;
+        @endauth
+
+        // Once per tab: when the user signs out in any tab, forget them here and
+        // reload, and never let a back/forward-cache restore revive a signed-in page.
+        if (!window.__keloaSignOut) {
+            var channel = null;
+            try { channel = new BroadcastChannel('keloa-identity'); } catch (e) { channel = null; }
+            var forget = function () { window.__keloaIdentified = false; window.Keloa('logout'); };
+            // A tab that showed a signed-in page reloads, which also drops the copies
+            // of earlier pages that Livewire or Turbo keep in memory for Back.
+            var reload = function () { forget(); if (window.__keloaEverSignedIn) { window.location.reload(); } };
+            window.__keloaSignOut = function () {
+                forget();
+                if (channel) { channel.postMessage('logout'); return; }
+                try { localStorage.setItem('keloa-logout', String(Date.now())); } catch (e) {}
+            };
+            if (channel) { channel.onmessage = function (e) { if (e.data === 'logout') { reload(); } }; }
+            window.addEventListener('storage', function (e) { if (e.key === 'keloa-logout') { reload(); } });
+            // Sticky: sign-out clears __keloaIdentified before the page is cached.
+            window.addEventListener('pageshow', function (e) { if (e.persisted && window.__keloaEverIdentified) { window.location.reload(); } });
+        }
+
+        @if (session('keloa_logout'))
+        window.__keloaSignOut();
+        @endif
+
+        @if ($keloaSignedIn)
+        window.__keloaIdentified = true;
+        window.__keloaEverIdentified = true;
+        window.Keloa('identify', {
+            // The only way the token reaches the page: never render it into the HTML.
+            getToken: function () {
+                var csrf = document.querySelector('meta[name="csrf-token"]');
+                return fetch(@json($keloaRefreshUrl), {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    cache: 'no-store',
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': csrf ? csrf.getAttribute('content') : '' }
+                }).then(function (r) {
+                    var type = r.headers.get('Content-Type') || '';
+                    if (!r.ok || r.redirected || type.indexOf('application/json') === -1) { throw new Error('Keloa token refresh failed'); }
+                    return r.json();
+                }).then(function (body) {
+                    if (!body || typeof body.token !== 'string' || body.token === '') { throw new Error('Keloa token refresh failed'); }
+                    return body.token;
+                });
+            }
+        });
+        @else
+        // The session behind an earlier identify in this tab is gone (the user
+        // signed out in a single-page app, or it expired): sign out everywhere.
+        if (window.__keloaIdentified) { window.__keloaSignOut(); }
+        @endif
+
+        var s = document.createElement('script');
+        s.src = @json($keloaLoaderUrl);
+        if (document.readyState === 'complete') { document.body.appendChild(s); }
+        else { window.addEventListener('load', function () { document.body.appendChild(s); }); }
+    })();
+</script>
+@endif
+```
+
+Flash the sign-out for the next page, so the partial calls `Keloa('logout')` there and reloads your other tabs:
+
+```php
+Auth::guard('web')->logout();
+$request->session()->invalidate();
+$request->session()->regenerateToken();
+
+return redirect('/')->with('keloa_logout', true);
+```
+
+A Livewire `wire:navigate` sign-out that never flashes is covered too: the partial runs again on the next page, sees that the session is gone and signs out everywhere. An Inertia app renders the partial once, in its root view, and never runs it again on page visits, so call `window.__keloaSignOut()` from your sign-out handler, right after the sign-out request succeeds.
+
+<Note>
+The browser can still show earlier pages of your own app on **Back** after a sign-out, from its back/forward cache or from a single-page framework's memory. That doesn't sign the widget back in: the restored page only has `getToken`, which gets `401`. To keep your own pages out of the browser's disk cache, send `Cache-Control: no-store, private` on pages for signed-in users.
+</Note>
+
+## Claims reference
+
+### Header
+
+| Field | Required | Rules |
+| --- | --- | --- |
+| `alg` | Yes | Exactly `HS256`. Any other algorithm, including `none`, is refused. |
+| `typ` | No | When present, `JWT`. |
+| `kid` | Recommended | The **Key ID (kid)** of the secret you signed with. Without it, Keloa tries each active secret of the agent. |
+| `crit` | — | Not supported. A token with a `crit` header is refused. |
+
+### Claims
+
+| Claim | Required | Type | Rules |
+| --- | --- | --- | --- |
+| `user_id` (or `sub`) | Yes | String or integer | Your stable, unique ID for the user. Up to 191 characters, no leading or trailing spaces, no control characters, Unicode in NFC form. Matched exactly: `Abc` and `abc` are two users; `9` and `"9"` are one. |
+| `iat` | Yes | Number (seconds) | When you issued the token. |
+| `exp` | Yes | Number (seconds) | When the token expires. Must be after `iat` and at most 24 hours later. Keep it to 15–60 minutes. |
+| `nbf` | No | Number (seconds) | The token is not valid before this time. |
+| `aud` | Recommended | String or array | Your agent ID. When present, it must contain the agent ID, so a token for one agent never works on another. |
+| `email` | No | String | A valid address, up to 255 characters. Stored in lowercase. |
+| `email_verified` | No | Boolean | `true` only when your site proved the user owns `email`. Any other value, including the string `"true"`, counts as not verified. See the warning below. |
+| `name` | No | String | Up to 120 characters. |
+| `first_name`, `last_name` | No | String | Used when `name` is absent. Up to 80 characters each. |
+| `phone` | No | String | 3 to 40 characters. It starts with `+` or a digit, followed by digits, spaces, brackets, dots or dashes. `+31 20 123 4567` works; `(020) 123 4567` is dropped. |
+| `language` (or `locale`) | No | String | A language tag such as `nl` or `en-GB`. Keloa keeps the language part (`nl`, `en`). |
+| `company` | No | String or object | A company name, or `{ "id": "…", "name": "…" }`. A company needs a name: an object with only an `id` is ignored. The `id` is up to 191 characters, the name up to 120. |
+| `attributes` (or `custom_attributes`) | No | Object | Up to 30 keys; keys beyond the 30th are ignored. A key is up to 40 characters of letters, digits, `_`, `.` and `-`, and starts with a letter, digit or `_` (`.plan` and `-plan` are skipped). Values are strings (cut to 500 characters), numbers, booleans or `null`; nested objects and arrays are skipped. |
+
+The whole token can be at most 8,192 characters. A missing or invalid required claim rejects the token.
+
+Keloa trims and cleans the optional profile claims (`email`, `name`, `first_name`, `last_name`, `phone`, `language`, `company` and the attributes):
+
+- Text that is too long is cut to the limit: a name, company or attribute string is shortened, not dropped.
+- A value that is invalid, such as an `email` that isn't a valid address or is longer than 255 characters, or a `phone` in the wrong format, is dropped and never stored. The rest of the token still counts.
+- Control characters and invisible formatting characters in text are replaced with a space, and repeated spaces are collapsed.
+
+A few optional claims reject the whole token when they're invalid: an `nbf` that isn't a number, a `typ` other than `JWT` (both `malformed`) and an `aud` without this agent's ID (`wrong_audience`). Claims nested more than 8 levels deep, for example deeply nested attribute values, also reject the token as `malformed`.
+
+<Warning>
+**Send `email_verified: true` only for an address the user proved they own**, for example by clicking a confirmation link. If you send `true` for an address nobody confirmed, anyone who signs up on your site with someone else's email can join that person's existing contact in Keloa, and get their Shopify orders and TRONVoice invoices through the AI. Send `false` for an address from a social or OAuth sign-in that didn't confirm it, for an address a teammate or admin typed in, and for a changed address until the user confirms it.
+</Warning>
+
+### How Keloa uses the claims
+
+- **Contact.** The first time Keloa sees a user, it joins an existing contact only when `email_verified` is `true` and the address exactly matches a contact email Keloa already trusts, and that contact doesn't already belong to another signed-in user or to an anonymous website visitor. Otherwise it creates a new contact. Your team can still merge the two contacts later.
+- **Profile sync.** On later visits, Keloa fills empty fields and updates a field when your site's value changed since the last sync. A change a teammate made stays until your site sends a different value.
+- **Email.** A verified address becomes the contact's email when the contact has none. It also replaces an address the visitor typed into the conversation (which Keloa never trusted), unless another signed-in user shares the contact, and it replaces the address this user's own token verified before when your site sends a new verified one. Keloa never replaces an address your team entered or one that arrived by email. An address sent without `email_verified: true` only fills an empty email, is not trusted and never replaces an address.
+- **Company.** A company needs a name. With an `id`, users with the same `id` share one company that Keloa created for that ID from this agent. With only a name, Keloa creates a company for that user alone. Keloa never joins a company your team created, or any existing company by name.
+- **Attributes.** They appear in the **Verified user** block in the inbox. A key that matches the key of a contact [custom field](/contacts/contact-profile#custom-fields) fills that field. `null` never clears a value. When several signed-in users share a contact, the AI and macros on a website conversation only use a synced field when that conversation's own user sent that value.
+
+<Warning>
+Only send attributes your team may see. Never send passwords, tokens, payment or bank details, or other sensitive data.
+</Warning>
+
+## JavaScript API reference
+
+Every call goes through the `Keloa` function. Calls made before the widget loads are queued by the stub and run in order once it loads.
+
+| Call | What it does |
+| --- | --- |
+| `Keloa('identify', { getToken })` | Identifies the signed-in user. A new call replaces the previous user. |
+| `Keloa('logout')` | Forgets the signed-in user in this browser tab and starts a new anonymous visitor. Tokens already issued stay valid until they expire. |
+| `Keloa('update', { … })` | Alias of `identify`. |
+| `Keloa('shutdown')` | Alias of `logout`. |
+| `Keloa.init({ identity_token, getIdentityToken })` | Older form from earlier snippets. Works the same as `identify`. |
+
+### `identify` options
+
+| Option | Type | Description |
+| --- | --- | --- |
+| `getToken` | `() => string \| Promise<string>` | Returns a fresh token from your backend. The widget calls it right away, and again whenever Keloa rejects the current token or it expires. |
+| `token` | String | Supported for older installs only. Don't use it: a token rendered into a page comes back whenever that page is restored from a cache, also after the user signed out. |
+
+`getToken()` must resolve to the token string. When it rejects, resolves to nothing or to an object, returns text that isn't a token (for example your login page), or takes longer than 10 seconds, the widget ends the signed-in session. The widget calls it at most 3 times per minute; if Keloa keeps rejecting the tokens it returns, the widget stops asking and warns in the browser console.
+
+<Note>
+The widget never puts the token in a URL or in browser storage, and only sends it to Keloa's own origin.
+</Note>
+
+## Security model
+
+### What Keloa guarantees
+
+- **Only signed identity counts.** Keloa accepts identity only from a token signed with one of the agent's active secrets. There is no unsigned identify call; `Keloa('identify')` without a token does nothing.
+- **Every request is checked.** The token travels with every widget request, and Keloa verifies the signature, expiry and audience each time.
+- **A rejected token is never downgraded.** A token that fails verification is never treated as an anonymous visitor. Keloa answers `401` with a reason code and the widget asks your page for a fresh token.
+- **One agent, one set of users.** Secrets belong to one agent, and Keloa keys each user on the agent plus the user ID. A token for one agent can never speak for another agent's users.
+- **Conversations stay with their owner.** A signed-in user's conversations are only visible to that user. Anonymous visitors can never read them, and an anonymous visitor only reaches the conversations they started in that browser, even after a teammate merges contacts. The one exception is a website conversation from before this release, when Keloa didn't yet record which browser started a conversation: it is open to every visitor on its contact, so after a contact merge another visitor's browser can open it, until your team merges it with a newer conversation of the visitor who wrote it, which ties it to that visitor (see [Identity matching and merging](/contacts/overview#identity-matching-and-merging)). A website conversation only merges with conversations of the same visitor or the same signed-in user: Keloa refuses to merge it with anyone else's conversation or with another channel's, so another person's messages, subject and tags never reach it. A website conversation that a merge made before that rule mixed with another person's or another channel's conversation is never shown in the widget again, and the AI, emails and flows leave out what Keloa can't attribute to the visitor (see [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule)).
+- **Anonymous visitors are kept apart per workspace.** The widget gives each browser a separate random visitor ID for every Keloa workspace, also when several shops share one host (for example `shop-a.example-host.com` and `shop-b.example-host.com`). Keloa never shows that ID to your team: the contact card says **Anonymous website visitor**, and the inbox and data exports only hold a keyed code that opens nothing. So no team can use what it sees to open a visitor's conversation with another workspace. Visitors who chatted before this change start a new anonymous conversation once; their earlier conversations stay in your inbox. The ID they used before is retired for good, in every workspace: a browser tab that still runs the widget from before the change can't start or open a conversation with it, and chats again once the page reloads.
+- **Only your sites can show the widget.** With verification on, Keloa tells browsers that only your allowed origins, over https on the standard port, may embed the widget. Another site can't frame it to push its own user's token into a visitor's conversation.
+- **Secrets are protected.** Secrets are stored encrypted and shown only once. Only owners and admins can create or revoke them, and every change is recorded in the audit log. Keloa never logs tokens. Revoking a secret cuts off every token signed with it at once, including live-update connections that are already open (see [Rotate or revoke a secret](#rotate-or-revoke-a-secret)).
+- **Contact data needs a verified email.** AI tools only use an email your site verified on that same user's conversations. On an anonymous website conversation the AI never uses the contact's email address for customer data: the Shopify order lookup asks the visitor for the email on the order, and TRONVoice data only comes through a link a teammate made from that same conversation. See [Tools](/agents/tools#contact-data-on-website-conversations).
+- **Anonymous conversations only use what the visitor said there.** On an anonymous website conversation, the AI, flow messages, conditions and action values, macros and the widget's own messages only use what the visitor said in that conversation, or in their own earlier conversations your team merged into it: a name, email address or phone number they typed in the chat or the contact form. `{{contact.email}}` and `{{contact.phone}}` render empty unless the visitor typed that address or number there. A name, company or language that your team, an email or a merge put on the contact, and every contact and company custom field, your team's included, count as unknown; the language follows the visitor's own messages. On a signed-in user's conversation, the name, company, language and custom fields are the ones your site signed for that user, and the email and phone also show the verified email and the phone your site signed. An AI-drafted email on an anonymous conversation only greets the visitor by a name they gave there. On a conversation from before this release that is still open to every visitor on its contact (see above), what was typed there shows to whoever opens it.
+- **Email replies stay with the visitor.** Your team can answer a website conversation by email only at an address shown to be the visitor's: one they typed in that conversation (in a message or the contact form) or in the contact form of one of their own earlier conversations your team merged into it, the verified email your site signed for that signed-in user, an address whose owner already emailed into that conversation, or an address your team corrected on a contact that wasn't merged with another contact. Otherwise the reply goes to the chat. An email sent from the conversation only quotes and carries the visitor's own messages and subject, and only names the visitor by a name they gave. See [Replying to conversations](/inbox/replying#email-on-a-website-conversation). See [Messages & actions](/flows/messages-and-actions#contact-details-on-website-conversations) and [Conditions](/flows/conditions#contact-fields-on-website-conversations).
+
+### What your site must guarantee
+
+Keloa trusts what your backend signs. Keep that trust deserved:
+
+- **Sign only for authenticated users.** Create tokens on your server for the user of the current session, never for an ID the browser sends you.
+- **Don't sign for impersonated users.** When your staff use a "log in as user" or impersonation feature, don't sign a token for the impersonated user. Otherwise their messages are stored as that user's conversations, follow the user to their devices, and unlock the user's data through the AI.
+- **Keep the secret secret.** Store it in your environment or secrets manager. Never ship it to a browser, a mobile app or a repository. Revoke it at once if it leaks.
+- **Use a stable user ID.** Use an ID that never changes and is never reused for another person. Don't use the email address as the user ID.
+- **Be honest about `email_verified`.** Send `true` only when the user proved they own the address, for example with a confirmation link. If users can change their email, send `false` until they confirm the new address, and require their current password for the change (see [When users change their email](#when-users-change-their-email)). A wrong `true` lets someone take over another person's contact and data (see the warning under [Claims reference](#claims-reference)).
+- **Keep tokens short-lived.** A token is a bearer credential: anyone who holds it can chat as that user until it expires, and a live-update connection opened with it keeps receiving that conversation's new replies for up to 13 minutes after its `exp` (the 60-second clock-skew allowance, plus up to 12 minutes until the connection's channel moves on). Use 15–60 minutes and `getToken` to refresh, and never let a token outlive the user's session on your site.
+- **Serve your site over HTTPS.**
+- **Protect the token endpoint.** Require a session, use `POST` with CSRF protection, send no CORS headers, rate-limit it and answer `401` when signed out.
+- **Watch the scripts on signed-in pages.** Any script on those pages can call your token endpoint and read the token. Keep third-party tags off them where you can, and protect them against XSS, for example with a Content Security Policy.
+- **Never put a token in a page.** Pass `getToken` only, never `token`, so a page restored from the back/forward cache, a single-page framework's memory, a CDN or a full-page cache can't sign the widget in again. Send `Cache-Control: no-store, private` on the token endpoint, so no cache ever keeps its answer.
+- **Keep tokens out of URLs, storage and logs.** Don't put them in query strings, `localStorage`, analytics or error reports.
+- **Call `Keloa('logout')` on every sign-out**, also in single-page apps, and reload your other open tabs (see [When the user signs out](#when-the-user-signs-out)). Logout only clears the browser tab that calls it; it doesn't invalidate tokens you already issued.
+
+<Tip>
+The widget handles pages the browser restores from its back/forward cache: it asks `getToken()` again and never resumes a signed-in conversation from the restored page. Reloading the page on `pageshow` when `event.persisted` is `true` is still a good idea if the page itself shows private data.
+</Tip>
+
+## Rotate or revoke a secret
+
+Each agent can have at most 2 active secrets, so you can rotate without signing anyone out. The second secret exists for rotation only: both secrets sign for the same users, so never use it for another environment (see [Staging and development](#staging-and-development)).
+
+<Steps>
+  <Step title="Create a second secret">
+    Click **Create secret** and store the new secret and key ID on your server.
+  </Step>
+  <Step title="Deploy the new secret">
+    Switch your backend to sign with the new secret and its `kid`. Tokens signed with the old secret keep working meanwhile.
+  </Step>
+  <Step title="Wait for old tokens to expire">
+    Wait at least your token lifetime. The secrets list shows when each secret was **last used**; it updates at most every 5 minutes, so it can lag by up to 5 minutes.
+  </Step>
+  <Step title="Revoke the old secret">
+    Click **Revoke** next to the old secret and confirm.
+  </Step>
+</Steps>
+
+Revoking takes effect immediately: every token signed with that secret stops working at once, for sending messages, loading conversations and live updates. Live-update connections already opened with those tokens stop receiving your team's replies, closed notices and satisfaction surveys at once too.
+
+A token that simply expires works the same way, with a short delay: a live-update connection opened with it stops receiving within 13 minutes of the token's `exp`. Keloa accepts a token for 60 seconds after `exp` (clock skew), and a connection keeps its channel for at most 12 minutes after it was opened.
+
+Signed-in users whose widget is open when you revoke keep chatting once your site hands the widget a token signed with the new secret. Live replies can pause for up to about 10 minutes until the widget renews its connection; they then appear from the conversation history.
+
+If you revoke the **last** secret:
+
+- in **Optional** mode, signed-in users chat anonymously until you create a new secret and update your site;
+- in **Required** mode, nobody can chat until you do.
+
+<Warning>
+If a secret leaks, revoke it right away, then create a new one and deploy it. Don't wait for a rotation window.
+</Warning>
+
+### Staging and development
+
+Use a separate AI agent for every environment that isn't production, such as staging, a preview environment or a developer's machine. Give it its own secrets and its own allowed origins. A separate workspace for testing is even better: Keloa joins a new signed-in user to an existing contact by verified email across the whole workspace, so test users with real addresses could otherwise land on real contacts.
+
+A second secret on your production agent is **not** a separate environment. Keloa keys each user on the agent and the `user_id`, not on the secret that signed the token. Any token signed with any active secret of the production agent is the production user with that `user_id`, whichever environment signed it. If staging signs a token for its own user `42`, that token opens production user `42`'s conversations, can write in them, updates their contact and lets the AI use their verified email. Staging databases often copy production users or reuse their IDs, and more people can usually sign in there.
+
+- Never copy a secret of your production agent, or its key ID, to staging or development.
+- Never sign a token for a production user from staging or development.
+- Don't add staging or development hosts to your production agent's **Allowed origins**. Add them to the separate agent instead.
+
+## What your team sees
+
+In the **Inbox**, a conversation started by a signed-in user shows a **Verified user** block in the context drawer:
+
+- **Signed in on your site or app during this chat**, with when Keloa last verified the user.
+- **User ID** — the `user_id` your site signed.
+- Every attribute your site sent. The first 4 are shown; click **Show all** to see the rest.
+
+The contact's email carries a **Verified** badge while it is the address your site signed as verified for that user. If a teammate changes the email, the badge disappears.
+
+On an anonymous website conversation, the email carries a **Typed in chat** badge only when the visitor typed that address in the chat: nobody has confirmed it's theirs. An address the contact got another way, for example from an email or from a teammate, shows no badge there, but the AI still doesn't use it on that conversation.
+
+Your teammates' inbox works differently: the **Shopify** and **WooCommerce** sections in the context drawer look up the store customer and their latest orders by whatever email the contact has, including an address a visitor only typed in the chat, and they don't label it as unverified. Don't discuss those orders with an anonymous visitor until they've proven they own the address.
+
+If you use the TRONVoice integration, its panel in the inbox tells you who you're linking on a website conversation:
+
+- On a signed-in user's conversation it says **Verified**: the person is signed in on your site, and a link made there applies to their conversations, and on email only to mail from the address your site verified for them.
+- On an anonymous conversation it says **Not verified**: a link made there applies to that conversation only, and only while that one visitor is the only one writing in it. It never applies to the contact's email or other conversations, also not after a contact merge. Before linking, Keloa asks you to confirm with **Link anyway**, because the AI can then share that client's invoices, quotes and subscriptions in the conversation. The AI stops using the link once the conversation has messages from anyone else: another visitor, messages merged in from another channel or another contact, or any email reply, including one from the address owner. Keloa refuses to link from a conversation that already has such messages, and from a mixed conversation (see [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule)).
+- On a website conversation from before Keloa told website visitors apart, the panel says a link can't be made there. Keloa refuses the link, and a link made from it earlier no longer gives the AI any data. Link the client from the email conversation instead, or ask the visitor to sign in or start a new chat.
+
+The block only appears on conversations the signed-in user started. An anonymous conversation on the same contact doesn't show it, because it proves nothing about who is typing. A website conversation only merges with conversations of the same visitor or the same signed-in user. Keloa refuses to merge it with another visitor's or another signed-in user's conversation, with an older website conversation that can't be shown to come from that visitor, or with an email, WhatsApp or social media conversation, and the merge picker shows those conversations locked with the reason. A conversation that a merge made before that rule mixed with another person's conversation is never shown to the visitor again, and the AI and the emails your team send from it leave out what Keloa can't attribute; the inbox shows everything. See [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule). See [Contact profile](/contacts/contact-profile#verified-users-from-your-site).
+
+## Guests, sign-in, sign-out and devices
+
+| Situation | What happens |
+| --- | --- |
+| A guest chats (**Optional**) | They chat anonymously, exactly as without identity verification. |
+| A guest signs in | The widget switches to the user's own conversations. The guest conversation stays anonymous in the inbox; it is not moved to the account. |
+| A signed-in user opens another device | Their conversations follow them: the widget loads them on every browser and device where they are signed in. |
+| The token expires mid-conversation | The widget calls `getToken()`, keeps the typed message and retries. If no fresh token comes, **Optional** continues as a guest with a short notice; **Required** asks the user to reload the page. |
+| Keloa is briefly unreachable | The widget retries. **Required** shows **Chat temporarily unavailable** with **Try again**; **Optional** opens a temporary guest conversation and tries again when the user sends a message. |
+| A visitor without a token (**Required**) | The widget shows **Sign in to chat with us.** and doesn't accept messages. |
+| The user signs out | After `Keloa('logout')`, the widget forgets the user in that browser tab and starts a new anonymous visitor. Your other open tabs reload as signed out. |
+| You turn verification **Off** | Signed-in users chat anonymously. They no longer see their verified conversations in the widget, and their details stop syncing until you turn it back on. |
+
+Signed-in conversations are never cached in the browser, and a token is never part of a page, so the next person on a shared computer can't see them or sign the widget in again with **Back**.
+
+## Troubleshooting
+
+When Keloa rejects a token, the widget request returns `401` with `{"error": "identity_invalid", "reason": "<code>"}`. Find it in your browser's **Network** tab on the request to `/widget/v1/identify` or `/widget/v1/messages`.
+
+| Reason | Meaning | Fix |
+| --- | --- | --- |
+| `identity_disabled` | Identity verification is **Off**, the agent has no active secret, or it has no usable allowed origin. | Set **Signed-in users** to **Optional** or **Required**, create a secret, and add your site under **Allowed origins**. |
+| `malformed` | The token isn't a compact JWT, uses base64 padding (`=`) or standard base64, or is over 8,192 characters. Or the header or claims segment isn't a JSON object, claims are nested more than 8 levels deep, `typ` isn't `JWT`, `exp` isn't after `iat`, `nbf` isn't a number, or `user_id` is invalid. | Use base64url without padding. Check `user_id` for spaces or control characters. Send `iat`, `exp` and `nbf` as numbers, with `exp` after `iat`. |
+| `unsupported_algorithm` | `alg` isn't `HS256`, or the header has `crit`. | Sign with HS256 and a plain header. |
+| `unknown_key` | `kid` doesn't match an active secret: it was revoked, mistyped, isn't a string or belongs to another agent. | Use the **Key ID (kid)** of an active secret of this agent. |
+| `bad_signature` | The signature doesn't match any active secret. | Sign with the secret exactly as shown, over the exact `header.claims` string you send. Make sure the secret belongs to this agent. |
+| `expired` | `exp` has passed (Keloa allows 60 seconds of clock skew). | Return a fresh token from `getToken()`. Check your server clock. |
+| `not_yet_valid` | `iat` or `nbf` is more than 60 seconds in the future. | Sync your server clock (NTP). |
+| `lifetime_too_long` | `exp` is more than 24 hours after `iat`. | Use a shorter lifetime: 15–60 minutes. |
+| `missing_claim` | `user_id` (or `sub`), `iat` or `exp` is missing, empty or of the wrong type: for example a `user_id` that is a decimal number or a boolean, or an `iat` or `exp` sent as a string. | Add the required claims. `user_id` is a string or an integer; `iat` and `exp` are numbers in seconds. |
+| `wrong_audience` | `aud` doesn't contain this agent's ID. | Use the agent ID from this agent's embed snippet, or a separate secret per agent. |
+
+| Symptom | Cause and fix |
+| --- | --- |
+| The widget disappears after you turn verification on | Your page isn't in **Allowed origins**, is served over http or on a non-standard port, or is framed by another host. The browser console shows `[Keloa] Widget blocked: origin '…' is not in the allowed domains list.` or a `frame-ancestors` error. Add the exact host and serve the page over https on the standard port. |
+| `401` with `identity_required` | The agent is set to **Required** and the page sent no token. Call `Keloa('identify')` on every page that shows the widget. |
+| `429` (`too_many_requests`, or `Too Many Attempts.`) | Too many identify calls for this user (30 per minute), or from this network. Both answers carry a `Retry-After` header; the widget waits and tries again. Call `identify` once per page and when the user changes, not on every render. |
+| Console: `getToken() returned something that is not a token.` | `getToken()` resolved to text that isn't a token, such as HTML (often your login page). Answer `401` instead of redirecting, and make sure `getToken()` reads the format your endpoint returns. |
+| Console: `getToken() returned no token.` | `getToken()` resolved to an object or to nothing. Return `body.token` from the JSON, not the whole body. |
+| Console: `getToken() failed.` | The promise `getToken()` returned was rejected, for example because your endpoint answered `401` or failed. |
+| Console: `getToken() did not answer in time.` | Your endpoint took longer than 10 seconds. |
+| Console: `getToken() keeps returning a token Keloa rejects` | Your backend signs incorrectly. Check the `reason` in the Network tab. |
+| Console: `The identity token was rejected and no getToken() was given…` | You passed only `token`, and Keloa rejected it or it expired. Add `getToken` so the widget can fetch a fresh one. |
+| Console: `Keloa("identify") needs { token } or { getToken }.` | You called `identify` with profile fields only. Keloa no longer accepts unsigned identity; pass `getToken`, which fetches a signed token from your endpoint. |
+| **Optional** and **Required** are unavailable | The agent needs a secret and at least one allowed origin first. |
+| **Create secret** is unavailable | The agent already has 2 active secrets. Revoke one first. |
+| You can't remove the last allowed origin | Identity verification needs at least one. Turn it **Off** first to allow every site again. |
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="Can I identify users without a backend?">
+    No. The token must be signed with your secret, and the secret must never reach the browser. If your site has no server-side sign-in, keep identity verification **Off**.
+  </Accordion>
+
+  <Accordion title="What happened to identify with an email and name only?">
+    Keloa no longer accepts unsigned identity: anyone could claim any email address that way. An `identify` call without a `token` or `getToken` is ignored with a console warning. Move the profile fields into a signed token.
+  </Accordion>
+
+  <Accordion title="Can I use RS256 or another algorithm?">
+    No. Keloa accepts HS256 only.
+  </Accordion>
+
+  <Accordion title="Can I use one secret for several AI agents?">
+    No. Secrets belong to one agent. If several agents run on your sites, create a secret for each and sign with the matching secret and agent ID.
+  </Accordion>
+
+  <Accordion title="Does a guest's conversation move to their account when they sign in?">
+    No. A guest conversation stays anonymous. After sign-in, the widget shows the user's own signed-in conversations.
+  </Accordion>
+
+  <Accordion title="Is the token itself sensitive?">
+    Yes. Until it expires, anyone holding it can chat as that user, and a live-update connection they opened with it keeps receiving that conversation's new replies for up to 13 minutes after its `exp`. Revoking the secret cuts both off at once. Keep it short-lived, out of your pages' HTML, URLs, storage and logs, and never let a cache keep it.
+  </Accordion>
+
+  <Accordion title="How do I test on my own machine?">
+    Create a separate AI agent for development, with its own secret, and add `localhost` or your `*.test` host under that agent's **Allowed origins**. Point your local `.env` at that agent's ID, key ID and secret. Don't add development hosts to your production agent, and never use a production secret on your machine: any token it signs is the production user with that `user_id`. Over http, identity verification only works for `localhost`, `127.0.0.1`, `*.test` and `*.localhost`. See [Staging and development](#staging-and-development).
+  </Accordion>
+
+  <Accordion title="What happens to verified identities when I delete a contact?">
+    Deleting a contact also deletes their verified identities and synced profile, and the companies Keloa created from that sync that no other contact uses. See [Data & privacy](/settings/data-and-privacy#delete-a-contact).
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Web widget" icon="message" href="/channels/web-widget">
+    Install the widget and configure allowed origins.
+  </Card>
+  <Card title="Contact profile" icon="address-card" href="/contacts/contact-profile">
+    What verified users look like in Keloa.
+  </Card>
+  <Card title="Tools" icon="wrench" href="/agents/tools">
+    How AI tools use verified emails.
+  </Card>
+  <Card title="Members & roles" icon="users" href="/settings/members-and-roles">
+    Who can manage identity verification.
+  </Card>
+</CardGroup>

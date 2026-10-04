@@ -46,9 +46,73 @@ Below the header, you'll see one or more **channel identities** — how we recog
 - Phone number (WhatsApp)
 - Instagram / Messenger user ID
 - Shopify customer ID
-- Webchat visitor UUID (before they share an email)
+- **Anonymous website visitor** (before they share an email). Keloa never shows the visitor's ID: see [Security model](/developers/identity-verification#what-keloa-guarantees).
 
 These are read-only. To merge duplicates, use **⋯ → Merge** on the profile.
+
+## Addresses typed into the chat
+
+An address a visitor types into the website chat is unverified: anyone can type anyone's address. If the owner of that address answers your team's email to it, their later email is filed under the same contact, and their email conversations are answered like any other conversation of that contact. So check the address before you merge that contact with another one or correct its address, for example by asking the visitor in the chat. Signed-in users whose email your site verified are not affected.
+
+## Verified users from your site
+
+When your site or app uses [identity verification](/developers/identity-verification), your backend vouches for who a signed-in user is. In the **Inbox**, a conversation that user started shows a **Verified user** block in the context drawer:
+
+| Item | What it shows |
+| --- | --- |
+| **Signed in on your site or app during this chat** | The conversation was started by a verified, signed-in user, with when Keloa last verified them. |
+| **User ID** | The user ID your site signed. |
+| Attributes | Every attribute your site sent, such as a plan or account role. The first 4 are shown; click **Show all** to see the rest. |
+
+The contact's email shows a **Verified** badge while it is the address your site signed as verified for that user. When a teammate changes the email, the badge disappears.
+
+The block only appears on conversations the signed-in user started. An anonymous website conversation on the same contact never shows it, because it proves nothing about who is typing.
+
+On an anonymous website conversation, the email shows a **Typed in chat** badge only when the visitor typed that address in the chat: nobody has confirmed it's theirs (see [Addresses typed into the chat](#addresses-typed-into-the-chat)). Keloa's AI never uses the contact's email for customer data on an anonymous website conversation, whether it was typed there or came from an email or a teammate. See [Tools](/agents/tools#contact-data-on-website-conversations).
+
+Your teammates' inbox works differently: the **Shopify** and **WooCommerce** sections in the context drawer look up the store customer and their latest orders by whatever email the contact has, including an address a visitor only typed in the chat, and they don't label it as unverified. Don't discuss those orders with an anonymous visitor until they've proven they own the address.
+
+How verified users become contacts:
+
+- **First visit.** Keloa joins an existing contact only when your site marked the email as verified and it exactly matches a contact email Keloa already trusts, and that contact doesn't already belong to another signed-in user or to an anonymous website visitor. Otherwise Keloa creates a new contact. A contact an anonymous visitor chats on is never joined, even when your team saved the user's address on it, because the user's name and company would then show up in that visitor's conversations. To bring them together, merge the contacts.
+- **Profile sync.** Name, email, phone, language and company are kept in sync. Keloa fills empty fields and updates a field when your site's value changed since the last sync; an edit by a teammate stays until your site sends a different value. The email follows stricter rules: see [How Keloa uses the claims](/developers/identity-verification#how-keloa-uses-the-claims).
+- **Custom fields.** An attribute whose key matches a custom field key fills that field.
+- **Website conversations only merge with the same person's.** A website conversation only merges with another website conversation of the same visitor or the same signed-in user. Keloa refuses to merge it with another visitor's or another signed-in user's conversation, with an older website conversation that can't be shown to come from that visitor, or with an email, WhatsApp or social media conversation. The merge picker shows those conversations locked, with the reason: **Different website visitor**, **Different signed-in user**, **Not from this website visitor**, **Different channel**, **Contains another person’s messages** (that conversation is mixed and the one you're merging isn't, see below) or **The chat you’re merging has another person’s messages** (the conversation you're merging is mixed and that one isn't). So another person's messages, subject, tags and ticket fields never end up in a visitor's conversation, in what the AI tells them or in an email your team sends from it. Conversations on other channels merge as before. A website conversation from before Keloa told visitors apart is open to every visitor on its contact; merging a visitor's newer conversation into one that only that visitor wrote ties it to them, so other visitors can no longer open it. The merge dialog tells you when a merge does that.
+- **Earlier merges.** A website conversation that your team merged another person's or another channel's conversation into before Keloa refused these merges is a *mixed* conversation. The inbox still shows everything, but the visitor can no longer open it in the widget, and the AI, emails and flows leave out what Keloa can't attribute to the visitor. See [Website conversations merged before the rule](#website-conversations-merged-before-the-rule).
+- **Anonymous conversations only use what the visitor said there.** A visitor ID proves nothing, and your team, Keloa's own email threading and merges can all put someone else's details on a website contact. So on an anonymous website conversation, the AI, flows, macros and the widget's own messages only use what the visitor said in that conversation, or in their own earlier conversations your team merged into it: a name, email address or phone number they typed in the chat or the contact form. An earlier conversation from before Keloa told visitors apart only counts while no other contact was merged into theirs and no signed-in user chats on it. The contact's other name, company and language, and every contact and company custom field, your team's included, count as unknown there; the language follows the visitor's own chat messages, never mail that the owner of an address they typed sent in. On a signed-in user's conversation, the name, company and language are the ones your site signed for that user, and only fields your site signed for that user show.
+
+## Website conversations merged before the rule
+
+Before Keloa refused to merge a website conversation with another person's, your team could merge, for example, an email or WhatsApp conversation or another visitor's chat into a visitor's website conversation. Afterwards Keloa can't always tell which messages, subject, tags and ticket fields came from whom, so it treats such a conversation as *mixed*. A website conversation is mixed when a merge made before the rule moved one of these into it:
+
+- a conversation on another channel, such as email, WhatsApp or social media
+- another visitor's or another signed-in user's website conversation
+- a website conversation from before Keloa recorded which browser started it, when the chat messages aren't all from one and the same visitor
+- messages from another contact
+
+It doesn't matter whether your team merged the contacts before or after the conversations. Merging the same visitor's own conversations never makes a conversation mixed, however many you merge. When all chat messages in the conversation are that visitor's, an earlier conversation of theirs merged in before the rule still counts as theirs, also when it came in through a chain of such merges: its subject, tags and contact form count for them, also after data retention deleted it.
+
+The other way round, a merge made before the rule could also move a visitor's website conversation into an email or another channel's conversation. Mail that answers one of its messages, such as the visitor's reply to an email your team sent from the chat, starts its own email conversation instead of landing in that conversation, so the visitor never gets another person's thread or a copy of the AI's answer to it. In that conversation your team still sees everything in the inbox, but:
+
+- **Emails** to its customer never quote, copy on Cc or thread under a message that came from the chat, and the chat doesn't set the email's language.
+- **The AI and flows** don't read the messages that came from the chat. The customer's own mail still counts, also mail your site's contact form sent on their behalf, and so does the message the conversation started with.
+- **Ticket fields** filled before that merge may be the chat's: they don't reach the AI, `{{ticket.custom.<key>}}` and `{{conversation.custom.<key>}}` in macros, or flow conditions. A ticket field your team fills in after the merge counts as usual, also after data retention deletes a conversation your team merged in later.
+
+Keloa stores this for each such conversation, also when it's merged into another conversation later, so data retention never undoes it.
+
+On a mixed conversation:
+
+- **Your team** still sees everything in the inbox. The composer tells you the visitor can no longer open the conversation, and starts on email when there's an address you can email there and your workspace can send email (see [Email on a website conversation](/inbox/replying#email-on-a-website-conversation)). A reply in the chat only shows in the inbox.
+- **The visitor's email answer** to an email your team sent from it starts its own email conversation, on purpose: it never threads back into the mixed conversation. Keloa adds an internal note to both conversations that links them, so you find the answer.
+- **The visitor** can no longer open it in the widget. Their next message starts a new conversation, and the old messages are never shown to them again.
+- **The AI** only reads the chat messages the visitor provably wrote there, not its own earlier answers, internal notes or emails. On a mixed conversation from before Keloa recorded which browser started it, it reads none of them.
+- **Emails** your team sends from it carry no chat transcript, no quoted mail and nobody on Cc: only your reply, to its one recipient.
+- **Ticket fields** don't reach the AI, `{{ticket.custom.<key>}}` and `{{conversation.custom.<key>}}` in macros, or flow conditions. Flows also leave out a subject or tags that came with any merge into it, and once data retention deleted the conversations merged into it, they see no subject or tags at all.
+- **Mail in reply.** When the person whose messages were moved in emails again in reply to one of them, their mail starts its own email conversation instead of landing in the visitor's chat.
+- **It stays mixed.** Keloa stores that a conversation is mixed, so deleting old conversations under your [data retention](/settings/data-and-privacy#retention) setting, including the ones merged into it, never makes it the visitor's again.
+- **Satisfaction survey.** It gets no survey in the widget, as nobody can open it there, and a survey it got earlier doesn't hold back the visitor's next one.
+- **TRONVoice.** Keloa refuses to link a TRONVoice client from it, and a link made there earlier no longer gives the AI any data.
+- **Merging.** A mixed conversation only merges with another mixed conversation of the same visitor, in either direction. When you merge it, the picker shows that visitor's conversations that aren't mixed locked as **The chat you’re merging has another person’s messages**. When you merge one of those, the picker shows the mixed one locked as **Contains another person’s messages**: the visitor would lose the conversation you're merging in the widget, and its contact form would no longer count as their address. When a mixed conversation is merged into another mixed one, its subject, tags, ticket fields and contact-form details don't come along, and the messages Keloa can't attribute stay hidden from the widget and the AI there too. The merge dialog says so: mentions are combined, and the subject, tags and ticket fields stay on the conversation you merge.
 
 ## Previous conversations
 

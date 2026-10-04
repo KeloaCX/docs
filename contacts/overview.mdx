@@ -3,7 +3,7 @@ title: "Contacts overview"
 description: "Every person you've talked to, with their full conversation history and company context."
 ---
 
-The **Contacts** section is your customer directory. Every person who's messaged on any channel appears here, and Keloa automatically merges identities when it can tell it's the same person.
+The **Contacts** section is your customer directory. Every person who's messaged on any channel appears here. Keloa never merges two contacts on its own: see [Identity matching and merging](#identity-matching-and-merging).
 
 ## The Contacts list
 
@@ -22,23 +22,34 @@ Search by name, email, or phone at the top.
 
 A contact is created the first time we see someone:
 
-- **Webchat** — a new browser session. When they share an email, we merge.
+- **Webchat** — a new browser session starts its own contact. An email the visitor types into the chat is saved on that contact only if it has no email yet, marked **Typed in chat** (unverified). It never joins or merges with an existing contact that has the same address.
+- **Signed-in website user** — with [identity verification](/developers/identity-verification), your backend vouches for the user. Keloa joins an existing contact only by an exactly matching email your site verified; otherwise it creates a new contact. The user's conversations follow them across devices.
 - **Email** — from the `From` header.
 - **WhatsApp** — the sender's phone number.
 - **Instagram / Messenger** — the Meta-side user ID (they stay anonymous to you, not to Meta).
 - **Shopify** — the buyer's email on the order.
 
-## Identity merging
+## Identity matching and merging
 
-If a contact shows up with the same email across two channels (say webchat and email), we merge them into one contact automatically. All conversations, on all channels, end up on one profile.
+Keloa never merges two existing contacts on its own. It only decides which contact a new message belongs to:
 
-You can also **merge manually** in rare cases the system missed:
+- **Email.** Mail from an address goes to the contact that earlier mail from that address went to. For a first email, Keloa looks for the oldest contact with that email address, skipping contacts whose address was only typed into a website chat. If there is none, Keloa creates a new contact.
+- **An address typed into a website chat.** Mail from that address joins the website contact only after the owner of the address replied to an email your team sent there, and their mail domain vouches for the sender. Until then, their mail goes to another contact with that address, or starts a new one. See [Addresses typed into the chat](/contacts/contact-profile#addresses-typed-into-the-chat).
+- **Signed-in website users.** With [identity verification](/developers/identity-verification), a user joins an existing contact only by an exactly matching email your site verified. See [Contact profile](/contacts/contact-profile#verified-users-from-your-site).
+
+So the same person can end up as two contacts, for example a website chat and an email contact with the same address. You can **merge them manually**:
 
 1. Open one of the two contacts.
 2. Click **⋯ → Merge into another contact**.
 3. Pick the target.
 
 Merges are irreversible — double-check first.
+
+Where the two contacts disagree, you pick the value to keep. The dialog starts on the contact you keep, with one exception: an email address a visitor typed into a website chat that nobody confirmed (**Typed in chat**) never wins over an address Keloa trusts unless you pick it. If you do, the dialog warns you, because emails to the contact then go to that address, and it stays marked as typed in chat. Under the email choice the dialog says whether the other address stays on the contact as an extra address (mail from it still arrives here) or isn't kept (only typed into the chat and never confirmed). Every conversation moves with the merge, and email conversations are answered at the address you keep. Check an address typed into the chat before you merge or correct it: see [Addresses typed into the chat](/contacts/contact-profile#addresses-typed-into-the-chat).
+
+<Warning>
+Only merge a website contact into another contact once the person has confirmed who they are, for example by answering your team's email. Anyone can type any address into the chat, and a merge puts the visitor's conversations on the other person's profile for your team. In the widget, each anonymous website conversation stays with the browser that started it, so a merge doesn't show the visitor the other person's chats. If your team also merges conversations, the widget still only shows the visitor what was written in their own website conversations, and a website conversation your team mixed with another person's conversation in a merge before Keloa refused such merges is never shown to the visitor again (see [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule)). Website conversations from before Keloa recorded which browser started them are the exception: after a merge, the visitor's browser can open those on the contact you keep, until your team merges a newer conversation of that visitor into one of them, which ties it to that visitor. See [Contact data on website conversations](/agents/tools#contact-data-on-website-conversations).
+</Warning>
 
 ## Tags on contacts
 

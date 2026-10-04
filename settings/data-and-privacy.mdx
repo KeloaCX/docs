@@ -31,6 +31,7 @@ Effects:
 - Every conversation with this contact is deleted.
 - Every message (inbound and outbound) is deleted.
 - Files they uploaded are purged from storage (within 24h).
+- Verified website identities ([identity verification](/developers/identity-verification)) and their synced profile are deleted, along with companies created by that sync that no other contact uses.
 - Audit log retains the deletion event (timestamp, operator) — that stays.
 
 **Irreversible.** We don't retain a hidden copy.
