@@ -1,66 +1,104 @@
 ---
 title: "Facebook Messenger"
-description: "Connect your Facebook Page so Messenger chats come into Keloa."
+description: "Connect your Facebook Page so Messenger chats land in your Keloa inbox and your AI agent answers them within Meta's 24-hour reply window."
 ---
 
-<Tip>
-Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
-</Tip>
+Connect the Facebook Page you already use and every Messenger chat with that Page arrives in your Keloa inbox as a conversation. Your AI agent answers within Meta's 24-hour reply window, and teammates can step in at any time.
 
-<Note>
-**Coming soon.** Messenger is not yet a live channel. The flow below is the planned setup. Click **Notify me** in **Settings → Channels → Facebook Messenger** to be pinged the day it ships.
-</Note>
-
-Connect the Facebook Page you already use to route Messenger conversations into the Keloa inbox.
+The same Page can also run [Instagram](/channels/instagram) in Keloa when an Instagram professional account is linked to it.
 
 ## Prerequisites
 
+- A Keloa workspace on **Growth** or higher, and the **owner** or **admin** role.
 - A **Facebook Page** (not a personal profile).
-- Admin access to the Page.
-- A **Meta Business account** linking the Page (usual path if you run any Meta ads).
+- A Facebook login that manages that Page.
+
+Messenger and Instagram are included from **Growth**. There's no limit on the number of Pages you connect.
 
 ## Connect Messenger
 
 <Steps>
-  <Step title="Open the integration">
-    Sidebar → **Integrations** → **Messenger** → **Connect**.
+  <Step title="Open Facebook Messenger in Integrations">
+    Sidebar → **Integrations** → **Facebook Messenger**. The **Connect Facebook Messenger** window opens and lists the permissions Keloa asks for.
   </Step>
 
-  <Step title="Sign in with Meta">
-    Meta asks which Page(s) to connect. Pick the one you want.
+  <Step title="Continue with Meta">
+    Click **Continue with Meta** and log in with the Facebook account that manages the Page.
   </Step>
 
-  <Step title="Grant permissions">
-    Messenger access, page engagement, manage inbox. Approve.
+  <Step title="Pick the Page">
+    In Meta's window, tick the Page or Pages you want to connect and approve the permissions.
   </Step>
 
-  <Step title="Done">
-    Connected. Messenger messages to your Page start flowing into the Keloa inbox.
+  <Step title="Back in Keloa">
+    Keloa confirms "Connected 1 Page." The Page appears in the Messenger panel. Send the Page a message from another Facebook account to check that it arrives.
   </Step>
 </Steps>
 
-## 24-hour window
+To add another Page later, open **Integrations** → **Facebook Messenger** and click **Connect Page**.
 
-Messenger enforces a **24-hour response window**. Inside it, you can send anything. Outside, you need a **message tag** (`CONFIRMED_EVENT_UPDATE`, `POST_PURCHASE_UPDATE`, `ACCOUNT_UPDATE`) or a One-Time Notification token — see Meta's platform policy.
+Keloa only receives the access token Meta issues for the Pages you pick. See [Instagram](/channels/instagram#connect-instagram) for the full list of permissions.
 
-Keloa blocks free-form AI replies outside the window automatically.
+<Note>
+A Page answers into one Keloa workspace at a time. If Meta finds no Pages on your account, Keloa says "To use Messenger, you'll need a Facebook Page first" and offers **Create a Page**.
+</Note>
+
+## Reply window
+
+Meta lets businesses reply within **24 hours** of the contact's last message. Every new message from the contact opens the window again.
+
+- **Inside 24 hours**, you and your AI agent reply freely.
+- **After 24 hours**, the reply box is locked and the AI agent stops answering, unless your workspace turned on the extended reply window.
+- **Extended reply window (24h–7d).** In the Messenger or Instagram panel in **Integrations**, an owner or admin can turn this on. Teammates can then reply for up to 7 days after the contact's last message; the AI agent stays paused during that time, as Meta's policy requires. Turn it on only after Meta has approved your business for the Human Agent permission.
+- **After 7 days**, nobody can reply until the contact writes again.
+
+Keloa doesn't send other Meta message tags or one-time notifications.
 
 ## What the AI does
 
-Inside the 24-hour window, AI replies as on any other channel. Outside, human teammates can still reply with tagged messages if the context fits one of Meta's allowed tags.
+- **One AI agent per Page.** Pick it on the Page's card under **Answered by**. You can also bind it from the agent editor: **Channels** → **Social channels** → **Facebook Messenger** → **Bind to this agent**.
+- **Inside the 24-hour window only.** Outside it, the conversation waits for your team.
+- **The whole conversation as context.** The AI agent reads the full conversation, not only the latest message. See [Conversation memory](/agents/overview#conversation-memory).
+- **Plain text.** Replies are sent as plain text without formatting. Long answers are split into messages of under 2,000 characters.
 
-## Combined with Instagram
+## Messages and media
 
-If you run both Instagram and Messenger for the same brand, you'll have two separate channels in Keloa. They can point at the same or different AI agents.
+- **Messages** with text, photos, videos, audio and files. Keloa downloads attachments up to 25 MB.
+- **Button taps** arrive as messages.
+- **Unsent messages.** When a contact unsends a message, the conversation shows "The customer unsent this message".
+- **Replies from Meta's own inbox.** A reply your team sends from the Page inbox in Meta Business Suite also appears in the Keloa conversation.
+- **Read receipts** are recorded automatically.
+- **Outbound is text only.** Sending files or GIFs isn't supported.
+
+## The Page's card
+
+| Status | Meaning |
+| --- | --- |
+| **Connected** | Messages flow both ways. |
+| **Reconnect needed** | The Page access token expired or a permission was revoked. Messages still arrive, but no replies go out until you click **Reconnect**. |
+| **Disconnected** | The Page no longer receives messages in Keloa. |
+| **Pending** | The connection is still being set up. |
+
+Click **Check connection** on the card to check that Meta still accepts the access and sends the Page's messages to Keloa.
+
+## Satisfaction surveys
+
+Keloa can send a [CSAT survey](/analytics/csat) as a message with a link to the rating page. Turn it on under **Settings → Customer satisfaction → Channels** → **Messenger & Instagram**. Meta only allows the survey within 24 hours of the contact's last message, so a 24-hour survey delay usually skips Messenger.
 
 ## Disconnecting
 
-**Integrations → Messenger → Disconnect** removes the webhook subscription from the Page. Messages stop arriving immediately.
+**Integrations** → **Facebook Messenger** → **Disconnect** on the Page's card.
+
+New Messenger messages from the Page stop arriving. Instagram on the same Page keeps running. Past conversations, contacts and messages stay searchable in your inbox, and you can reconnect at any time.
 
 ## Troubleshooting
 
 | Issue | Fix |
 | --- | --- |
-| "No Pages found" during connect | The Meta user signing in doesn't admin any Pages. Grant access or have an admin connect. |
-| Messages arrive but can't reply | Check the channel status in Integrations — the token may need re-auth. |
-| Outside 24-hour window, need to reach customer | Use a tagged message type or email/WhatsApp follow-up. |
+| "We couldn't find any Facebook Pages on this account" | The Facebook account you logged in with doesn't manage a Page. Create one with **Create a Page**, or ask a Page admin to connect it. |
+| "This Page is already connected to another Keloa workspace" | Disconnect it in that workspace first. |
+| "No new Pages were selected" | Open the Meta window again and tick the Page you want to add. |
+| Messages arrive but replies don't go out | The card probably says **Reconnect needed**. Click **Reconnect**. |
+| No messages arrive | Click **Check connection** on the card. |
+| The reply box is locked | The 24-hour window closed (or the 7-day window, with the extended reply window on). Wait for the contact to write again, or email them if you have their address. |
+| The panel shows **Slot pool full** | Pages don't count toward your plan's integrations, but **Connect Page** is blocked while all integration slots (Shopify, custom HTTP, Slack, Google Drive) are in use. Disconnect an integration you no longer use or upgrade your plan. |

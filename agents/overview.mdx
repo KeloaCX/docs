@@ -29,11 +29,23 @@ Each agent has:
 When a message arrives on a channel an agent is attached to:
 
 1. Keloa picks the best knowledge passages for this question using semantic search.
-2. The system prompt + passages + conversation history go to the LLM.
+2. The system prompt, the passages and the conversation so far go to the LLM (see [Conversation memory](#conversation-memory)).
 3. The model drafts a reply. If it wants to use a tool (*look up order*, *hand off*), it calls it.
 4. Reply goes back to the customer and into the inbox.
 
 This all happens in a few seconds. The reply includes citations to the knowledge sources it used — you can see them in the conversation's **Sources** panel.
+
+## Conversation memory
+
+The agent doesn't answer the latest message on its own. It reads the whole conversation the contact saw, on every channel:
+
+- **The most recent messages word for word**, from the contact, the AI agent and your teammates: at least the last 6, and on WhatsApp and Telegram up to the last 20 (as long as they fit), so a burst of short messages stays intact.
+- **A summary of everything older.** In a long conversation, Keloa summarises the earlier messages so the agent still knows what was already asked, answered or promised. The summary is updated as the conversation grows.
+- **Only what the contact saw.** Internal notes, AI drafts waiting for review, discarded drafts and replies that failed to send are left out.
+
+So a contact can say *"and the blue one?"* or *"like I said earlier"* and the agent understands. On Telegram, when a contact sends several messages in a row, the agent waits a few seconds and answers them together.
+
+The agent doesn't remember other conversations with the same contact. Each conversation starts fresh.
 
 ## Grounded answers, not hallucinations
 
@@ -53,7 +65,7 @@ Confidence appears next to the AI badge on every assisted message in the inbox, 
 
 ## Model providers
 
-Keloa routes each agent through either Anthropic (Claude) or OpenAI (GPT) automatically based on the model selected. Both providers run with zero-retention flags so prompts and completions are never used for training.
+Keloa routes each agent to the AI model you selected. Model providers run with zero-retention settings, so prompts and replies are never used for training. See [sub-processors](https://keloa.ai/legal/sub-processors).
 
 ## One agent or several?
 

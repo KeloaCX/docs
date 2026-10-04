@@ -55,15 +55,25 @@ Outbound (Keloa → customer):
 2. Use [mail-tester.com](https://mail-tester.com) — send a test from Keloa to the address mail-tester gives you. Score should be 9+/10.
 3. If DKIM fails, re-check the `CNAME` records exactly as Keloa shows them.
 
-## WhatsApp / Instagram / Messenger channel broken
+## Instagram or Messenger channel broken
 
-If the status shows **Error**, the Meta token has expired or permissions were revoked.
+If the card shows **Reconnect needed**, the Page access token expired or a permission was revoked. Messages still arrive, but replies don't go out.
 
-1. **Integrations** → the channel card → **Reconnect**.
-2. Sign in with a Meta user that admins the business/page/Instagram account.
-3. Re-grant the permissions.
+1. **Integrations** → **Facebook Messenger** or **Instagram** → **Reconnect** on the card.
+2. Log in with a Facebook account that manages the Page (and the linked Instagram account).
+3. Approve the permissions again.
 
-If reconnect fails, check `business.facebook.com → Business settings → Business integrations → Keloa`. It should exist and have the right Pages selected. Add any missing page and re-try.
+Click **Check connection** on the card to check that Meta still sends the Page's messages to Keloa. If the card says **Instagram account unlinked**, link the Instagram account to the Page again in Meta Business Suite, then reconnect. See [Instagram](/channels/instagram#troubleshooting) and [Messenger](/channels/messenger#troubleshooting).
+
+## WhatsApp number not working
+
+There's no token for you to renew on WhatsApp. If the number's card says **Needs attention**, WhatsApp reported a quality or connection problem; Keloa looks into it and contacts you if you need to act.
+
+When a single reply fails, the message says why, for example a closed reply window or a contact who blocked your number. See [WhatsApp troubleshooting](/channels/whatsapp#troubleshooting).
+
+## Telegram bot not working
+
+Check the bot's card in **Integrations** → **Telegram**. **Token revoked** means the token was regenerated in BotFather; **Needs attention** means another tool took over the bot or Telegram can't reach Keloa. See [Telegram troubleshooting](/channels/telegram#troubleshooting).
 
 ## Conversations arrive but notifications don't
 

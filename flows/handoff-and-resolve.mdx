@@ -36,15 +36,16 @@ A **Resolve** node closes the conversation — optional at the end of any flow.
 
 ### Configure
 
-- **Resolution type** — resolved / no action needed / duplicate / spam
-- **CSAT enabled** — send the one-tap survey after resolving
-- **CSAT delay** — in seconds (e.g. 30s so the customer doesn't feel rushed)
+- **Resolution** — resolved / no action needed / duplicate / spam
+- **Satisfaction survey** — tick **Always send a satisfaction survey** to survey every conversation this step solves
 
 ### CSAT
 
-When enabled, the customer sees a 👍 / 😐 / 👎 prompt right after resolution. Results appear on the conversation and in **Analytics**.
+With **Always send a satisfaction survey** on, the contact gets a survey with five faces when this step solves the conversation, even if they had one recently or the AI agent solved it. Surveys still need to be on for the channel in **Settings → Customer satisfaction**, and the delay set there applies.
 
-CSAT is **only** sent through the same channel the conversation was on. Email CSATs include a one-click link; webchat and messaging CSATs are inline buttons.
+With it off, your usual survey rules in **Settings → Customer satisfaction** decide, as when a teammate solves a conversation.
+
+The survey goes out on the conversation's own channel: a rating card in website chat, an email, a message with a link on Messenger and Instagram, or a message with five faces on Telegram. WhatsApp conversations aren't surveyed. See [CSAT](/analytics/csat).
 
 ## Combining handoff and resolve
 

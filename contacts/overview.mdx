@@ -25,9 +25,11 @@ A contact is created the first time we see someone:
 - **Webchat** — a new browser session starts its own contact. An email the visitor types into the chat is saved on that contact only if it has no email yet, marked **Typed in chat** (unverified). It never joins or merges with an existing contact that has the same address.
 - **Signed-in website user** — with [identity verification](/developers/identity-verification), your backend vouches for the user. Keloa joins an existing contact only by an exactly matching email your site verified; otherwise it creates a new contact. The user's conversations follow them across devices.
 - **Email** — from the `From` header.
-- **WhatsApp** — the sender's phone number.
-- **Instagram / Messenger** — the Meta-side user ID (they stay anonymous to you, not to Meta).
-- **Shopify** — the buyer's email on the order.
+- **WhatsApp** — the sender's phone number and WhatsApp profile name.
+- **Instagram / Messenger** — the contact's Meta user ID for your Page. Keloa fills in their name and profile picture from Meta when it can.
+- **Telegram** — the contact's Telegram user ID, with the name, username and language from their Telegram profile. The phone number is only known if the contact shares their contact card in the chat.
+
+Shopify isn't a channel, but the [Shopify integration](/knowledge/shopify) can show a contact's orders by matching their email.
 
 ## Identity matching and merging
 

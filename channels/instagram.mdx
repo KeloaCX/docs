@@ -1,80 +1,116 @@
 ---
 title: "Instagram"
-description: "Connect an Instagram Professional account so DMs and story replies land in Keloa."
+description: "Connect an Instagram professional account through its Facebook Page so Instagram DMs land in your Keloa inbox and your AI agent answers them."
 ---
 
-<Tip>
-Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
-</Tip>
+Connect your Instagram professional account and every Instagram Direct message arrives in your Keloa inbox as a conversation. Your AI agent answers within Meta's 24-hour reply window, and teammates can step in at any time.
 
-<Note>
-**Coming soon.** Instagram is not yet a live channel. The flow below is the planned setup. Click **Notify me** in **Settings → Channels → Instagram** to be pinged the day it ships.
-</Note>
-
-Keloa handles Instagram DMs via Meta's Instagram Messaging API. DMs, story replies, and message reactions all flow into the same inbox.
+Instagram connects through the Facebook Page it's linked to. The same Page can also run [Facebook Messenger](/channels/messenger) in Keloa.
 
 ## Prerequisites
 
-- An **Instagram Professional account** (Business or Creator). Consumer accounts aren't supported by the API.
-- The Instagram account **linked to a Facebook Page** (required by Meta).
-- A **Meta Business account** with admin access to that Page.
+- A Keloa workspace on **Growth** or higher, and the **owner** or **admin** role.
+- An **Instagram professional account** (Business or Creator). Personal accounts can't be connected.
+- The Instagram account **linked to a Facebook Page**. Link it in Meta Business Suite if it isn't yet.
+- A Facebook login that manages that Page.
+
+Messenger and Instagram are included from **Growth**. There's no limit on the number of Pages you connect.
 
 ## Connect Instagram
 
 <Steps>
-  <Step title="Open the integration">
-    Sidebar → **Integrations** → **Instagram** → **Connect**.
+  <Step title="Open Instagram in Integrations">
+    Sidebar → **Integrations** → **Instagram**. The **Connect Instagram (via Facebook Page)** window opens and lists the permissions Keloa asks for.
   </Step>
 
-  <Step title="Sign in with Meta and pick the Page">
-    Pick the Facebook Page linked to the Instagram account you want to connect. All Pages you admin will be listed.
+  <Step title="Continue with Meta">
+    Click **Continue with Meta** and log in with the Facebook account that manages the Page.
   </Step>
 
-  <Step title="Grant messaging permissions">
-    Meta will show the permissions Keloa needs: read/send DMs, read your Page profile, subscribe to webhooks. Approve.
+  <Step title="Pick the Page and Instagram account">
+    In Meta's window, tick the Page linked to your Instagram account and approve the permissions.
   </Step>
 
-  <Step title="Done">
-    The Instagram channel is now **connected**. Test by sending a DM from another account — it should land in Keloa within a second.
+  <Step title="Back in Keloa">
+    Keloa confirms "Connected 1 Page." The account appears in the Instagram panel with its `@handle`. Send a DM from another Instagram account to check that it arrives.
   </Step>
 </Steps>
 
-## What's supported
+To add another account later, open **Integrations** → **Instagram** and click **Connect Page**.
 
-- Direct Messages (text, images, short video, audio notes).
-- Story replies (show up as a DM with the story preview).
-- Message reactions (👍 ❤️ etc.) — appear next to the message in Keloa.
-- Read receipts — toggleable in the channel settings.
+Keloa asks Meta for these permissions:
 
-## What's not supported
+| Permission | Why |
+| --- | --- |
+| `pages_show_list` | See the Pages you manage |
+| `pages_manage_metadata` | Subscribe the Page to message webhooks |
+| `pages_read_engagement` | Read the Page's settings, including its linked Instagram account |
+| `pages_messaging` | Read and send Messenger messages for the Page |
+| `instagram_basic` | Read the Instagram account's name and profile picture |
+| `instagram_manage_messages` | Read and send Instagram DMs for the account |
 
-- **Comments** on posts (these aren't part of the Messaging API).
-- **Broadcasts** — no outbound mass-messaging.
-- Message reactions **from business side** — you can only send text/media, not react.
+<Note>
+A Page answers into one Keloa workspace at a time. Pages without a linked Instagram account, and Pages already connected to another workspace, are skipped.
+</Note>
 
-## 7-day window
+## Reply window
 
-Like WhatsApp, Instagram has a reply window: **7 days** after the last user message. Outside that, you can only send a **human agent message** (`HUMAN_AGENT` tag) which must be sent by a human, not a bot, and is intended for a human-in-the-loop response.
+Meta lets businesses reply within **24 hours** of the contact's last message. Every new message from the contact opens the window again.
 
-Keloa enforces this — the composer will disable AI replies outside the window.
+- **Inside 24 hours**, you and your AI agent reply freely.
+- **After 24 hours**, the reply box is locked and the AI agent stops answering, unless your workspace turned on the extended reply window.
+- **Extended reply window (24h–7d).** In the Instagram or Messenger panel in **Integrations**, an owner or admin can turn this on. Teammates can then reply for up to 7 days after the contact's last message; the AI agent stays paused during that time, as Meta's policy requires. Turn it on only after Meta has approved your business for the Human Agent permission.
+- **After 7 days**, nobody can reply until the contact writes again.
 
 ## What the AI does
 
-Inside the 7-day window, the AI responds like on any other channel. Outside the window, a human teammate can send a manual reply (tagged `HUMAN_AGENT`).
+- **One AI agent per account.** Pick it on the account's card under **Answered by**. You can also bind it from the agent editor: **Channels** → **Social channels** → **Instagram** → **Bind to this agent**.
+- **Inside the 24-hour window only.** Outside it, the conversation waits for your team.
+- **The whole conversation as context.** The AI agent reads the full conversation, not only the latest message. See [Conversation memory](/agents/overview#conversation-memory).
+- **Plain text.** Replies are sent as plain text without formatting. Long answers are split into several messages.
 
-## Multiple accounts
+## Messages and media
 
-Connect multiple Instagram accounts — each is its own channel with its own agent attachment. You'll see them as separate cards in **Integrations**.
+- **Direct messages** with text, photos, videos and audio. Keloa downloads attachments up to 25 MB.
+- **Story replies** arrive as DMs.
+- **Unsent messages.** When a contact unsends a message, the conversation shows "The customer unsent this message".
+- **Replies from Meta's own inbox.** A reply your team sends from the Instagram app or Meta Business Suite also appears in the Keloa conversation.
+- **Read receipts** are recorded automatically.
+- **Outbound is text only.** Sending files, GIFs or reactions isn't supported.
+
+Comments on posts aren't part of Instagram messaging and don't arrive in Keloa.
+
+## The account's card
+
+| Status | Meaning |
+| --- | --- |
+| **Connected** | Messages flow both ways. |
+| **Reconnect needed** | The access token expired or a permission was revoked. Messages still arrive, but no replies go out until you click **Reconnect**. |
+| **Disconnected** | The account no longer receives messages in Keloa. |
+| **Pending** | The connection is still being set up. |
+
+**Instagram account unlinked** means the Instagram account is no longer linked to the Facebook Page, so its messages stop arriving. Link it again in Meta Business Suite, then reconnect.
+
+Click **Check connection** on the card to check that Meta still accepts the access and sends the Page's messages to Keloa.
+
+## Satisfaction surveys
+
+Keloa can send a [CSAT survey](/analytics/csat) as a message with a link to the rating page. Turn it on under **Settings → Customer satisfaction → Channels** → **Messenger & Instagram**. Meta only allows the survey within 24 hours of the contact's last message, so a 24-hour survey delay usually skips Instagram.
 
 ## Disconnecting
 
-**Integrations → Instagram → Disconnect** removes the Meta webhook subscription. You can also revoke access from `business.facebook.com → Business settings → Business integrations → Keloa → Remove`.
+**Integrations** → **Instagram** → **Disconnect** on the account's card.
+
+New Instagram messages stop arriving. Messenger on the same Page keeps running. Past conversations stay searchable in your inbox.
 
 ## Troubleshooting
 
 | Issue | Fix |
 | --- | --- |
-| No DMs arrive | Check the Instagram account is Professional, linked to a Page, and the Page is selected in Keloa. |
-| "Missing permissions" on connect | The signed-in Meta user isn't an admin on the Page. Grant admin or have an admin re-connect. |
-| Can't reply after 7 days | Expected — use a manual reply tagged as human-agent, or re-engage via email / another channel. |
-| Story replies show without context | Instagram only sends the story preview for 24 hours after posting — after that, the thumbnail may be gone. |
+| "None of the Pages you picked has an Instagram professional account linked to it" | Switch the Instagram account to a professional account, link it to the Page in Meta Business Suite, then connect again. |
+| "This Page is already connected to another Keloa workspace" | Disconnect it in that workspace first. A Page answers into one workspace at a time. |
+| No DMs arrive | Click **Check connection** on the card. Make sure the account is professional and still linked to the Page. |
+| The card says **Reconnect needed** | Click **Reconnect** and log in with a Facebook account that still manages the Page. |
+| The card says **Instagram account unlinked** | Link the Instagram account to the Page again in Meta Business Suite, then reconnect. |
+| The reply box is locked | The 24-hour window closed (or the 7-day window, with the extended reply window on). Wait for the contact to write again. |
+| The panel shows **Slot pool full** | Pages don't count toward your plan's integrations, but **Connect Page** is blocked while all integration slots (Shopify, custom HTTP, Slack, Google Drive) are in use. Disconnect an integration you no longer use or upgrade your plan. |

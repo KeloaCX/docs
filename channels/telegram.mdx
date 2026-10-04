@@ -1,6 +1,6 @@
 ---
 title: "Telegram"
-description: "Connect a Telegram bot so Telegram chats land in your Keloa inbox."
+description: "Connect your Telegram bot to Keloa so Telegram chats land in your shared inbox and your AI agent answers them, with no reply window."
 ---
 
 Telegram has no separate business app. Companies talk to their contacts through a **Telegram bot**: an account you create in Telegram with **@BotFather**. You connect that bot to Keloa, and every private chat with it arrives in your inbox as a conversation. Your AI agent answers, and teammates can step in at any time.
@@ -59,7 +59,7 @@ Don't send `/token` or tap **Revoke current token** unless you mean to: both cre
   </Step>
 
   <Step title="Paste the token">
-    Paste the bot token into **Bot token**. Keloa checks it with Telegram right away.
+    Paste the bot token into **Bot token**. Keloa checks it with Telegram right away; click **Check token** to check again, or **Show token** to see what you pasted.
   </Step>
 
   <Step title="Check the preview">
@@ -78,6 +78,8 @@ Don't send `/token` or tap **Revoke current token** unless you mean to: both cre
     Click **Connect**. The bot appears in the Telegram panel with its `t.me` link and a QR code.
   </Step>
 </Steps>
+
+**Add another bot.** Once a bot is connected, **Integrations** → **Telegram** opens the Telegram panel. Click **Add bot** to connect the next one. The panel shows how many bots your plan allows, for example "1 of 3 bots on your plan".
 
 <Note>
 **"This bot is connected to another tool."** A Telegram bot delivers its messages to one place only. If the bot is already used by another tool (a chatbot builder, your own script), Keloa shows where its messages go now. Tick **Move this bot to Keloa** to connect anyway: messages then come to Keloa, and the other tool stops receiving them.
@@ -110,15 +112,16 @@ Keloa only handles **private chats**. If someone adds your bot to a group, the b
 
 ## What the AI does
 
-- **One AI agent per bot.** The agent you picked under **Answered by** answers every chat with that bot. Change it any time on the bot's card. With **No AI agent**, your team answers every chat.
+- **One AI agent per bot.** The agent you picked under **Answered by** answers every chat with that bot. Change it any time on the bot's card, or from the agent editor: **Channels** → **Social channels** → **Telegram** → **Bind to this agent**. With **No AI agent**, your team answers every chat.
 - **Greeting on Start.** When a contact taps **Start**, the bot sends the AI agent's greeting: the one shown in the agent editor. It goes out at most once a day per chat and doesn't count toward your plan's replies. With **No AI agent**, or while the AI agent isn't live, no greeting is sent.
 - **The conversation starts when the contact writes.** Tapping **Start** alone doesn't open a conversation in your inbox. Once the contact sends a real message, the conversation appears with a "started the chat" line, the greeting they saw, and their message.
+- **The whole conversation as context.** The AI agent reads the full conversation, not only the latest message. See [Conversation memory](/agents/overview#conversation-memory).
 - **One answer per burst.** When a contact sends several messages in a row, or a photo album, the AI agent waits a few seconds and answers once, to their latest message.
 - **Telegram formatting.** Replies support **bold**, _italic_, `code` and links. Headings become bold text and tables become simple rows that read well on a phone.
 - **Long answers are split** into several Telegram messages, about a second apart, so they arrive in order.
 - **Commands.** Only `/start` is special. Anything else a contact sends, `/help` included, reaches the AI agent as a normal message.
 
-Teammates reply from the inbox as on any other channel. While the AI agent writes, the contact sees "typing…" in Telegram.
+Teammates reply from the inbox as on any other channel. The conversation header shows which bot the chat came in on ("via @username"), and the reply box counts up to 4,096 characters per Telegram message; longer replies are split automatically. While the AI agent writes, the contact sees "typing…" in Telegram.
 
 ## Messages and media
 
@@ -136,13 +139,14 @@ Contacts can send:
 | Polls and dice | A short text line |
 
 - **20 MB per file.** Telegram lets bots download files up to 20 MB. A larger file shows as too large in the conversation; ask the contact to send it another way.
+- **Daily download limit.** Each workspace can download a set amount of Telegram files per day (2 GB by default). Past it, files show "Not downloaded: this workspace reached today's Telegram download limit." The messages themselves still arrive.
 - **Unsafe file types** (for example programs and scripts) are never stored. The conversation says the file type isn't shown for security reasons.
 - **Edits.** When a contact edits a message, Keloa updates it in the conversation and marks it **Edited**. Hover the label to see the earlier text. The AI agent doesn't answer an edit again.
 - **Replies and forwards.** When a contact replies to an earlier message, Keloa shows the quoted message. Forwarded messages show who they came from.
 - **Outbound is text only.** You and your AI agent send text messages. Sending files or GIFs to Telegram isn't supported.
 - **Flood guard.** If one chat sends more than 30 messages in a minute, Keloa keeps the text but skips the files and the AI answer for those messages, and the conversation waits for a teammate.
 
-## Blocked bots
+## Blocked bots and inbox banners
 
 A contact can block your bot in Telegram. When they do:
 
@@ -151,6 +155,14 @@ A contact can block your bot in Telegram. When they do:
 - A reply sent just before Keloa learned about the block shows as **Not delivered**.
 
 Once the contact unblocks the bot and writes again, the banner disappears and you can reply as usual.
+
+Conversations also show a banner when something is wrong with the bot itself:
+
+| Banner | What to do |
+| --- | --- |
+| "This Telegram bot's token no longer works" | The reply box is locked. [Replace the token](#replace-a-token). |
+| "This Telegram bot is disconnected" | The reply box is locked. Connect the bot again under **Integrations** → **Telegram**. The conversation stays in your inbox. |
+| "Telegram can't deliver new messages from this bot to Keloa right now" | Replies still go out. Check the bot's card under **Integrations** → **Telegram**. |
 
 ## Satisfaction surveys
 
@@ -174,7 +186,7 @@ Replace the token when you revoked it in BotFather, or when the bot's card says 
 
 Messages flow again right away. The token must belong to the same bot: a token of another bot is refused. Replacing a token doesn't count against your plan's bot limit.
 
-## Bot status
+## The bot's card
 
 Each bot's card shows its status:
 
@@ -190,7 +202,7 @@ If another tool took over the bot, the card offers **Move back to Keloa**. That 
 
 ## Disconnecting
 
-**Integrations** → **Telegram** → **Disconnect** on the bot's card. Keloa removes its webhook from Telegram and deletes the stored token, so messages stop arriving immediately.
+**Integrations** → **Telegram** → **Disconnect** on the bot's card. Keloa tells Telegram to stop sending the bot's messages to Keloa and deletes the stored token, so messages stop arriving immediately.
 
 The bot itself stays in Telegram, and existing conversations stay in your inbox. To delete the bot completely, use `/deletebot` in BotFather.
 
@@ -209,3 +221,5 @@ The bot itself stays in Telegram, and existing conversations stay in your inbox.
 | Someone added the bot to a group | Group chats aren't supported, and the bot leaves the group. To stop group adds, send `/setjoingroups` to BotFather and turn it off for your bot. |
 | A file shows as not shown or too large | Unsafe file types are never stored, and bots can't download files over 20 MB. Ask the contact to send the file another way, for example by email. |
 | Files show "Not downloaded: too many files from this chat" | The chat sent too many messages in a short time. Ask the contact to send the files again in a moment. |
+| Files show "Not downloaded: this workspace reached today's Telegram download limit" | Your workspace downloaded its daily amount of Telegram files. New files download again the next day; ask the contact to resend important ones then, or to email them. |
+| "You've reached your plan's bot limit" | Your plan's Telegram bots are all in use. Disconnect a bot or upgrade your plan. |
