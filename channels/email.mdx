@@ -17,7 +17,7 @@ You need both an **email domain** (verified) and an **email channel** to send. Y
 
 ## 1. Verify your sending domain
 
-Settings → **Channels** → **Email** → **Set up**, then **Email domains** → **Add domain**.
+Sidebar → **Integrations** → **Email domain**, then **Add domain**.
 
 Enter just the domain — no `@`, no mailbox. E.g. `yourdomain.com`.
 
@@ -34,9 +34,9 @@ If verification keeps failing, recopy the records from the Keloa UI rather than 
 
 ## 2. Add an email channel
 
-Settings → **Channels** → **Email** → **Add address**.
+Sidebar → **AI agents** → edit the agent → **Channels** → **Email** → **Add mailbox**, pick the **Verified domain**, enter the **Local part** and click **Assign to this agent**.
 
-Enter the visible mailbox you'll reply *as* (e.g. `support@yourdomain.com`). The domain part must match a verified email domain — Keloa blocks the form otherwise.
+The local part plus the verified domain form the mailbox you'll reply *as* (e.g. `support` + `yourdomain.com` = `support@yourdomain.com`).
 
 After saving, Keloa shows your workspace's `inbound_address`, e.g. `acme-x9k2pq@in.keloa.ai`. **This is the address you forward inbound mail to.** It's shared across every email channel in the workspace, so you only set up one forwarding rule per real mailbox.
 
@@ -63,7 +63,7 @@ You can add as many email channels as your plan allows.
 | Scale | Unlimited | Unlimited |
 
 <Note>
-Email is a **Growth+ feature**. Starter workspaces are widget-only — the email tile in **Settings → Channels** shows an upgrade prompt.
+Email is a **Growth+ feature**. Starter workspaces are widget-only — the **Email domain** tile in **Integrations** shows an upgrade prompt.
 </Note>
 
 Common setups:
@@ -93,7 +93,7 @@ Inbound attachments up to 25 MB per email are stored against the message. Images
 
 ## Disconnecting
 
-Settings → **Channels** → **Email** → **Disconnect** stops new mail on that specific address from creating a Keloa conversation. Remove the forwarding rule on the source mailbox too, otherwise inbound mail still hits the alias and counts against your conversation limit.
+Sidebar → **AI agents** → edit the agent → **Channels** → **Email** → **Remove** on the address stops new mail on that address from creating a Keloa conversation. Remove the forwarding rule on the source mailbox too, otherwise inbound mail still hits the alias and counts against your conversation limit.
 
 Removing the underlying email *domain* also removes every channel using it.
 

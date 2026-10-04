@@ -1,93 +1,167 @@
 ---
-title: "WhatsApp Business"
-description: "Connect WhatsApp Business API to unify WhatsApp messages into your Keloa inbox."
+title: "WhatsApp"
+description: "Connect your WhatsApp Business number to Keloa. WhatsApp messages land in your shared inbox and your AI agent answers them within the 24-hour reply window."
 ---
 
-<Tip>
-Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
-</Tip>
+Connect your business phone number to Keloa and every WhatsApp message to that number arrives in your inbox as a conversation. Your AI agent answers within WhatsApp's reply window, and teammates can step in at any time.
 
-<Note>
-**Coming soon.** WhatsApp Business is not yet a live channel. The flow below is the planned setup. Click **Notify me** in **Settings → Channels → WhatsApp Business** to be pinged the day it ships, or use the [web widget](/channels/web-widget) and [email](/channels/email) channels in the meantime.
-</Note>
-
-Keloa connects to WhatsApp via the official **WhatsApp Business Platform**. This is the business-grade API, not the WhatsApp Business app — it lets you message from a shared team inbox with automation and AI.
+Keloa uses the official WhatsApp Business Platform, so your number gets a verified business profile and a shared team inbox instead of living on one phone.
 
 ## Prerequisites
 
-- A **Meta Business account** (business.facebook.com).
-- A phone number **not** currently registered with any WhatsApp app. If it's in use in the consumer app, you'll need to deregister it first.
-- Permission to manage the business on Meta.
+- A Keloa workspace on **Growth** or higher, and the **owner** or **admin** role.
+- A phone number your business owns that can receive an SMS or a call, for the verification code.
+- Admin access to your company's Meta (Facebook) Business account.
+- Your website online. Meta checks it during the review.
+
+| Plan | WhatsApp numbers |
+| --- | --- |
+| Starter | — (locked) |
+| Growth | 1 |
+| Business | 3 |
+| Scale | Unlimited |
+
+WhatsApp numbers have their own limit. They don't count against your plan's channels or integrations cap. A request that's still being set up counts toward the limit.
+
+### Is your number on WhatsApp today?
+
+| Your number today | What happens |
+| --- | --- |
+| Not on WhatsApp | The easiest option. Meta sends a code by SMS or call, and the number is ready. |
+| In the **WhatsApp Business app** | You can keep using the app next to Keloa. Keep the phone with the app at hand during setup. |
+| On a personal WhatsApp account | Delete the personal account first (back up your chats). A number can't be personal and business at the same time. |
 
 ## Connect WhatsApp
 
 <Steps>
-  <Step title="Open the integration">
-    Sidebar → **Integrations** → **WhatsApp Business** → **Connect**.
+  <Step title="Open WhatsApp in Integrations">
+    Sidebar → **Integrations** → **WhatsApp**. The **Connect WhatsApp** form opens.
   </Step>
 
-  <Step title="Sign in with Meta">
-    You'll be redirected to Meta's Embedded Signup flow. Sign in and pick the business.
+  <Step title="Your number">
+    Pick the **Country**, enter the **Phone number** contacts should message, and answer **Is this number on WhatsApp today?**
   </Step>
 
-  <Step title="Create or choose a WhatsApp Business Account (WABA)">
-    If this is your first integration, create a WABA. Otherwise pick the existing one.
+  <Step title="Business profile">
+    Enter the **Display name** contacts see in WhatsApp, your **Legal business name** (as registered with the Chamber of Commerce) and, optionally, your **Website**. A preview shows how the name looks in a chat.
   </Step>
 
-  <Step title="Verify the phone number">
-    - Enter the phone number to use.
-    - Receive the SMS/call verification code and enter it.
-    - Pick a display name (e.g. "Acme Support"). Meta reviews this — usually minutes, sometimes a day.
+  <Step title="Contact & confirm">
+    Tell Keloa who to call to finish the verification: **Name**, **Phone** and **Email**, plus any notes. Tick the confirmation and click **Send request**.
   </Step>
 
-  <Step title="Return to Keloa">
-    Meta redirects back. Your WhatsApp channel is now **connected**. Incoming messages start flowing into the Keloa inbox.
+  <Step title="Keloa sets it up with you">
+    Keloa contacts you within one business day to verify the number with Meta. Keep the phone at hand: Meta sends a code by SMS or call. You get an email the moment the number is live.
   </Step>
 </Steps>
 
-## The 24-hour customer service window
+<Note>
+If the form offers **Connect with Facebook**, you can also set up the number yourself in about 5 minutes: log in with your company's Facebook account, pick or create your WhatsApp Business account and verify the number. Tick **This number already runs the WhatsApp Business app and I want to keep using it** if that applies. If the Facebook setup doesn't finish, choose **Let Keloa set it up for me** instead.
+</Note>
 
-WhatsApp distinguishes between:
+### Display name rules
 
-- **Session messages** — free-form, sent within 24 hours of the last customer message. No restrictions.
-- **Template messages** — required for anything outside that window. Must be pre-approved by Meta.
+Meta reviews the display name, so keep it close to your business name. The form checks it as you type:
 
-Keloa enforces this automatically — if you try to send a free-form message outside the window, we'll block it and prompt you to pick a template.
+- 3 to 60 characters
+- Doesn't contain "WhatsApp"
+- No web address
+- Letters, digits and simple punctuation only
+- More than a generic word like "Shop" or "Support"
+- Not all in capitals
 
-## Message templates
+### Follow your request
 
-A **template** is a pre-approved message with optional placeholders. Examples: appointment reminder, order-shipped update, re-engagement.
+While Keloa sets up the number, **Integrations** → **WhatsApp** shows the request and its progress: **Request received** → **Keloa registers your number with Meta** → **Live in your inbox**.
 
-### Creating a template
+| Status | Meaning |
+| --- | --- |
+| **Requested** | Keloa received your request and will contact you. |
+| **In progress** | Keloa is registering the number with Meta. |
+| **Declined** | The request can't go ahead. The reason is shown. Click **Start a new request** to try again. |
 
-1. Settings → **WhatsApp templates** → **New template**.
-2. Pick a category (utility / marketing / authentication).
-3. Write the body with `{{1}}`, `{{2}}` placeholders for dynamic parts.
-4. Submit for Meta approval.
+Changed your mind? Click **Cancel request**. You can send a new request any time.
 
-Approval takes minutes to a few hours. Approved templates appear in the composer's **Template** picker.
+## Test it
 
-### Sending a template
+On WhatsApp the contact starts the conversation, so test it the way a contact would.
 
-In a conversation outside the 24-hour window, the composer will automatically switch to template mode. Pick one, fill variables, send.
+<Steps>
+  <Step title="Open the test panel">
+    In **Integrations** → **WhatsApp**, click **Test it** on your number.
+  </Step>
+
+  <Step title="Message your number">
+    Scan the QR code with your phone camera, or click **Open on this device** or **Open WhatsApp Web**, and send the prefilled message. Use a different phone than the one running the business number.
+  </Step>
+
+  <Step title="Check the inbox">
+    The panel shows **Message received! It is in your inbox.** Click **Open conversation** to see it, together with your AI agent's answer.
+  </Step>
+</Steps>
+
+## The 24-hour reply window
+
+WhatsApp only lets businesses reply within **24 hours** of the contact's last message. When the contact came in through a click-to-WhatsApp ad, the window is **72 hours**. Every new message from the contact opens the window again.
+
+- **Inside the window**, you and your AI agent reply freely.
+- **Before it closes**, the conversation shows a banner: "WhatsApp reply window closes in…".
+- **After it closes**, the reply box is locked and the AI agent stops answering. You can reply again as soon as the contact writes to you. If the contact has an email address, the banner offers a button to email them instead (for example **Email Sam**).
+
+Keloa doesn't send WhatsApp message templates. You can't message a contact on WhatsApp after the window has closed, or start a WhatsApp conversation yourself.
 
 ## What the AI does
 
-The AI agent replies **within** the 24-hour window like on any other channel. Outside the window, it cannot reply (no free-form allowed) — your flow should handle re-engagement via templates if needed.
+- **One AI agent per number.** Pick it on the number's card under **Answered by**, or choose **No agent (team only)** so every message waits for your team. You can also bind a number from the agent editor: **Channels** → **Social channels** → **WhatsApp Business** → **Bind to this agent**.
+- **Inside the window only.** The AI agent answers while the reply window is open, like on other channels.
+- **The whole conversation as context.** The AI agent reads the full conversation, not only the latest message. See [Conversation memory](/agents/overview#conversation-memory).
+- **Long answers are split** into several WhatsApp messages of up to 4,096 characters, sent in order.
 
-## Multiple numbers
+## Messages and media
 
-You can connect several numbers to the same workspace — each is a separate WhatsApp channel with its own phone and its own default agent.
+Contacts can send text, photos, videos, voice messages, audio, documents, stickers, locations, shared contacts, reactions and button replies. When a contact replies to an earlier message, Keloa shows the quoted message.
+
+- **WhatsApp keeps media for 7 days.** Keloa downloads files as they arrive. A file that couldn't be fetched in time shows as no longer available.
+- **Large files** over 25 MB aren't previewed.
+- **Unsafe files** are blocked and never stored.
+- **Delivery status.** Your messages show **Sent**, **Delivered** and **Read**.
+- **Outbound is text and GIFs.** You and your AI agent send text. Teammates can also send GIFs when **Let teammates send GIFs in WhatsApp and website chat replies** is on in **Settings → Helpdesk**. Sending files isn't supported yet.
+
+## The number's card
+
+Each connected number has a card in **Integrations** → **WhatsApp**:
+
+| Field | Meaning |
+| --- | --- |
+| **Live** / **Needs attention** | **Live** means messages flow. **Needs attention** means WhatsApp reports a quality or connection problem with the number. Keloa looks into it and contacts you if you need to act. |
+| **Quality** | WhatsApp's rating of the number: **High**, **Medium** or **Low**. |
+| **Messaging tier** | How many customers your business can start conversations with per 24 hours. It never limits replies to contacts who message you. |
+| **Last customer message** | When a contact last wrote to this number. |
+| **Answered by** | The AI agent that answers this number. |
+
+To add another number, click **Add number** in the WhatsApp panel. The panel shows how many numbers your plan allows.
+
+## Satisfaction surveys
+
+WhatsApp conversations aren't surveyed. [CSAT surveys](/analytics/csat) go out on website chat, email, Messenger, Instagram and Telegram.
 
 ## Disconnecting
 
-**Integrations → WhatsApp → Disconnect** unlinks the WABA in your Keloa workspace. The number itself stays registered with Meta — deregister it from Meta if you want to move it elsewhere.
+**Integrations** → **WhatsApp** → **Disconnect** on the number's card.
+
+New WhatsApp messages to the number stop arriving in Keloa and the AI agent stops replying. Existing conversations stay readable. The number keeps its WhatsApp Business registration, so Keloa can link it again later.
 
 ## Troubleshooting
 
 | Issue | Fix |
 | --- | --- |
-| Verification SMS never arrives | Try the voice-call option. Some carriers block 6-digit SMS codes. |
-| "Phone number already registered" | Number is in use in the WhatsApp consumer app. Deregister it in WhatsApp settings → Account → Delete account → two-factor PIN. |
-| Template rejected | Read the rejection reason. Usually promotional content in a utility template, or missing opt-in. |
-| Messages sent but not received | Check the display name has been approved. Customers can still message you before approval, but outbound from business is gated. |
+| The reply box is locked | The 24-hour reply window closed. Wait for the contact to write again, or email them if you have their address. |
+| "This phone number doesn't use WhatsApp" | The contact's number isn't on WhatsApp. Reach them another way. |
+| "The customer has blocked your WhatsApp number" | Messages can't be delivered until the contact unblocks your number. |
+| "WhatsApp is limiting how many messages this number can send right now" | Wait a few minutes, then send again. |
+| "The customer reinstalled WhatsApp or switched phones" | WhatsApp paused delivery to them. Ask the contact to message you again, then retry. |
+| "This WhatsApp number isn't connected to Keloa right now" | Check the number in **Integrations** → **WhatsApp**, then send your reply again. |
+| The card says **Needs attention** | WhatsApp flagged the number for quality or a sending limit. Replies still go out, and Keloa contacts you if you need to act. |
+| The request was **Declined** | Read the reason on the request, fix it (often the display name) and click **Start a new request**. |
+| The display name doesn't meet Meta's rules | Follow the [display name rules](#display-name-rules) and keep it close to your legal business name. |
+| The AI agent doesn't answer | Check **Answered by** on the number's card, that the AI agent is live, and that the reply window is still open. |

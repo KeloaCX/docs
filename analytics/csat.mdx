@@ -3,7 +3,7 @@ title: "CSAT analytics"
 description: "Customer satisfaction — average score, distribution, response rate, what drives the lows."
 ---
 
-CSAT (customer satisfaction) is the single number that summarises how your customers feel about the support they got. Keloa collects it via a one-tap survey after resolution and surfaces it in **Analytics → CSAT**.
+CSAT (customer satisfaction) is the single number that summarises how your customers feel about the support they got. Keloa collects it with a short survey after a conversation is solved: the contact taps one of five faces and can add a comment. Results show up in the **Customer satisfaction** section of **Analytics**.
 
 ## What's measured
 
@@ -66,11 +66,26 @@ A 4.7 average from 4% of customers is much weaker evidence than 4.3 from 35%. To
 
 ## Configure CSAT
 
-CSAT is enabled per flow's **Resolve** node, or globally via support if you want every resolved conversation to ask. See [Resolving conversations](/inbox/resolving) for the per-conversation behaviour.
+An owner or admin turns surveys on in **Settings → Customer satisfaction** with **Send satisfaction surveys**, then picks:
+
+- **Channels** — where contacts get the survey. Other channels are never surveyed.
+- **When and how often** — the delay after solving (right away, 15 minutes, 1 hour or 24 hours), how many days between surveys for the same contact, and whether conversations the AI agent solved on its own are included.
+- **Question** — what the survey asks, in English and Dutch.
+- **Low scores** — alert the team when a contact rates 1 or 2.
+
+| Channel | How the survey arrives |
+| --- | --- |
+| **Website chat** | A rating card in the chat, right away while the visitor is still there. |
+| **Email** | A short email with five one-click faces, from the address your replies use. Needs a verified sending domain. |
+| **Messenger & Instagram** | A message with a link to the survey. Meta only allows it within 24 hours of the contact's last message, so a 24-hour delay usually skips these. |
+| **Telegram** | A message with five faces to tap. Any delay works. |
+| **WhatsApp** | Not surveyed. |
+
+Teammates can also send a survey by hand when they solve a conversation, and a flow's **Resolve** node can send one every time (with **Always send a satisfaction survey**), as long as surveys are on for that channel. See [Resolving conversations](/inbox/resolving#csat-customer-satisfaction).
 
 ## Plan availability
 
-CSAT collection is available on **Growth and above**. The CSAT analytics page is available on every plan, but if no CSAT is configured the page shows an empty state with setup instructions.
+Satisfaction surveys and the CSAT analytics page are available on every plan. Surveys only go out on the channels your plan includes. While surveys are off, the page shows an empty state with a **Turn on surveys** button.
 
 ## Related
 

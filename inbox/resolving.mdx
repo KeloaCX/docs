@@ -29,9 +29,11 @@ A resolved conversation reopens automatically when the contact sends a new messa
 
 ## CSAT (customer satisfaction)
 
-If CSAT is enabled on a flow's **Resolve** node, a one-tap survey is sent after resolution — 👍 / 😐 / 👎 — and the result appears on the conversation and in analytics.
+When satisfaction surveys are on, Keloa asks the contact to rate the conversation after it's solved, with five faces from **Very unhappy** to **Very happy**. The answer appears on the conversation and in [CSAT analytics](/analytics/csat).
 
-Enable CSAT per flow, or globally by asking support to turn it on for every resolved conversation.
+An owner or admin sets this up in **Settings → Customer satisfaction**: which channels get a survey (**Website chat**, **Email**, **Messenger & Instagram**, **Telegram**), how long after solving it goes out, how often the same contact can be asked, and the question. WhatsApp conversations aren't surveyed.
+
+When you solve a conversation, the **Send satisfaction survey** box shows whether a survey goes out. Tick it to send one anyway, for example to a contact who was surveyed recently. A flow's **Resolve** node can also send one every time (with **Always send a satisfaction survey**), as long as surveys are on for that channel.
 
 The survey speaks the customer's language. On a website conversation that is the language of the visitor's own chat messages, never of mail that the owner of an address they typed sent in. Without such messages the widget keeps the visitor's browser language, and the survey email uses your workspace's default language.
 

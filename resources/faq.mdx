@@ -39,15 +39,27 @@ description: "Quick answers to the questions we get most."
   </Accordion>
 
   <Accordion title="Does the AI learn from past conversations?">
-    No. It uses the current conversation plus your knowledge base. Past conversations don't get added to the knowledge base automatically — if you want to seed from them, export and paste the best answers as **Q&amp;A pairs**.
+    No. It uses the current conversation plus your knowledge base. Within a conversation it reads everything the contact saw, not just the last message: the most recent messages word for word (at least 6; up to 20 on WhatsApp and Telegram) and a summary of everything older. See [Conversation memory](/agents/overview#conversation-memory). Past conversations don't get added to the knowledge base automatically — if you want to seed from them, export and paste the best answers as **Q&amp;A pairs**.
   </Accordion>
 </AccordionGroup>
 
 ## Channels
 
 <AccordionGroup>
+  <Accordion title="Which plans include WhatsApp, Instagram, Messenger and Telegram?">
+    All four are included from **Growth**. Messenger and Instagram have no Page limit. WhatsApp numbers and Telegram bots have their own limits: 1 on Growth, 3 on Business and unlimited on Scale. See [Channels overview](/channels/overview#channel-limits-per-plan).
+  </Accordion>
+
   <Accordion title="Can I connect multiple WhatsApp numbers?">
-    Yes. Each number is a separate channel in Keloa, with its own default AI agent. Subject to your plan's channel cap.
+    Yes. Each number has its own AI agent. WhatsApp numbers have their own limit, separate from the channels cap: 1 on Growth, 3 on Business, unlimited on Scale. A request that's still being set up counts toward it. See [WhatsApp](/channels/whatsapp).
+  </Accordion>
+
+  <Accordion title="Can the AI reply after 24 hours on WhatsApp, Instagram or Messenger?">
+    No. These apps only let businesses reply within 24 hours of the contact's last message (72 hours after a click-to-WhatsApp ad). On Messenger and Instagram, teammates can reply for up to 7 days if you turn on the **Extended reply window (24h–7d)**, but the AI agent stays paused. Telegram has no reply window. See [Reply windows](/channels/overview#reply-windows).
+  </Accordion>
+
+  <Accordion title="Can I send files to contacts?">
+    Not yet. Replies are text on every channel. Teammates can send GIFs on WhatsApp and website chat. Contacts can send you photos, videos, voice messages and files.
   </Accordion>
 
   <Accordion title="Does the widget slow down my site?">

@@ -1,9 +1,9 @@
 ---
 title: "Channels overview"
-description: "Connect the places your customers already message you. Keloa unifies them into one inbox."
+description: "Connect web chat, email, WhatsApp, Instagram, Messenger and Telegram to Keloa. Every channel lands in one shared inbox, answered by your AI agent."
 ---
 
-Every "place" where you receive customer messages is a **channel**. Today Keloa is live on web chat and email. WhatsApp, Instagram, Messenger and Shopify are on the roadmap.
+Every place where you receive customer messages is a **channel**. Keloa is live on web chat, email, WhatsApp, Instagram, Facebook Messenger and Telegram. Every conversation lands in the same inbox, and your AI agent answers on all of them.
 
 ## Live channels
 
@@ -14,74 +14,87 @@ Every "place" where you receive customer messages is a **channel**. Today Keloa 
   <Card title="Email" icon="envelope" href="/channels/email">
     Forward `support@yours` to Keloa, replies go back through your verified domain.
   </Card>
+  <Card title="WhatsApp" icon="whatsapp" href="/channels/whatsapp">
+    Connect your business number. Keloa registers it with Meta for you, and your AI agent answers within the 24-hour window.
+  </Card>
+  <Card title="Instagram" icon="instagram" href="/channels/instagram">
+    Instagram DMs and story replies from a professional account, connected through its Facebook Page.
+  </Card>
+  <Card title="Facebook Messenger" icon="facebook-messenger" href="/channels/messenger">
+    Connect a Facebook Page and its Messenger chats come into the inbox.
+  </Card>
+  <Card title="Telegram" icon="telegram" href="/channels/telegram">
+    Connect your own Telegram bot. Contacts message it by `@username` or `t.me` link, and your AI agent answers.
+  </Card>
 </CardGroup>
 
 ## Coming soon
 
-Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
-
-<CardGroup cols={2}>
-  <Card title="WhatsApp Business" icon="whatsapp" href="/channels/whatsapp">
-    Via the WhatsApp Business Platform. Notify-me list open in **Settings → Channels**.
-  </Card>
-  <Card title="Instagram" icon="instagram" href="/channels/instagram">
-    DMs and story replies via Meta's Messaging API.
-  </Card>
-  <Card title="Messenger" icon="facebook-messenger" href="/channels/messenger">
-    Connect a Facebook Page to receive Messenger DMs.
-  </Card>
-  <Card title="Shopify storefront chat" icon="shopify" href="/channels/shopify">
-    Inbound chat from your Shopify storefront. Shopify-as-an-integration (orders, products, knowledge sync) is **already live** — see [Shopify integration](/knowledge/shopify).
-  </Card>
-</CardGroup>
-
-If you want one of the upcoming channels prioritised, click **Notify me** on the channel card in **Settings → Channels** and we'll ping you the day it ships.
+<Card title="Shopify storefront chat" icon="shopify" href="/channels/shopify">
+  Inbound chat from your Shopify storefront. Shopify as an integration (orders, products, knowledge sync) is **already live**. See [Shopify integration](/knowledge/shopify). Track availability on the [Keloa roadmap](https://keloa.ai/roadmap).
+</Card>
 
 ## Where to connect channels
 
-Sidebar → **Settings** → **Channels**. Live channels show a **Connect** or **Set up** button. Coming-soon channels show **Notify me**.
+Sidebar → **Integrations**. The **Channels** category holds **Email domain**, **Facebook Messenger**, **Instagram**, **WhatsApp** and **Telegram** (plus **Slack**, for teammates). The web widget is installed from **Settings → Widget**.
 
-Each connected channel shows:
-
-- **Connect / Disconnect** controls
-- status (`connected`, `pending_setup`, `disconnected`, `error`)
-- last-synced timestamp
-- a deep link into channel-specific settings
+Connecting and disconnecting channels needs the **owner** or **admin** role. Other teammates see the channels but can't change them.
 
 ## Channel status
 
-| Status | Meaning |
+Each connected Page, number or bot has a card with its own status:
+
+| Channel | Statuses |
 | --- | --- |
-| **Connected** | Messages are flowing both ways. |
-| **Pending setup** | Created in Keloa, waiting for external verification (e.g. an email domain DNS check). |
-| **Disconnected** | Was connected, now paused. No messages flow. |
-| **Error** | Something broke (expired token, bounced DNS). Click to fix. |
+| **WhatsApp** | **Live**, **Needs attention**. While Keloa sets up a number: **Requested**, **In progress** or **Declined**. See [WhatsApp](/channels/whatsapp#the-numbers-card). |
+| **Messenger** and **Instagram** | **Connected**, **Reconnect needed**, **Disconnected**, **Pending**. See [Instagram](/channels/instagram#the-accounts-card). |
+| **Telegram** | **Connected**, **Needs attention**, **Token revoked**. See [Telegram](/channels/telegram#the-bots-card). |
+
+## Reply windows
+
+Some messaging apps only let businesses reply for a limited time after the contact's last message. Keloa locks the reply box and pauses the AI agent when a window closes.
+
+| Channel | Reply window |
+| --- | --- |
+| **Web widget**, **email** | None |
+| **Telegram** | None. Reply any time, unless the contact blocked the bot. |
+| **WhatsApp** | 24 hours after the contact's last message (72 hours after a click-to-WhatsApp ad). |
+| **Messenger** and **Instagram** | 24 hours. With the optional **Extended reply window (24h–7d)**, teammates (not the AI agent) can reply for up to 7 days. |
 
 ## Channel limits per plan
 
 | Plan | Channels | Email channels | Email domains | Integrations |
 | --- | --- | --- | --- | --- |
 | Starter | 1 | — (locked) | — (locked) | 1 |
-| Growth | 2 | 3 | 1 | 2 |
-| Business | 5 | 6 | 3 | 4 |
+| Growth | 2 | 3 | 1 | 5 |
+| Business | 5 | 6 | 3 | 15 |
 | Scale | Unlimited | Unlimited | Unlimited | Unlimited |
 
-**Channels**, **email channels**, **email domains**, and **integrations** are four separate pools — they do not share a cap. A **channel** is any place customers message you (web widget, email, social). An **email channel** is one email address you reply as; it also counts as a channel. An **email domain** is a verified sending domain. An **integration** is a connected third-party app (Shopify, custom HTTP, Slack, Google Drive) that feeds data or runs actions — see [Core concepts](/concepts#integration). Two email addresses on the same domain is two email channels but one verified domain.
+**Channels**, **email channels**, **email domains** and **integrations** are four separate pools: they don't share a cap. The **Channels** cap counts your web widget and email inboxes. An **email channel** is one email address you reply as; it also counts as a channel. An **email domain** is a verified sending domain. An **integration** is a connected third-party app (Shopify, custom HTTP, Slack, Google Drive) that feeds data or runs actions; see [Core concepts](/concepts#integration). Two email addresses on the same domain is two email channels but one verified domain.
+
+WhatsApp, Messenger, Instagram and Telegram have their own limits and don't count against **Channels**:
+
+| Plan | Messenger and Instagram | WhatsApp numbers | Telegram bots |
+| --- | --- | --- | --- |
+| Starter | — (locked) | — (locked) | — (locked) |
+| Growth | Included | 1 | 1 |
+| Business | Included | 3 | 3 |
+| Scale | Included | Unlimited | Unlimited |
 
 <Note>
-Email is a **Growth+** feature. Starter is widget-only — `email_channels` and `email_domains` are locked on Starter. Upgrade to Growth to add email channels.
+Email is a **Growth+** feature. Starter is widget-only: `email_channels` and `email_domains` are locked on Starter. Upgrade to Growth to add email channels.
 </Note>
 
-The **Integrations** column counts every connected third-party app — Shopify, custom HTTP endpoints, Slack, and Google Drive — against one cap, separate from the channels cap.
+## One AI agent per channel
 
-## One AI agent per channel (by default)
+Every connected Page, number and bot has one **AI agent** that answers it. Pick it under **Answered by** on the card in **Integrations**, or in the agent editor under **Channels** → **Social channels**. Use flows to override the default for specific senders or topics.
 
-Every channel has a **default AI agent** that handles inbound messages. Pick it when you connect, or change later in the channel's settings. Use flows to override the default for specific senders or topics.
+Whatever the channel, the AI agent reads the whole conversation, not only the latest message. See [Conversation memory](/agents/overview#conversation-memory).
 
 ## Real-time
 
-Every channel feeds the same real-time **Inbox** via Reverb. Operators see new messages within a second.
+Every channel feeds the same real-time **Inbox**. Teammates see new messages within a second.
 
 ## Privacy
 
-All channel traffic is logged in the EU. When you disconnect a channel, inbound messages stop immediately. Historical conversations stay unless you delete them in **Settings → Data &amp; privacy**.
+All channel traffic is stored in the EU. When you disconnect a channel, inbound messages stop immediately. Historical conversations stay unless you delete them in **Settings → Data &amp; privacy**.

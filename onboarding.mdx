@@ -19,7 +19,7 @@ Paste a URL and Keloa inspects the homepage to extract:
 | Starter system prompt | Your first AI agent |
 
 <Note>
-Nothing is saved until you click **Continue**. You can also **Skip** the scan entirely and fill it in by hand.
+Nothing is saved until you click **Next**. You can also **Skip** the scan entirely and fill it in by hand.
 </Note>
 
 ## Step 2 · Your first AI agent
@@ -27,7 +27,7 @@ Nothing is saved until you click **Continue**. You can also **Skip** the scan en
 Every workspace needs at least one agent. Onboarding creates one with:
 
 - **Name** — what customers see ("Nova", "Kay", whatever fits)
-- **Tone** — friendly / professional / playful — maps to the system prompt
+- **Tone** — Neutral / Friendly / Formal — maps to the system prompt
 - **Greeting** — the first message on the widget (e.g. *"Hi! How can I help?"*)
 - **System prompt** — drafted from the scan; you can edit it now or later
 
@@ -35,44 +35,47 @@ The agent starts as **live** — it will answer immediately on any channel you c
 
 See [Create an agent](/agents/create-agent) to change these later.
 
-## Step 3 · Pick your first channel
+## Step 3 · Try it
 
-You choose **one** channel to start. Today onboarding offers webchat and email — the two channels that ship live. Other channels (WhatsApp, Instagram, Messenger) are on the [roadmap](https://keloa.ai/roadmap).
+When you click **Finish setup**, Keloa starts reading your website and opens a **Try it** chat. Ask your agent anything a real customer might ask; citations show where the answer came from. The page count shows how much of your site is indexed so far. Test chats don't appear in your inbox.
+
+Click **Go to dashboard** when you're done, or **Skip — go to dashboard** to leave right away.
+
+## After onboarding · Connect your channels
+
+Onboarding doesn't connect a channel. Add them from the dashboard whenever you're ready:
 
 <CardGroup cols={2}>
-  <Card title="Webchat" icon="comment" href="/channels/web-widget">
-    Fastest to set up — one script tag on your site.
+  <Card title="Web widget" icon="comment" href="/channels/web-widget">
+    Fastest to set up: one script tag on your site, from **Settings → Widget**.
   </Card>
   <Card title="Email" icon="envelope" href="/channels/email">
-    Forward support@yours → Keloa; AI replies with a branded signature. Available on Growth and above.
+    Forward support@yours to Keloa; replies go out from your verified domain. Growth and above.
+  </Card>
+  <Card title="WhatsApp" icon="whatsapp" href="/channels/whatsapp">
+    Request your number under **Integrations** and Keloa sets it up with you. Growth and above.
+  </Card>
+  <Card title="Instagram and Messenger" icon="facebook-messenger" href="/channels/messenger">
+    Connect your Facebook Page and its Instagram account with your Facebook login. Growth and above. See also [Instagram](/channels/instagram).
+  </Card>
+  <Card title="Telegram" icon="telegram" href="/channels/telegram">
+    Paste your Telegram bot's token under **Integrations**. Growth and above.
   </Card>
 </CardGroup>
 
 <Tip>
-Shopify is an **integration** (orders, products, knowledge sync), not a chat channel. Connect it from **Settings → Integrations** any time after onboarding — see [Shopify knowledge source](/knowledge/shopify).
+Shopify is an **integration** (orders, products, knowledge sync), not a chat channel. Connect it from **Integrations** any time — see [Shopify knowledge source](/knowledge/shopify).
 </Tip>
-
-## Step 4 · Widget appearance
-
-If you picked webchat, onboarding sets a default theme colour from your scan. Tune it in the agent's **Web widget** card (**AI agents → your agent → Channels**):
-
-- bubble and header colour
-- greeting message
-- optional avatar image
-- languages (EN / NL)
-
-Changes preview live in the right-hand pane.
 
 ## Completing onboarding
 
-When you hit **Finish**, Keloa:
+When you click **Finish setup**, Keloa:
 
 1. Marks your workspace as onboarded so you won't land here again.
 2. Creates a live AI agent.
-3. Creates a channel row — already connected for webchat, or marked *pending setup* for external channels that need verification.
-4. Queues a knowledge ingest job for your website (you'll see pages appearing in **Knowledge** within a minute or two).
+3. Queues a knowledge ingest job for your website (you'll see pages appearing in **Knowledge** within a minute or two).
 
-You land on the **Dashboard** with a status summary.
+After the **Try it** chat you land on the **Dashboard**.
 
 ## Coming back to a step
 
