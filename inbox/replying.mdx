@@ -47,12 +47,30 @@ Toggle **Note** in the composer to write something only teammates see — never 
 Internal notes (and `@`-mention) require **Growth or above** (paywall key `tickets.add_internal_note`). Starter shows the toggle but blocks posting.
 </Note>
 
+## Email on a website conversation
+
+You can answer a website conversation by email instead of in the chat, but only at an address shown to be the visitor's:
+
+- an address the visitor typed in that conversation, in a message or the contact form. When you merge an earlier conversation of the same visitor into it, what they typed there counts too.
+- the verified email your site signed for the signed-in user of that conversation (see [Identity verification](/developers/identity-verification)). An address your site signed without `email_verified: true` is only the user's word, so it doesn't count on its own.
+- an address whose owner already emailed into that conversation
+- an address your team corrected on a contact that wasn't merged with another contact
+
+These rules apply to signed-in users' conversations too. Otherwise the composer starts on the chat and doesn't offer email, and an email reply or closing reply you force anyway is refused: **Reply not sent: this visitor didn't give an email address in this chat. Reply in the chat instead.** When the visitor typed a different address than the one on the contact, your team sees it, but the composer keeps suggesting the chat.
+
+When a visitor asks for a person and the contact has no address you can email in that conversation, the AI shows the contact form, even if the contact already has an address. This happens, for example, when a returning visitor left their address in an earlier conversation. The address they leave in the form lets your team email them from that conversation.
+
+The email only carries the visitor's own conversation: the chat transcript, the quoted mail, the people on Cc and the subject leave out anything a merge brought in from another person, and on an anonymous conversation the visitor is only greeted by a name they gave there, like every other contact detail (see [Contact details on website conversations](/flows/messages-and-actions#contact-details-on-website-conversations)). When you merge an earlier conversation of the same visitor into it, a name they gave in its contact form counts too. After your team corrects the address, mail the owner of the former address sent belongs to them: the email to the new address and the AI's draft of it leave that mail out. Their language only follows the visitor's chat messages and mail from the address they go to, never mail anyone else sent into the thread.
+
+A *mixed* conversation, one your team merged another person's or another channel's conversation into before Keloa refused such merges, is different: the visitor can no longer open it in the widget, so a reply in the chat only shows in the inbox. The composer says so, and starts on email when there's an address you can email there and your workspace can send email; without a verified sending domain it tells you no reply reaches the visitor yet. An email from it carries no chat transcript, no quoted mail and nobody on Cc, only your reply. The visitor's email answer starts its own email conversation instead of landing in the mixed one, and an internal note on both links them. See [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule).
+
 ## Keyboard shortcuts
 
 | Shortcut | Action |
 | --- | --- |
 | <kbd>j</kbd> / <kbd>k</kbd> | Next / previous conversation |
 | <kbd>e</kbd> | Resolve the open conversation |
+| <kbd>m</kbd> | Merge the open conversation into another one |
 | <kbd>Esc</kbd> | Clear bulk-selection |
 | <kbd>Cmd</kbd>+<kbd>Enter</kbd> (<kbd>Ctrl</kbd>+<kbd>Enter</kbd> on Windows/Linux) | Send the composer |
 | <kbd>Cmd</kbd>+<kbd>/</kbd> (<kbd>Ctrl</kbd>+<kbd>/</kbd> on Windows/Linux) | Insert a macro |

@@ -3,44 +3,45 @@ title: "Widget appearance"
 description: "Style your web chat widget to match your brand."
 ---
 
-Tune how the widget looks on your site — colours, greeting, intro bubbles, suggested questions, position, and branding. Changes preview live on the right of the settings page.
+Tune how the widget looks on your site — colour, welcome message, intro bubbles, quick questions, position, and branding. The **Live preview** next to the settings shows what you saved.
 
 ## Open widget settings
 
-Sidebar → **Settings** → **Widget**.
+Each AI agent has its own widget. Go to **AI agents**, open the agent and select the **Channels** tab. The settings live in the **Web widget** card. **Settings → Widget** only points there now.
 
 ## What you can customise
 
 | Setting | Details |
 | --- | --- |
-| **Theme color** | Bubble and header background. Pick from the colour input or paste a hex. |
-| **Launcher position** | `right` (default) or `left`. |
-| **Greeting** | Fallback intro message. Used when no intro bubbles are set. |
-| **Display name (header)** | Overrides the AI agent name in the widget header. |
-| **Bot avatar** | Set on the AI agent itself (**AI agents → edit**). Brand logo is the fallback. |
+| **Brand color** | Bubble and header background. Pick a colour or paste a hex value. |
+| **Launcher position** | **Right** (default) or **Left**. |
+| **Header display name** | The name in the widget header. Falls back to the AI agent's name. |
+| **Welcome message** | The greeting shown when no intro bubbles are set. Empty = the built-in greeting. |
+| **Quick questions** | Up to 6 chips that visitors can tap on a fresh chat. Auto-seeded from your onboarding site scan. |
+| **Business-hours message** | Shown when the team is offline. |
+| **Allowed origins** | Empty = any site. Add hosts (`www.acme.com`) to restrict the widget to your sites. Only add a wildcard (`*.acme.com`) for a domain you control: wildcards over public suffixes and known shared-hosting platforms (`*.co.uk`, `*.vercel.app`) are refused. See [Allowed origins](/channels/web-widget#allowed-origins). |
 | **Intro bubbles** | Up to 5 short "hello" bubbles shown when the widget opens. |
-| **Suggested questions** | Up to 6 one-tap chips. Auto-seeded from your onboarding site scan. |
-| **Privacy policy URL** | Optional link in the widget footer. |
-| **Origin allowlist** | Empty = allowed everywhere. Add domains to restrict the widget to your sites only. |
-| **Hide branding** | Removes "Powered by Keloa" from the footer. **Business+ only.** |
+| **Privacy policy URL (optional)** | Link in the small footer of the widget. |
+| **Branding** | A switch that hides the "Powered by Keloa" badge in the footer. **Business+ only.** |
+
+The widget avatar is the AI agent's avatar, set on the agent's **Profile** tab. The brand logo is the fallback.
 
 ## Plan-gated features
 
 Two widget capabilities are locked behind plan caps:
 
-- **`hide_branding`** — requires the `widget_unbranded` cap. Available on Business and Scale.
-- **Proactive triggers** — requires the `proactive_triggers` cap. Available on Business and Scale.
+- **Branding** (hide the Keloa badge) — requires the `widget_unbranded` cap. Available on Business and Scale.
 - **Working hours integration** — requires the `working_hours` cap. Available on Business and Scale. Configure in **Settings → Workspace → Business hours**.
 
 See [Billing & plans](/billing/plans) for the full cap matrix.
 
 ## Preview
 
-The live preview on the right updates as you type. Click **Open preview** to launch the widget on a sandboxed host page (`/widget/host-demo`) — useful for clicking through a real conversation flow without touching your site.
+The **Live preview** next to the settings runs the widget on a sandboxed host page (`/widget/host-demo`) with your saved settings. It updates when you save — useful for clicking through a real conversation without touching your site. **Send test message** next to the embed snippet checks that the agent answers.
 
 ## Languages
 
-The widget greeting is translated automatically into English, Dutch, German, French and Spanish. The visitor's locale is detected from `navigator.language`, with the brand language as fallback. The greeting you type in **Settings → Widget → Greeting** is used as the operator-customised version for your brand's primary locale.
+The widget greeting is translated automatically into English, Dutch, German, French and Spanish. The visitor's locale is detected from `navigator.language`, with the brand language as fallback. The **Welcome message** you type in the agent's **Web widget** card is used as the operator-customised version for your brand's primary locale.
 
 ## Accessibility
 
@@ -55,8 +56,8 @@ The widget greeting is translated automatically into English, Dutch, German, Fre
 
 ## Identifying logged-in users
 
-If your site authenticates visitors, you can pass identity data to the widget. See the [widget docs](/channels/web-widget#identify-a-logged-in-user).
+If your site authenticates visitors, your backend can sign a token that tells the widget who the signed-in user is. See [Identity verification](/developers/identity-verification).
 
 ## Save
 
-Changes save on click. The next loader fetch on your site picks up the change (CDN cache 60 seconds).
+Changes save automatically: the card shows **Auto-saving**, then **Saved**. The next loader fetch on your site picks up the change (CDN cache 60 seconds).

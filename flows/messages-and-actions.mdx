@@ -14,14 +14,32 @@ A **Message** node sends a message to the customer, on the same channel the conv
 
 ### Variables
 
-Same variable system as [Macros](/inbox/macros):
+A flow message can use these contact variables. A variable without a value renders empty.
 
 | Variable | Renders |
 | --- | --- |
 | `{{contact.first_name}}` | Contact's first name |
 | `{{contact.name}}` | Full name |
-| `{{workspace.name}}` | Your workspace name |
-| `{{agent.name}}` | The AI agent attached to the channel |
+| `{{contact.company}}` | Contact's company name |
+| `{{contact.email}}` | Contact's email address. On website conversations, see below. |
+| `{{contact.phone}}` | Contact's phone number. On website conversations, see below. |
+
+Flows don't fill `{{contact.last_name}}` or the other [macro](/inbox/macros) variables, such as `{{account.name}}`. In a flow message they render empty.
+
+#### Contact details on website conversations
+
+On the web widget, Keloa can't tell who is typing unless your site signs them in with [identity verification](/developers/identity-verification). So a flow message on a website conversation only shows contact details the person chatting is known to own:
+
+- `{{contact.email}}` shows the address when the visitor typed it in that conversation (in a message or the contact form) or in the contact form of one of their own earlier conversations your team merged into it, or when it is the verified email your site signed for the signed-in user of that conversation.
+- `{{contact.phone}}` shows the number when the visitor typed it in that conversation, or when your site signed it for the signed-in user of that conversation.
+
+Otherwise the placeholder renders empty, so on an anonymous conversation it stays empty unless the visitor typed the detail there.
+
+Names follow the same rule. On an anonymous website conversation, `{{contact.name}}`, `{{contact.first_name}}` and `{{contact.company}}` only show a name the visitor gave in that conversation, in the chat or in the contact form, or in the contact form of one of their own earlier conversations your team merged into it; otherwise they render empty, because a name your team, an email or a merge put on the contact may be someone else's. Contact and company custom fields count as unknown there too. On a signed-in user's conversation, they show the name and company your site signed for that user.
+
+Signed-in users' conversations follow the rules above for email and phone. Other channels, such as email and WhatsApp, render every placeholder as usual.
+
+The same rules apply wherever a flow reads the contact on a website conversation: [Condition nodes](/flows/conditions#contact-fields-on-website-conversations), and `{{contact.*}}` values you pass to an action. A detail the visitor isn't shown to own counts as empty there too.
 
 ### Use a macro instead
 

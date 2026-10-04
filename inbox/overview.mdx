@@ -52,6 +52,25 @@ Select multiple conversations with the checkboxes on the left. The bulk bar lets
 
 Great for cleanup after a launch day. Press <kbd>Esc</kbd> to clear the selection.
 
+## Merge conversations
+
+When one customer's request is split over two conversations, open the one to fold in and click **⋯ → Merge into…** (or press <kbd>m</kbd>). Pick the conversation to keep: its messages, notes and attachments move over in time order, tags are combined, and the merged conversation closes with a link to the kept one. A merge can't be undone.
+
+A website conversation only merges with conversations of the same visitor or the same signed-in user. The picker shows other conversations locked, with the reason:
+
+| Label | Why |
+| --- | --- |
+| **Different website visitor** | It's another anonymous visitor's chat. |
+| **Different signed-in user** | One side belongs to a signed-in user of your site, the other to another user or an anonymous visitor. |
+| **Not from this website visitor** | One side is an older website chat that can't be shown to come from the same visitor. |
+| **Different channel** | A website chat never merges with an email, WhatsApp or social media conversation. |
+| **The chat you’re merging has another person’s messages** | The conversation you're merging is a [mixed conversation](/contacts/contact-profile#website-conversations-merged-before-the-rule). It only merges with another mixed conversation of the same visitor. |
+| **Contains another person’s messages** | This conversation is a mixed conversation of the same visitor, and the one you're merging isn't. The visitor would lose the conversation you're merging in the widget, and its contact form would no longer count as their address. |
+
+When you merge two mixed conversations of the same visitor, the subject, tags and ticket fields of the one you merge stay on it, and the dialog says so. Mentions are still combined.
+
+So another person's messages, subject and tags never reach what a visitor sees, what the AI tells them or an email your team sends from their chat. Conversations on other channels merge freely. See [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule) for merges made before this rule.
+
 ## Collision detection
 
 Live presence indicators show when a teammate has a conversation open, so two people don't reply at the same time. Powered by Reverb — updates appear without refreshing.

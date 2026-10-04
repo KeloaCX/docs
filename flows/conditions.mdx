@@ -19,6 +19,18 @@ A **Condition** node splits the flow into two paths — one for matches, one for
 | `intent` | AI-inferred intent (e.g. `shipping`, `refund`, `pre_sales`) |
 | `sentiment` | `positive`, `neutral`, `negative` |
 
+## Contact fields on website conversations
+
+A branch decides what the visitor sees next, so on a website conversation a condition only sees the contact details a [flow message](/flows/messages-and-actions#contact-details-on-website-conversations) may show:
+
+- `contact.email` (and its domain) and `contact.phone` count as empty on an anonymous website conversation, unless the visitor typed that address or number in that conversation (an address left in the contact form counts, also in the form of one of their own earlier conversations your team merged into it). On a signed-in user's conversation they also see the verified email and the phone your site signed for that user.
+- `contact.name` and `contact.company` count as empty on an anonymous website conversation, unless the visitor gave that name in that conversation (in the chat or the contact form) or in the contact form of one of their own earlier conversations your team merged into it. On a signed-in user's conversation they are the name and company your site signed for that user.
+- On an anonymous website conversation, `language` and every contact and company custom field, your team's included, count as unknown; `language` then follows the visitor's own messages. On a signed-in user's conversation, `language` is the one your site signed, and custom fields only count when your site signed them for that user.
+- `subject` and `tags` leave out what an earlier merge brought in from another person's conversation.
+- On a mixed conversation, one a merge made before Keloa refused such merges mixed with another person's or another channel's conversation, every conversation custom field counts as empty, and `subject` and `tags` leave out what any merge brought in; once data retention deleted the conversations merged into it, they count as empty. On an email or other conversation such a merge moved a website conversation into, a conversation custom field filled before that merge counts as empty too. See [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule).
+
+Other channels, such as email and WhatsApp, see every field as usual. In the Try run the panel shows the value the condition used.
+
 ## Operators
 
 | Operator | Meaning |

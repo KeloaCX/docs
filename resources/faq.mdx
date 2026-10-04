@@ -54,6 +54,14 @@ description: "Quick answers to the questions we get most."
     No. The loader is under 6 KB and loads `async`. The full widget is lazy-loaded on first interaction. It won't affect Core Web Vitals.
   </Accordion>
 
+  <Accordion title="Can the widget recognise users who are signed in to my site?">
+    Yes, with [identity verification](/developers/identity-verification). Your backend signs a short-lived token for the signed-in user, and Keloa checks it on every message, so nobody can chat as one of your users. Your team sees the verified user in the inbox, and their conversations follow them across devices. Guests keep chatting anonymously.
+  </Accordion>
+
+  <Accordion title="Why was my wildcard allowed origin refused?">
+    Keloa refuses wildcards over public suffixes and known shared-hosting platforms, such as `*.com`, `*.co.uk` or `*.vercel.app`, because they would let anyone's site show your widget. Only add a wildcard for a domain you control, such as `*.acme.com`. For a hosted site, add its exact address instead (`acme.vercel.app`). See [Allowed origins](/channels/web-widget#allowed-origins).
+  </Accordion>
+
   <Accordion title="Can I use Keloa without email?">
     Yes — email is optional. Plenty of workspaces run only webchat + WhatsApp, for example.
   </Accordion>

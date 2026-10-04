@@ -36,6 +36,31 @@ These appear only when the relevant integration is connected:
 
 Connect the integration first, then the tools become switchable on your agent.
 
+## Contact data on website conversations
+
+Some tools return a contact's own data: their Shopify orders, or their invoices, quotes and subscriptions in TRONVoice. On the web widget anyone can type any email address, and a teammate's merge can put a stranger's conversation on someone else's contact. So these tools only use an address Keloa can trust for the person typing:
+
+- **Signed-in users.** When your site uses [identity verification](/developers/identity-verification) and marks the email as verified, the AI uses that address, but only on that same user's own conversations. Another signed-in user's conversations on the same contact never get it.
+- **Anonymous visitors.** On an anonymous website conversation the AI never uses the contact's email address for customer data, wherever that address came from: typed in the chat, from an email, or entered by a teammate. This covers the AI only: the Shopify and WooCommerce sections in your team's inbox still show the orders of whatever email the contact has (see [Contact profile](/contacts/contact-profile#verified-users-from-your-site)).
+- **Shopify order lookups.** When the email isn't trusted, the AI asks the visitor for both the order number and the email on the order before it shows anything.
+- **TRONVoice.** On an anonymous conversation, TRONVoice data only comes through a link a teammate made from that same conversation, and only while one visitor alone writes in it. Once the conversation also has another visitor's messages, messages merged in from another channel or another contact, or any email reply (even from the address owner), the AI stops using the link there, and Keloa refuses to link from such a conversation. The link never counts anywhere else either: not on the contact's email conversations (the address owner may write there) and not after a contact merge. Keloa also refuses to link from a *mixed* conversation, one a merge made before Keloa refused such merges mixed with another person's conversation, and a link made there earlier no longer counts (see [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule)). The same goes for a website conversation from before Keloa told website visitors apart: Keloa refuses to link from it, and a link made there earlier no longer gives the AI any data, until your team merges a newer conversation of the visitor who wrote it into it: that ties it to the visitor, and it then counts like their other conversations. A link made from a signed-in user's conversation applies to that user's conversations, and on email only to mail from the address your site verified for that user. The TRONVoice panel in the inbox shows which case applies and asks you to confirm before you link a client to a visitor who isn't signed in.
+
+On a website conversation the AI only reads the messages written in that visitor's or signed-in user's own website conversations and the replies to them, never messages merged in from any other conversation, even one on the same contact. Your team can no longer merge another person's or another channel's conversation into a website conversation at all. On a mixed conversation, from a merge made before that rule, the AI only reads the chat messages the visitor provably wrote there: not its own earlier answers, internal notes or emails, and none of its ticket fields. On an email or other conversation such a merge moved a website conversation into, it never reads the chat's messages, messages merged in from another contact, or the ticket fields filled before that merge (see [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule)). On other conversations, such as an email or WhatsApp conversation your team merged another one into, the AI reads the whole merged thread. See [Merge conversations](/inbox/overview#merge-conversations).
+
+These rules apply to website conversations. On other channels, such as email, each integration keeps its own checks.
+
+### Where a TRONVoice link applies
+
+A teammate's TRONVoice link applies where it was made:
+
+| Linked from | Applies to |
+| --- | --- |
+| An email conversation, or any other conversation of the contact | The contact's conversations, except website conversations |
+| A signed-in user's website conversation | That user's conversations, and email from the address your site verified for them |
+| An anonymous website conversation | That conversation only, while one visitor alone writes in it |
+
+A contact has one link per administratie: linking a client again, from any conversation, replaces it, and it then applies to whoever that conversation is for. When a contact merge brings two links for the same administratie together, the kept contact's link stays, unless it was made from an anonymous website conversation, or it names nobody while the other was made for a signed-in user and points at the same client. The link that doesn't stay is recorded in the audit log.
+
 ## When tools fire
 
 The agent decides per-message whether to use a tool. The decision is based on the system prompt and the conversation — e.g. *"customer said 'where is my order #1234'"* → call `shopify.orders.lookup`.

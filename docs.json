@@ -119,6 +119,7 @@
             "group": "Developers",
             "pages": [
               "developers/overview",
+              "developers/identity-verification",
               "developers/api-tokens",
               "developers/webhooks"
             ]

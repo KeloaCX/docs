@@ -15,6 +15,10 @@ Inside the app, **Settings → Developers** ships:
 
 - **Outbound webhooks** — admins register HTTPS endpoints, pick events, and receive signed POSTs as those events fire. Built. See [Webhooks](/developers/webhooks) for the planned event taxonomy and payload shape.
 
+Per AI agent, under **AI agents → Channels → Web widget**:
+
+- **Identity verification** — your backend signs a short-lived token for a user signed in to your site, and the web widget hands it to Keloa, so nobody can chat as one of your users. Built. See [Identity verification](/developers/identity-verification).
+
 What's *not* shipped yet (covered in detail on the linked pages):
 
 - A versioned, stable, public REST API surface.
@@ -26,6 +30,7 @@ If you need integration today, the supported paths are:
 - The **[Custom HTTP tool](/agents/tools-custom-http)** — let your AI agent call your endpoints from inside a conversation. Already shipped.
 - The **[Shopify integration](/channels/shopify)** — orders, products, tracking lookup. Already shipped.
 - **Outbound webhooks** — push Keloa events to your stack. Already shipped.
+- **[Identity verification](/developers/identity-verification)** — tell the web widget who your signed-in users are. Already shipped.
 
 ## The planned API shape
 
@@ -58,6 +63,7 @@ These choices follow what the app already uses internally, so the surface should
 | --- | --- |
 | Outbound webhook endpoints (managed in-app) | **Live** |
 | Webhook signing (HMAC-SHA256) | **Live** |
+| Web widget identity verification (HS256 tokens) | **Live** |
 | API tokens UI | Roadmap |
 | Public REST API surface | Roadmap |
 | Official SDKs | Roadmap |
@@ -67,6 +73,9 @@ Subscribe to updates on the [roadmap page](https://keloa.ai/roadmap) so you're n
 ## Related
 
 <CardGroup cols={2}>
+  <Card title="Identity verification" icon="user-check" href="/developers/identity-verification">
+    Verify signed-in users in the web widget.
+  </Card>
   <Card title="API tokens" icon="key" href="/developers/api-tokens">
     Planned token management.
   </Card>

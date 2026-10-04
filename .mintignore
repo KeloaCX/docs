@@ -5,3 +5,37 @@
 # Draft content
 drafts/
 *.draft.mdx
+
+# Agent tooling: skill folders installed for AI coding agents (not docs pages).
+# Mintlify parses every .md/.mdx it finds, and these break mint broken-links.
+.adal/
+.agents/
+.augment/
+.bob/
+.claude/
+.codebuddy/
+.commandcode/
+.continue/
+.cortex/
+.crush/
+.factory/
+.goose/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/
+skills/
