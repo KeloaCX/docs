@@ -43,7 +43,7 @@ Use these Keloa-specific terms exactly. They are wired into the product UI and t
 **For roadmap features**, include a roadmap callout at the top of the page (or section) and cross-link to `https://keloa.ai/roadmap`. Today's roadmap items, per the cross-reference audit:
 
 - **Channels:** Shopify-as-channel (storefront chat).
-- **Integrations:** HubSpot, Salesforce, Mollie, Notion, Zapier, WooCommerce.
+- **Integrations:** HubSpot, Salesforce, Mollie, Notion, WooCommerce.
 - **Auth:** SSO (SAML/OIDC), Google OAuth login.
 - **Developer surface:** public REST API, public webhooks API.
 

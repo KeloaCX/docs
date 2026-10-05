@@ -19,6 +19,10 @@ Per AI agent, under **AI agents → Channels → Web widget**:
 
 - **Identity verification** — your backend signs a short-lived token for a user signed in to your site, and the web widget hands it to Keloa, so nobody can chat as one of your users. Built. See [Identity verification](/developers/identity-verification).
 
+Under **Integrations → Zapier**:
+
+- **Zapier** — owners and admins connect the workspace to Zapier through OAuth, so Zaps can start on Keloa events and act in the workspace. Built. See [Zapier](/developers/zapier) for the setup and the API the integration uses.
+
 What's *not* shipped yet (covered in detail on the linked pages):
 
 - A versioned, stable, public REST API surface.
@@ -31,6 +35,7 @@ If you need integration today, the supported paths are:
 - The **[Shopify integration](/channels/shopify)** — orders, products, tracking lookup. Already shipped.
 - **Outbound webhooks** — push Keloa events to your stack. Already shipped.
 - **[Identity verification](/developers/identity-verification)** — tell the web widget who your signed-in users are. Already shipped.
+- **[Zapier](/developers/zapier)** — connect Keloa to thousands of apps without code. Already shipped.
 
 ## The planned API shape
 
@@ -64,6 +69,7 @@ These choices follow what the app already uses internally, so the surface should
 | Outbound webhook endpoints (managed in-app) | **Live** |
 | Webhook signing (HMAC-SHA256) | **Live** |
 | Web widget identity verification (HS256 tokens) | **Live** |
+| Zapier integration (OAuth 2 + REST hooks) | **Live** |
 | API tokens UI | Roadmap |
 | Public REST API surface | Roadmap |
 | Official SDKs | Roadmap |
@@ -81,5 +87,8 @@ Subscribe to updates on the [roadmap page](https://keloa.ai/roadmap) so you're n
   </Card>
   <Card title="Webhooks" icon="webhook" href="/developers/webhooks">
     Outbound events Keloa will push.
+  </Card>
+  <Card title="Zapier" icon="zap" href="/developers/zapier">
+    Connect Zapier, and the API it uses.
   </Card>
 </CardGroup>
