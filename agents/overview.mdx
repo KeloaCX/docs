@@ -39,19 +39,19 @@ This all happens in a few seconds. The reply includes citations to the knowledge
 
 The agent doesn't answer the latest message on its own. It reads the whole conversation the contact saw, on every channel:
 
-- **The most recent messages word for word**, from the contact, the AI agent and your teammates: at least the last 6, and on WhatsApp and Telegram up to the last 20 (as long as they fit), so a burst of short messages stays intact.
+- **The most recent messages word for word**, from the contact, the AI agent and your teammates: at least the last 6, and on WhatsApp, Telegram and Slack up to the last 20 (as long as they fit), so a burst of short messages stays intact.
 - **A summary of everything older.** In a long conversation, Keloa summarises the earlier messages so the agent still knows what was already asked, answered or promised. The summary is updated as the conversation grows.
 - **Only what the contact saw.** Internal notes, AI drafts waiting for review, discarded drafts and replies that failed to send are left out.
 
-So a contact can say *"and the blue one?"* or *"like I said earlier"* and the agent understands. On Telegram, when a contact sends several messages in a row, the agent waits a few seconds and answers them together.
+So a contact can say *"and the blue one?"* or *"like I said earlier"* and the agent understands. On Telegram and Slack, when a contact sends several messages in a row, the agent waits a few seconds and answers them together.
 
 ### Earlier conversations
 
 When Keloa can verify who is writing, the agent also gets a short summary of that contact's earlier conversations, so it doesn't ask again for something the contact already told you, like an order number.
 
-- **Only verified senders.** The contact must be writing from the same Telegram account, WhatsApp number, Messenger or Instagram account, or from their own email address with a mail that passed sender checks (and nobody else on Cc). On the web widget, only a [signed-in visitor](/developers/identity-verification) counts. Anonymous website visitors never get it, even when they type a contact's name or email address.
+- **Only verified senders.** The contact must be writing from the same Telegram account, WhatsApp number, Messenger or Instagram account, Slack account (in a direct message with the Keloa app; channel threads never use it), or from their own email address with a mail that passed sender checks (and nobody else on Cc). On the web widget, only a [signed-in visitor](/developers/identity-verification) counts. Anonymous website visitors never get it, even when they type a contact's name or email address.
 - **Only conversations from that same sender.** A conversation another person started, or an anonymous chat a teammate merged into the contact, is never used.
-- **Same way in.** Only conversations on the same channel and the same bot, number or Page, never another AI agent's.
+- **Same way in.** Only conversations on the same channel and the same bot, number, Page or Slack workspace, never another AI agent's.
 - **Recent and short.** Up to 3 conversations from the last 90 days, newest first, within your data retention period.
 - **Background only.** The agent treats it as possibly outdated: the current conversation always wins, it never grants refunds or exceptions based on it, and it checks order details with its tools.
 

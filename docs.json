@@ -81,6 +81,7 @@
               "channels/instagram",
               "channels/messenger",
               "channels/telegram",
+              "channels/slack",
               "channels/shopify"
             ]
           },

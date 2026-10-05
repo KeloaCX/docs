@@ -4,8 +4,8 @@ Source for the Keloa user documentation, hosted on [Mintlify](https://mintlify.c
 Published at **[docs.keloa.ai](https://docs.keloa.ai)**.
 
 Keloa is a multi-tenant AI-first omnichannel customer engagement platform:
-a unified inbox across webchat, email, WhatsApp, Instagram, Messenger and
-Telegram, with a per-workspace AI agent grounded in your own knowledge base.
+a unified inbox across webchat, email, WhatsApp, Instagram, Messenger,
+Telegram and Slack, with a per-workspace AI agent grounded in your own knowledge base.
 
 ## Structure
 
@@ -19,7 +19,7 @@ inbox/              — inbox, replying, macros, assignments, resolving
 agents/             — creating, prompting, tools, testing AI agents
 knowledge/          — website crawl, files, snippets, Q&A pairs
 flows/              — triggers, conditions, messages/actions, handoff, publishing
-channels/           — web widget, email, WhatsApp, Instagram, Messenger, Telegram, Shopify (roadmap)
+channels/           — web widget, email, WhatsApp, Instagram, Messenger, Telegram, Slack, Shopify (roadmap)
 contacts/           — contact and company profiles
 analytics/          — metrics and breakdowns
 settings/           — workspace, members, assignment rules, widget, tools, data & privacy, security
