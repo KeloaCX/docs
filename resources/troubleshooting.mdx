@@ -75,6 +75,10 @@ When a single reply fails, the message says why, for example a closed reply wind
 
 Check the bot's card in **Integrations** → **Telegram**. **Token revoked** means the token was regenerated in BotFather; **Needs attention** means another tool took over the bot or Telegram can't reach Keloa. See [Telegram troubleshooting](/channels/telegram#troubleshooting).
 
+## Slack app not answering
+
+In a channel, the Keloa app only sees messages that mention it, in channels it was added to: type `/invite @Keloa` in the channel, then mention **@Keloa**. In a thread, it only answers the person who started it. If the card in **Integrations** → **Slack** says **Access revoked**, click **Reconnect**. See [Slack troubleshooting](/channels/slack#troubleshooting).
+
 ## Conversations arrive but notifications don't
 
 1. In your browser, open site settings for `app.keloa.ai` → **Notifications** → **Allow**.

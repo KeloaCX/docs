@@ -1,0 +1,206 @@
+---
+title: "Slack"
+description: "Connect your Slack workspace to Keloa so direct messages and @mentions of the Keloa app land in your shared inbox and your AI agent answers them in Slack."
+---
+
+Connect a Slack workspace and people can reach your AI agent right inside Slack. They send the **Keloa app** a direct message, or mention it in a channel, and the conversation arrives in your Keloa inbox. Your AI agent answers in the same direct message or thread, and teammates can step in from the inbox at any time.
+
+This works for your own colleagues (an internal help desk for IT or HR questions) and for people at other companies you share a **Slack Connect** channel with.
+
+Keloa can also post team alerts, such as escalations and SLA breaches, into a Slack channel of your choice. See [Notifications channel](#notifications-channel).
+
+## Prerequisites
+
+- A Slack workspace where you're allowed to install apps (or a Slack admin who approves the install).
+- A Keloa workspace with a free **integration** slot, and the **owner** or **admin** role.
+
+Slack is available on every plan. A connected Slack workspace uses one slot of your plan's **Integrations** pool, the same pool as Shopify and custom HTTP endpoints. It doesn't count against **Channels**.
+
+| Plan | Integrations (shared pool) |
+| --- | --- |
+| Starter | 1 |
+| Growth | 5 |
+| Business | 15 |
+| Scale | Unlimited |
+
+When every slot is in use, the Slack panel shows **Slot pool full** instead of **Add workspace**. Disconnect an integration you no longer use, or upgrade your plan.
+
+## Connect Slack
+
+<Steps>
+  <Step title="Open the integration">
+    Sidebar → **Integrations** → **Slack**. The **Connect Slack** window opens.
+  </Step>
+
+  <Step title="Continue to Slack">
+    Click **Continue with Slack**. Slack opens in the same tab.
+  </Step>
+
+  <Step title="Approve the install">
+    Check that the right Slack workspace is selected and click **Allow**. If your Slack workspace needs an admin to approve new apps, an admin approves it first.
+  </Step>
+
+  <Step title="Pick the AI agent">
+    Back in Keloa, you see "Slack is connected. Pick the AI agent that answers in it." On the workspace's card, pick an agent under **AI agent**.
+  </Step>
+</Steps>
+
+<Warning>
+Until you pick an AI agent, the card shows **— No agent (AI paused, your team answers) —**. Messages still arrive in your inbox, but the AI agent doesn't answer them.
+</Warning>
+
+You can also bind the agent from the agent editor: **Channels** → **Social channels** → **Slack** → **Bind to this agent**. One AI agent answers each Slack workspace.
+
+**Add another workspace.** Once a workspace is connected, **Integrations** → **Slack** opens the Slack panel. Click **Add workspace** to connect the next one. Each Slack workspace uses its own integration slot.
+
+<Note>
+**One Keloa workspace per Slack workspace.** A Slack workspace can be connected to one Keloa workspace at a time. If it's already connected elsewhere, you see "This Slack workspace is already connected to another Keloa workspace. Disconnect it there first." Keloa is installed in one Slack workspace at a time, not across a whole Enterprise Grid organization.
+</Note>
+
+### What Keloa asks for in Slack
+
+When you click **Allow**, Slack lists the permissions the Keloa app asks for. They let it:
+
+- Read direct messages sent to the app, and messages in channels, private channels and group DMs it was added to. Keloa only stores the messages described in [How people reach you](#how-people-reach-you).
+- Post answers, and upload images.
+- Read files people send it.
+- Add and remove a reaction, to show when the AI agent is working.
+- Read people's names, and their email address when Slack shows it.
+- List channels, for the notifications channel picker.
+
+## How people reach you
+
+The Slack panel shows the same steps under **How people reach you in Slack**.
+
+- **Direct message.** People open **Keloa** under **Apps** in Slack and send it a direct message. All of one person's messages go into one conversation until you solve it. The next message after that starts a new conversation.
+- **Mention in a channel.** First add the app to the channel: type `/invite @Keloa` there once. Then anyone can mention **@Keloa** with a question. The answer comes in a thread.
+- **Slack Connect.** This also works in Slack Connect channels you share with other companies. Their messages arrive under their own name.
+
+<Note>
+If your Slack admin renamed the app, use that name instead of **@Keloa**. The Slack panel shows the app's current name in its steps.
+</Note>
+
+**Each thread is one conversation.** A mention starts a conversation for its thread. Later replies in that thread reach Keloa without mentioning **@Keloa** again. Messages elsewhere in the channel that don't mention the app are never read or stored.
+
+Private channels and group DMs work the same way, once the app has been added to them.
+
+## What the AI does
+
+- **Answers in place.** In a direct message, the AI agent answers in the same chat. In a channel, it answers in the thread of the message that mentioned it.
+- **Reads the thread first.** When someone mentions **@Keloa** in the middle of a thread that was already going, Keloa reads up to 15 earlier messages of that thread. They show in the conversation, and the AI agent uses them as context.
+- **The whole conversation as context.** The AI agent reads the full conversation, not only the latest message: on Slack, up to the last 20 messages word for word. See [Conversation memory](/agents/overview#conversation-memory).
+- **One answer per burst.** When someone sends several messages in a row, the AI agent waits a few seconds and answers them together.
+- **Shows it's working.** While the AI agent works on an answer, the newest message gets an 👀 reaction. The reaction is removed once the answer is out.
+- **Hands off to your team.** When the AI agent hands a conversation to a teammate, it sends its own hand-off reply in Slack, and the conversation moves to your inbox for a human.
+- **Answers only the thread's owner.** In a channel thread, the person who mentioned **@Keloa** first owns the conversation. The AI agent only answers them, because its tools and context (orders, invoices) are theirs.
+- **Other people in the thread.** Messages from anyone else in a tracked thread are saved in the conversation under their own name, marked "(in this thread)". They don't get an AI answer. If someone else mentions **@Keloa** in another person's thread, the AI agent doesn't answer either: your team is told so a teammate can reply.
+
+When the AI agent can't answer, for example because no agent is bound, the agent is paused or not published, or the workspace is out of AI credits, Keloa adds an internal note to the conversation that says why, and the conversation waits in your inbox for a teammate.
+
+## Formatting
+
+Answers from the AI agent and replies from the inbox are formatted for Slack:
+
+- **Bold**, _italic_, ~~strikethrough~~ and `code` (also code blocks).
+- Links with their own label.
+- Bulleted and numbered lists, and quotes.
+
+Slack has no headings or tables in messages. The AI agent doesn't use them on Slack; if a reply contains one anyway, a heading becomes a bold line and a table becomes simple `a | b` rows.
+
+Anything that looks like a Slack command in a reply, such as `@channel` or `@here`, goes out as plain text. A reply never pings a whole channel.
+
+Long replies are split into several Slack messages of up to 3,900 characters each.
+
+## Files and images
+
+**From people to you.** People can send files and images in a direct message or a tracked thread. Keloa copies them, and they show in the conversation.
+
+- Up to 10 files per message, and up to 25 MB per file. A larger file shows "Too large to copy from Slack. Open it in Slack."
+- Each workspace can copy a set amount of Slack files per day (2 GB). Past it, files aren't copied; the messages still arrive.
+- Unsafe file types (for example programs and scripts) are never stored. The conversation says the file type isn't shown for security reasons.
+- A file that lives elsewhere, such as Google Drive, shows as a link: "Linked file (opens outside Keloa)".
+- The AI agent can't look inside files and images. It's told what was sent, and can ask the person to describe it or hand off to your team.
+
+**From you to people.** Teammates can add images to a reply with the reply box. Keloa uploads them to Slack, into the same direct message or thread. Other file attachments and GIFs can't be sent on Slack.
+
+<Note>
+**Images arrive as links?** Slack workspaces connected before image uploads existed haven't granted that permission. The card shows **New permissions available.** with a **Reconnect** button, and the reply box says "Slack shows formatting; images go as links until Slack is reconnected". Click **Reconnect** and approve the install again. Your settings and conversations stay.
+</Note>
+
+## Edits and deletes
+
+- **Edits.** When someone edits a message in Slack, Keloa updates it in the conversation and marks it **Edited**. Hover the label to see the earlier text. The AI agent doesn't answer an edit again.
+- **Deletes.** When someone deletes a message in Slack, Keloa keeps it for your team and marks it **Deleted in Slack**. The AI agent is told the message was deleted.
+
+## Satisfaction surveys
+
+Keloa can ask people to rate the conversation after you solve it. The survey goes out as a message in their direct message with the app, with five faces to click; each face opens the short rating page.
+
+Surveys are only sent in direct messages with the app, never in a channel thread or group DM, where anyone could answer them.
+
+Turn Slack surveys on or off in **Settings → Customer satisfaction → Channels**. Results show up in [CSAT](/analytics/csat) next to your other channels.
+
+## Memory of earlier conversations
+
+In a direct message, the AI agent can get a short summary of that person's earlier Slack conversations, so they don't have to repeat themselves. Slack confirms who sent every message, so a direct message counts as a verified sender.
+
+Channel threads and group DMs never use this memory, in either direction: other people read the answers. See [Earlier conversations](/agents/overview#earlier-conversations).
+
+The email address from someone's Slack profile is shown as **From Slack**. Slack doesn't confirm it's theirs, so Keloa never uses it to look up their orders or invoices.
+
+## Notifications channel
+
+Separately from conversations, Keloa can post team alerts into one Slack channel.
+
+<Steps>
+  <Step title="Pick the channel">
+    On the workspace's card, click **Notifications channel** and pick a channel from the list. Public channels are listed right away. For a private channel, first type `/invite @Keloa` in it.
+  </Step>
+
+  <Step title="Choose the events">
+    Open **Notification events** and tick the alerts you want: **Conversation escalated**, **SLA breached**, **Payment failed**, **Auto-recharge failed** and **Email domain verified**. All but **Email domain verified** are on by default.
+  </Step>
+
+  <Step title="Send a test">
+    Click **Send test message**. The channel gets "Keloa is connected to this channel."
+  </Step>
+</Steps>
+
+New conversations, mentions, assignments and failed replies are personal alerts. Each teammate turns on the **Slack** column for them under **Profile → Notifications**. They're posted in the same notifications channel, so everyone in it sees them.
+
+## Status and reconnecting
+
+Each Slack workspace has a card with its status, the AI agent and the time of the last message from Slack.
+
+| Status | Meaning |
+| --- | --- |
+| **Connected** | Messages flow both ways. |
+| **Access revoked** | Slack no longer accepts Keloa's access: the app was removed from the Slack workspace, or its permissions were revoked. The card says which and shows **Reconnect**. |
+
+Keloa also checks every connected workspace automatically every few hours. When access stops working, the workspace owners get an email and a notification in Keloa.
+
+While a workspace is disconnected, its conversations show a banner, such as **Slack needs to be reconnected**, and the reply box is locked.
+
+**To reconnect**, click **Reconnect** on the card and approve the install in Slack again. The same AI agent, notification settings and conversations come back. Reconnect too when the card shows **New permissions available.**, to grant permissions Keloa added since you connected.
+
+## Disconnecting
+
+**Integrations** → **Slack** → the **×** on the workspace's card → **Disconnect**. Keloa removes its access in Slack, so new messages stop being answered and notifications stop posting. Past conversations stay in your inbox.
+
+The AI agent binding is kept: if you connect the same Slack workspace again later, the same agent answers.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| The app doesn't answer in a channel | Add it to the channel first with `/invite @Keloa`, then mention **@Keloa** in your message. Messages without a mention outside a tracked thread are never read. |
+| The app doesn't answer a colleague in someone's thread | By design: the AI agent only answers the person who started the thread with a mention. Other people's messages are saved, and your team can reply from the inbox. To get an AI answer, start a new thread with a mention. |
+| The app doesn't answer at all | Check **AI agent** on the workspace's card, and that the agent is live. With **— No agent (AI paused, your team answers) —**, your team answers. The conversation has an internal note that says why the AI didn't reply. |
+| Images arrive in Slack as links | Click **Reconnect** on the card to grant the upload permission. |
+| The card says **Access revoked** | The Keloa app was removed from Slack or its access was revoked. Click **Reconnect**. |
+| "The Keloa app is no longer in this Slack channel" | Someone removed the app from the channel. Type `/invite @Keloa` in it and send the reply again. |
+| No channels in the **Notifications channel** list, or a private channel is missing | Type `/invite @Keloa` in the channel, then open the list again. |
+| "This Slack workspace is already connected to another Keloa workspace" | Disconnect it in that Keloa workspace first. |
+| "Keloa can be installed in one Slack workspace at a time" | Install Keloa in one workspace of your Enterprise Grid organization, not organization-wide. |
+| **Slot pool full** | Every integration slot of your plan is in use. Disconnect an integration or upgrade your plan. |
+| A file shows "Too large to copy from Slack" | Files over 25 MB aren't copied. Open the message in Slack with **Open in Slack** in the conversation header. |

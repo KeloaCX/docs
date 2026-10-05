@@ -1,9 +1,9 @@
 ---
 title: "Channels overview"
-description: "Connect web chat, email, WhatsApp, Instagram, Messenger and Telegram to Keloa. Every channel lands in one shared inbox, answered by your AI agent."
+description: "Connect web chat, email, WhatsApp, Instagram, Messenger, Telegram and Slack to Keloa. Every channel lands in one shared inbox, answered by your AI agent."
 ---
 
-Every place where you receive customer messages is a **channel**. Keloa is live on web chat, email, WhatsApp, Instagram, Facebook Messenger and Telegram. Every conversation lands in the same inbox, and your AI agent answers on all of them.
+Every place where you receive customer messages is a **channel**. Keloa is live on web chat, email, WhatsApp, Instagram, Facebook Messenger, Telegram and Slack. Every conversation lands in the same inbox, and your AI agent answers on all of them.
 
 ## Live channels
 
@@ -26,6 +26,9 @@ Every place where you receive customer messages is a **channel**. Keloa is live 
   <Card title="Telegram" icon="telegram" href="/channels/telegram">
     Connect your own Telegram bot. Contacts message it by `@username` or `t.me` link, and your AI agent answers.
   </Card>
+  <Card title="Slack" icon="slack" href="/channels/slack">
+    Colleagues and Slack Connect customers message the Keloa app or @mention it in a channel, and your AI agent answers in the thread.
+  </Card>
 </CardGroup>
 
 ## Coming soon
@@ -36,7 +39,7 @@ Every place where you receive customer messages is a **channel**. Keloa is live 
 
 ## Where to connect channels
 
-Sidebar → **Integrations**. The **Channels** category holds **Email domain**, **Facebook Messenger**, **Instagram**, **WhatsApp** and **Telegram** (plus **Slack**, for teammates). The web widget is installed from **Settings → Widget**.
+Sidebar → **Integrations**. The **Channels** category holds **Email domain**, **Facebook Messenger**, **Instagram**, **WhatsApp**, **Telegram** and **Slack**. The web widget is installed from **Settings → Widget**.
 
 Connecting and disconnecting channels needs the **owner** or **admin** role. Other teammates see the channels but can't change them.
 
@@ -49,6 +52,7 @@ Each connected Page, number or bot has a card with its own status:
 | **WhatsApp** | **Live**, **Needs attention**. While Keloa sets up a number: **Requested**, **In progress** or **Declined**. See [WhatsApp](/channels/whatsapp#the-numbers-card). |
 | **Messenger** and **Instagram** | **Connected**, **Reconnect needed**, **Disconnected**, **Pending**. See [Instagram](/channels/instagram#the-accounts-card). |
 | **Telegram** | **Connected**, **Needs attention**, **Token revoked**. See [Telegram](/channels/telegram#the-bots-card). |
+| **Slack** | **Connected**, **Access revoked**. See [Slack](/channels/slack#status-and-reconnecting). |
 
 ## Reply windows
 
@@ -58,6 +62,7 @@ Some messaging apps only let businesses reply for a limited time after the conta
 | --- | --- |
 | **Web widget**, **email** | None |
 | **Telegram** | None. Reply any time, unless the contact blocked the bot. |
+| **Slack** | None. Reply any time while the Slack workspace is connected. |
 | **WhatsApp** | 24 hours after the contact's last message (72 hours after a click-to-WhatsApp ad). |
 | **Messenger** and **Instagram** | 24 hours. With the optional **Extended reply window (24h–7d)**, teammates (not the AI agent) can reply for up to 7 days. |
 
@@ -70,7 +75,7 @@ Some messaging apps only let businesses reply for a limited time after the conta
 | Business | 5 | 6 | 3 | 15 |
 | Scale | Unlimited | Unlimited | Unlimited | Unlimited |
 
-**Channels**, **email channels**, **email domains** and **integrations** are four separate pools: they don't share a cap. The **Channels** cap counts your web widget and email inboxes. An **email channel** is one email address you reply as; it also counts as a channel. An **email domain** is a verified sending domain. An **integration** is a connected third-party app (Shopify, custom HTTP, Slack, Google Drive) that feeds data or runs actions; see [Core concepts](/concepts#integration). Two email addresses on the same domain is two email channels but one verified domain.
+**Channels**, **email channels**, **email domains** and **integrations** are four separate pools: they don't share a cap. The **Channels** cap counts your web widget and email inboxes. An **email channel** is one email address you reply as; it also counts as a channel. An **email domain** is a verified sending domain. An **integration** is a connected third-party app (Shopify, custom HTTP, Google Drive) that feeds data or runs actions; see [Core concepts](/concepts#integration). A connected Slack workspace also uses one integration slot. Two email addresses on the same domain is two email channels but one verified domain.
 
 WhatsApp, Messenger, Instagram and Telegram have their own limits and don't count against **Channels**:
 
@@ -81,13 +86,15 @@ WhatsApp, Messenger, Instagram and Telegram have their own limits and don't coun
 | Business | Included | 3 | 3 |
 | Scale | Included | Unlimited | Unlimited |
 
+Slack is available on every plan. Each connected Slack workspace uses one slot of the **Integrations** pool above. See [Slack](/channels/slack#prerequisites).
+
 <Note>
-Email is a **Growth+** feature. Starter is widget-only: `email_channels` and `email_domains` are locked on Starter. Upgrade to Growth to add email channels.
+Email is a **Growth+** feature. Starter has no email: `email_channels` and `email_domains` are locked on Starter. Upgrade to Growth to add email channels.
 </Note>
 
 ## One AI agent per channel
 
-Every connected Page, number and bot has one **AI agent** that answers it. Pick it under **Answered by** on the card in **Integrations**, or in the agent editor under **Channels** → **Social channels**. Use flows to override the default for specific senders or topics.
+Every connected Page, number, bot and Slack workspace has one **AI agent** that answers it. Pick it under **Answered by** (on Slack: **AI agent**) on the card in **Integrations**, or in the agent editor under **Channels** → **Social channels**. Use flows to override the default for specific senders or topics.
 
 Whatever the channel, the AI agent reads the whole conversation, not only the latest message. See [Conversation memory](/agents/overview#conversation-memory).
 
