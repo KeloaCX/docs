@@ -5,7 +5,7 @@ description: "Connect your Slack workspace to Keloa so direct messages and @ment
 
 Connect a Slack workspace and people can reach your AI agent right inside Slack. They send the **Keloa app** a direct message, or mention it in a channel, and the conversation arrives in your Keloa inbox. Your AI agent answers in the same direct message or thread, and teammates can step in from the inbox at any time.
 
-This works for your own colleagues (an internal help desk for IT or HR questions) and for customers you share a **Slack Connect** channel with.
+This works for your own colleagues (an internal help desk for IT or HR questions) and for people at other companies you share a **Slack Connect** channel with.
 
 Keloa can also post team alerts, such as escalations and SLA breaches, into a Slack channel of your choice. See [Notifications channel](#notifications-channel).
 
@@ -74,7 +74,7 @@ The Slack panel shows the same steps under **How people reach you in Slack**.
 
 - **Direct message.** People open **Keloa** under **Apps** in Slack and send it a direct message. All of one person's messages go into one conversation until you solve it. The next message after that starts a new conversation.
 - **Mention in a channel.** First add the app to the channel: type `/invite @Keloa` there once. Then anyone can mention **@Keloa** with a question. The answer comes in a thread.
-- **Slack Connect.** This also works in Slack Connect channels you share with customers. Their messages arrive under their own name.
+- **Slack Connect.** This also works in Slack Connect channels you share with other companies. Their messages arrive under their own name.
 
 <Note>
 If your Slack admin renamed the app, use that name instead of **@Keloa**. The Slack panel shows the app's current name in its steps.
@@ -136,7 +136,7 @@ Long replies are split into several Slack messages of up to 3,900 characters eac
 
 Keloa can ask people to rate the conversation after you solve it. The survey goes out as a message in their direct message with the app, with five faces to click; each face opens the short rating page.
 
-Surveys are only sent in direct messages, never in a channel thread, where anyone could answer them.
+Surveys are only sent in direct messages with the app, never in a channel thread or group DM, where anyone could answer them.
 
 Turn Slack surveys on or off in **Settings → Customer satisfaction → Channels**. Results show up in [CSAT](/analytics/csat) next to your other channels.
 
@@ -144,7 +144,7 @@ Turn Slack surveys on or off in **Settings → Customer satisfaction → Channel
 
 In a direct message, the AI agent can get a short summary of that person's earlier Slack conversations, so they don't have to repeat themselves. Slack confirms who sent every message, so a direct message counts as a verified sender.
 
-Channel threads never use this memory, in either direction: other people in the channel read the answers. See [Earlier conversations](/agents/overview#earlier-conversations).
+Channel threads and group DMs never use this memory, in either direction: other people read the answers. See [Earlier conversations](/agents/overview#earlier-conversations).
 
 The email address from someone's Slack profile is shown as **From Slack**. Slack doesn't confirm it's theirs, so Keloa never uses it to look up their orders or invoices.
 
