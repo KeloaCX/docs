@@ -1,0 +1,1499 @@
+---
+title: "Zapier"
+description: "Connect Keloa to Zapier, and the API reference for every endpoint the Keloa Zapier integration uses."
+---
+
+The Keloa Zapier integration connects a Keloa workspace to thousands of apps. Zaps start on Keloa events (a new conversation, a customer message, a Zap command a teammate runs from the inbox) and can create contacts and conversations, reply, add notes and tags, and update conversations.
+
+This page has two parts:
+
+- [Connect Zapier](#connect-zapier) — for teams who want to use Keloa in their Zaps.
+- [API reference](#api-reference) — the OAuth 2 flow, the endpoints, the REST hooks and the payloads the integration uses.
+
+<Info>
+The API on this page exists for the Keloa Zapier integration. Only Zapier can get an access token for it: the OAuth client is Zapier, and Keloa only redirects to Zapier's own OAuth return address. To call Keloa from your own code, use [Webhooks](/developers/webhooks) and the [Custom HTTP tool](/agents/tools-custom-http).
+</Info>
+
+## Connect Zapier
+
+### Who can connect
+
+- **Role.** Only workspace **owners** and **admins** can connect Keloa to Zapier. See [Members & roles](/settings/members-and-roles).
+- **Plan.** Zapier works on every plan. It uses **one integration slot** per workspace, however many teammates connect it: Starter includes 1 slot, Growth 5, Business 15 and Scale unlimited. See [Plans](/billing/plans).
+- **Per-plan actions.** **Add Internal Note** needs **Growth** or higher, because internal notes do. Keloa only sends email from a workspace with a verified [email domain](/settings/email-domains), which needs **Growth** or higher. Without one, **Create Conversation** and replies on email conversations are kept in the conversation but not sent.
+
+### Set it up
+
+<Steps>
+  <Step title="Open Keloa on Zapier">
+    In Keloa, open **Integrations** in the sidebar, select the **Zapier** tile and click **Open Keloa on Zapier**. Or search for Keloa when you add a step to a Zap.
+  </Step>
+
+  <Step title="Pick a Keloa trigger or action">
+    Create a Zap and pick one of the Keloa [triggers](#triggers), [actions](#actions) or [searches](#searches). Zapier asks you to sign in to Keloa.
+  </Step>
+
+  <Step title="Allow access to your workspace">
+    Sign in to Keloa. The consent page shows the workspace you have open and what Zapier may do there. Click **Allow access to** your workspace. If you're an owner or admin of other workspaces, the page offers to connect one of those instead.
+  </Step>
+
+  <Step title="Build your Zap">
+    Zapier labels the connection with the workspace name and your email address. Zaps act as you: replies and notes show your name, and the conversations you reply to are assigned to you, as if you had done it in the inbox.
+  </Step>
+</Steps>
+
+### What you can do in a Zap
+
+#### Triggers
+
+All triggers are instant (REST hooks). See [Events](#events) for the data each one sends.
+
+| Trigger | Fires when | Optional filter |
+| --- | --- | --- |
+| **New Conversation** | A conversation is created on any channel. | |
+| **Conversation Status Changed** | A conversation changes status. | Status |
+| **Conversation Assigned** | A conversation is assigned to a teammate. | |
+| **Conversation Tagged** | One or more tags are added to a conversation. | Tag |
+| **New Satisfaction Rating** | A contact rates a conversation (CSAT). | |
+| **New Customer Message** | A contact writes on any channel. | |
+| **New Contact** | A contact is created. | |
+| **New Zap Command** | A teammate runs a [Zap command](#zap-commands) from a conversation. | Command |
+
+#### Actions
+
+| Action | What it does |
+| --- | --- |
+| **Create Contact** | Creates a contact. |
+| **Update Contact** | Updates a contact's name, email, phone, city or language. |
+| **Create Conversation** | Emails a contact from your workspace and starts an email conversation. |
+| **Send Reply** | Replies to the contact on the conversation's own channel. |
+| **Add Internal Note** | Adds an internal note to a conversation. |
+| **Add Tags to Conversation** | Adds tags to a conversation. Existing tags stay. |
+| **Update Conversation** | Changes the status, priority, assignee or team of a conversation. |
+
+#### Searches
+
+| Search | Finds |
+| --- | --- |
+| **Find Contact** | Contacts by email address or phone number. Can create the contact when none is found. |
+| **Find Conversation** | A conversation by ID, or the newest conversations of a contact's email address, optionally in one status. |
+
+### Zap commands
+
+A Zap command lets a teammate start a Zap from a conversation. Turn on a Zap with the **New Zap Command** trigger and give it a command name, for example `refund`. Then, in a conversation:
+
+- Type `/zap` in the composer and pick a command, or
+- click the **Zapier** button next to the composer (**Run a Zap**).
+
+You can add optional details for the Zap, for example `12.50 damaged`. Keloa sends the conversation, its contact, the teammate, the command and the details to every Zap that listens for that command. The command never reaches the contact. Keloa adds an internal note to the conversation that says who ran which command.
+
+- A command name uses lowercase letters, digits, dashes and underscores, starts with a letter or digit and is at most 48 characters long. A leading `/` is dropped and uppercase is lowered.
+- A Zap with the trigger's **Command** filter left empty listens for every command. Then teammates can type any command name.
+- Every teammate except **viewers** can run Zap commands.
+- If no Zap listens for a command, Keloa refuses to run it.
+
+### See and remove connections
+
+Open **Integrations → Zapier** in Keloa. It lists each teammate who connected Zapier, when they connected, when the connection was last used, how many live Zaps it has, and the Zap commands Zaps listen for. Owners and admins can **Disconnect** a connection: its Zaps stop receiving Keloa events and can no longer act in the workspace. When the last connection is gone, Zapier frees its integration slot.
+
+A connection also ends on its own when the teammate who made it leaves the workspace. When they're no longer an owner or admin, the connection stops working: API calls are refused right away, and the connection ends when Zapier next refreshes its access token or delivers an event.
+
+## API reference
+
+### Basics
+
+| | |
+| --- | --- |
+| **App URL** | `https://app.keloa.ai` |
+| **API base URL** | `https://app.keloa.ai/api/zapier/v1` |
+| **Authentication** | OAuth 2.0 authorization code grant with PKCE |
+| **Format** | JSON request and response bodies. Timestamps are ISO 8601 with a UTC offset (`2026-10-05T08:12:45+00:00`). IDs are UUIDs. |
+
+Every API call runs **as the teammate who connected**, **in the workspace they approved**, whatever workspace that teammate has open in the app. Records of other workspaces don't exist for the call: their IDs answer `404`, and searches never return them.
+
+Optional fields that are missing, `null` or an empty string are ignored: an update only changes the fields you send with a value.
+
+### OAuth 2.0
+
+Keloa is an OAuth 2.0 authorization server ([RFC 6749](https://www.rfc-editor.org/rfc/rfc6749)) with PKCE ([RFC 7636](https://www.rfc-editor.org/rfc/rfc7636)) and token revocation ([RFC 7009](https://www.rfc-editor.org/rfc/rfc7009)).
+
+| Endpoint | URL |
+| --- | --- |
+| Authorize | `GET https://app.keloa.ai/oauth/authorize` |
+| Token | `POST https://app.keloa.ai/oauth/token` |
+| Revoke | `POST https://app.keloa.ai/oauth/revoke` |
+
+| | |
+| --- | --- |
+| **Grant types** | `authorization_code`, `refresh_token` |
+| **Authorization code** | Single use, valid for **10 minutes** |
+| **Access token** | Valid for **2 hours** (`expires_in: 7200`), prefix `kza_` |
+| **Refresh token** | Prefix `kzr_`. Valid until the connection is revoked. It is **not rotated**: a refresh returns the same refresh token. |
+| **Scope** | One fixed scope, `zapier`. The `scope` request parameter is ignored. |
+| **Client authentication** | `client_id` and `client_secret` in the form body, or HTTP Basic auth |
+
+#### 1. Authorize
+
+Zapier sends the teammate's browser to the consent page:
+
+```http
+GET /oauth/authorize?response_type=code
+  &client_id=<client id>
+  &redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2F<app key>%2F
+  &state=<opaque state>
+  &code_challenge=<base64url SHA-256 of the verifier>
+  &code_challenge_method=S256 HTTP/1.1
+Host: app.keloa.ai
+```
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `response_type` | Yes | Must be `code`. |
+| `client_id` | Yes | The Zapier integration's client ID. |
+| `redirect_uri` | Yes | Zapier's OAuth return address, `https://zapier.com/dashboard/auth/oauth/return/<app key>/`. At most 500 characters. |
+| `state` | Recommended | Returned unchanged. At most 500 characters. |
+| `code_challenge` | Recommended | The PKCE challenge: 43 to 128 characters of `A-Z a-z 0-9 - . _ ~`. When you send one, the token request must send the matching `code_verifier`. |
+| `code_challenge_method` | No | `S256` (recommended) or `plain`. Defaults to `plain` when a challenge is sent without a method. |
+
+The teammate signs in to Keloa if needed, then sees the consent page for the workspace they have open. When they approve, Keloa redirects to the `redirect_uri`:
+
+```
+https://zapier.com/dashboard/auth/oauth/return/<app key>/?code=kzc_...&state=<opaque state>
+```
+
+Errors:
+
+| Situation | Result |
+| --- | --- |
+| Unknown `client_id`, or a `redirect_uri` that isn't Zapier's return address | `400` page in Keloa. Keloa never redirects to an unknown address. |
+| `response_type` isn't `code` | Redirect with `error=unsupported_response_type` |
+| `state` longer than 500 characters, malformed `code_challenge`, or an unknown `code_challenge_method` | Redirect with `error=invalid_request` |
+| The teammate clicks **Cancel** | Redirect with `error=access_denied` |
+| The teammate isn't an owner or admin of the workspace | The page says so; approving answers `403` |
+| The workspace has no free integration slot | The page offers an upgrade; approving answers `402` |
+| The teammate switched workspace in another tab since the page loaded | `409`; the teammate reviews the request again |
+
+#### 2. Exchange the code for tokens
+
+```http
+POST /oauth/token HTTP/1.1
+Host: app.keloa.ai
+Content-Type: application/x-www-form-urlencoded
+Accept: application/json
+
+grant_type=authorization_code
+&code=kzc_...
+&redirect_uri=https%3A%2F%2Fzapier.com%2Fdashboard%2Fauth%2Foauth%2Freturn%2F<app key>%2F
+&code_verifier=<PKCE verifier>
+&client_id=<client id>
+&client_secret=<client secret>
+```
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `grant_type` | Yes | `authorization_code` |
+| `code` | Yes | The code from the redirect. |
+| `redirect_uri` | Yes | Exactly the `redirect_uri` of the authorize request. |
+| `code_verifier` | When a challenge was sent | The PKCE verifier, 43 to 128 characters. |
+| `client_id`, `client_secret` | Yes | In the body, or as HTTP Basic auth. |
+
+```json 200 OK
+{
+  "access_token": "kza_...",
+  "refresh_token": "kzr_...",
+  "token_type": "Bearer",
+  "expires_in": 7200,
+  "scope": "zapier"
+}
+```
+
+Token responses carry `Cache-Control: no-store`. A code is valid once. If a used code is presented again, Keloa refuses it and also revokes the connection that code created, because someone else may hold it.
+
+#### 3. Refresh the access token
+
+When an API call answers `401`, refresh the access token:
+
+```http
+POST /oauth/token HTTP/1.1
+Host: app.keloa.ai
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=refresh_token
+&refresh_token=kzr_...
+&client_id=<client id>
+&client_secret=<client secret>
+```
+
+```json 200 OK
+{
+  "access_token": "kza_...",
+  "refresh_token": "kzr_...",
+  "token_type": "Bearer",
+  "expires_in": 7200,
+  "scope": "zapier"
+}
+```
+
+A refresh returns a new access token and the **same** refresh token. The previous access token stops working at once. If the teammate who connected is no longer an owner or admin of the workspace, the refresh fails with `invalid_grant` and Keloa revokes the connection: reconnect with an owner or admin account.
+
+#### 4. Revoke a token
+
+```http
+POST /oauth/revoke HTTP/1.1
+Host: app.keloa.ai
+Content-Type: application/x-www-form-urlencoded
+
+token=kzr_...
+&client_id=<client id>
+&client_secret=<client secret>
+```
+
+```json 200 OK
+[]
+```
+
+`token` can be the access token or the refresh token: either one ends the whole connection. Its tokens stop working, its REST hooks are deleted, and when it was the workspace's last Zapier connection, the integration slot is freed. An unknown or already revoked token also answers `200`.
+
+#### Token endpoint errors
+
+Errors from `/oauth/token` and `/oauth/revoke` use the OAuth 2.0 error format:
+
+```json 400 Bad Request
+{
+  "error": "invalid_grant",
+  "error_description": "The authorization code is invalid, expired or already used."
+}
+```
+
+| Status | `error` | When |
+| --- | --- | --- |
+| `401` | `invalid_client` | Missing or wrong `client_id` / `client_secret`. |
+| `400` | `invalid_request` | `code` or `refresh_token` is missing. |
+| `400` | `invalid_grant` | The code is unknown, expired, already used, issued for another `redirect_uri` or fails PKCE; or the refresh token is unknown or revoked; or the teammate may no longer connect. |
+| `400` | `unsupported_grant_type` | `grant_type` is neither `authorization_code` nor `refresh_token`. |
+| `429` | | More than 60 requests a minute from one IP address. |
+
+### Authentication
+
+Send the access token as a bearer token on every API call:
+
+```http
+GET /api/zapier/v1/me HTTP/1.1
+Host: app.keloa.ai
+Authorization: Bearer kza_...
+Accept: application/json
+```
+
+| Status | Body `message` | What to do |
+| --- | --- | --- |
+| `401` | `The Keloa connection has expired. Reconnect Keloa in Zapier.` | The token is missing, unknown, expired or revoked. Refresh it; if the refresh fails, reconnect. |
+| `401` | `The teammate who connected Keloa is no longer in this workspace. Reconnect Keloa in Zapier.` | The connection was revoked. Reconnect. |
+| `401` | `This Keloa workspace connection is no longer valid. Reconnect Keloa in Zapier.` | The teammate or workspace was deleted. The connection was revoked. Reconnect. |
+| `403` | `The teammate who connected Keloa needs to be an owner or admin of the workspace.` | The teammate is now an agent or viewer. Make them an owner or admin again, or reconnect with an owner or admin account. |
+
+### Rate limits
+
+| Endpoint | Limit |
+| --- | --- |
+| `/api/zapier/v1/*` | 300 requests a minute per connection |
+| `POST /oauth/token`, `POST /oauth/revoke` | 60 requests a minute per IP address |
+| Approving on the consent page | 20 a minute per teammate |
+
+Over the limit, Keloa answers `429` with a `Retry-After` header (seconds) and `{"message": "Too Many Attempts."}`. API responses also carry `X-RateLimit-Limit` and `X-RateLimit-Remaining`.
+
+### Errors
+
+The API always answers JSON, whatever `Accept` header you send. Every error body has a `message`. Validation errors (`422`) also list the fields:
+
+```json 422 Unprocessable Content
+{
+  "message": "This address already belongs to Jeroen Bakker. (and 1 more error)",
+  "errors": {
+    "email": ["This address already belongs to Jeroen Bakker."],
+    "email_duplicate": ["This address already belongs to Jeroen Bakker."]
+  }
+}
+```
+
+| Status | Meaning |
+| --- | --- |
+| `200` / `201` | Success. `201` when the call created something. |
+| `401` | The access token is missing, expired or revoked. See [Authentication](#authentication). |
+| `402` | The workspace's plan doesn't include this. The `message` says which plan does, for example `Internal notes are available on Growth and above.` |
+| `403` | The teammate who connected may not do this. See [Authentication](#authentication). |
+| `404` | The record doesn't exist in the connected workspace, or the ID isn't a valid ID. |
+| `422` | The data is invalid, or the action isn't possible (for example a conversation that was merged into another). See `errors`. |
+| `429` | Rate limited. Wait for the `Retry-After` seconds. |
+| `5xx` | Something went wrong in Keloa. Try again later. |
+
+### Objects
+
+Every endpoint and every event uses the same object shapes, so a field you map in a Zap is the same in test and live runs.
+
+#### Conversation
+
+```json
+{
+  "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+  "subject": "Where is my order #10423?",
+  "status": "open",
+  "priority": "normal",
+  "channel": "email",
+  "tags": [
+    "order",
+    "shipping"
+  ],
+  "assignee": {
+    "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+    "name": "Sanne de Vries",
+    "email": "sanne@bakkerijdevries.nl"
+  },
+  "team": {
+    "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+    "name": "Support"
+  },
+  "contact": {
+    "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+    "name": "Jeroen Bakker",
+    "first_name": "Jeroen",
+    "last_name": "Bakker",
+    "email": "jeroen.bakker@example.nl",
+    "phone": "+31612345678",
+    "city": "Utrecht",
+    "language": "nl",
+    "company": {
+      "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+      "name": "Bakker Installaties"
+    },
+    "created_at": "2026-09-28T09:14:22+00:00",
+    "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+  },
+  "created_at": "2026-10-05T08:12:45+00:00",
+  "updated_at": "2026-10-05T08:30:02+00:00",
+  "resolved_at": null,
+  "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Conversation ID (UUID). |
+| `subject` | string or null | The conversation's subject. |
+| `status` | string | `open`, `pending`, `solved` or `closed`. |
+| `priority` | string | `low`, `normal`, `high` or `urgent`. |
+| `channel` | string | The channel the conversation is on, for example `email`, `webchat`, `whatsapp`, `instagram`, `messenger`, `telegram` or `slack`. |
+| `tags` | string[] | The conversation's tags. |
+| `assignee` | [Teammate](#teammate) or null | Who the conversation is assigned to. |
+| `team` | object or null | `{ "id", "name" }` of the team it's in. |
+| `contact` | [Contact](#contact) or null | The contact the conversation is with. |
+| `created_at`, `updated_at` | string | Timestamps. |
+| `resolved_at` | string or null | When it was last solved. |
+| `url` | string | The conversation in the Keloa inbox. |
+
+#### Contact
+
+```json
+{
+  "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+  "name": "Jeroen Bakker",
+  "first_name": "Jeroen",
+  "last_name": "Bakker",
+  "email": "jeroen.bakker@example.nl",
+  "phone": "+31612345678",
+  "city": "Utrecht",
+  "language": "nl",
+  "company": {
+    "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+    "name": "Bakker Installaties"
+  },
+  "created_at": "2026-09-28T09:14:22+00:00",
+  "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Contact ID (UUID). |
+| `name`, `first_name`, `last_name` | string or null | The contact's name, and its first and last part. |
+| `email` | string or null | Email address, lowercase. |
+| `phone` | string or null | Phone number. |
+| `city` | string or null | City. |
+| `language` | string or null | Language code, for example `nl`. |
+| `company` | object or null | `{ "id", "name" }` of the contact's company. |
+| `created_at` | string | When the contact was created. |
+| `url` | string | The contact in Keloa. |
+
+#### Teammate
+
+```json
+{
+  "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+  "name": "Sanne de Vries",
+  "email": "sanne@bakkerijdevries.nl"
+}
+```
+
+#### Message
+
+Used by the `message.received` event:
+
+```json
+{
+  "id": "a2b3c4d5-e6f7-4a8b-9c0d-1e2f3a4b5c6d",
+  "content": "Hi, my order #10423 still has not arrived. Can you check where it is?",
+  "created_at": "2026-10-05T08:12:45+00:00",
+  "attachments_count": 0
+}
+```
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `id` | string | Message ID (UUID). |
+| `content` | string | The message text. |
+| `created_at` | string | When it arrived. |
+| `attachments_count` | integer | How many files the contact attached. |
+
+### Endpoints
+
+All paths are relative to `https://app.keloa.ai/api/zapier/v1`.
+
+| Method | Path | Used by |
+| --- | --- | --- |
+| `GET` | [`/me`](#get-/me) | Connection test and label |
+| `GET` | [`/users`](#get-/users) | Teammate dropdowns |
+| `GET` | [`/teams`](#get-/teams) | Team dropdowns |
+| `POST` | [`/hooks`](#post-/hooks) | Turning a Zap with a Keloa trigger on |
+| `DELETE` | [`/hooks/{id}`](#delete-/hooks/id) | Turning that Zap off |
+| `GET` | [`/triggers/{event}/samples`](#get-/triggers/event/samples) | Testing a trigger |
+| `GET` | [`/contacts/search`](#get-/contacts/search) | Find Contact |
+| `POST` | [`/contacts`](#post-/contacts) | Create Contact |
+| `PATCH` | [`/contacts/{id}`](#patch-/contacts/id) | Update Contact |
+| `GET` | [`/conversations/search`](#get-/conversations/search) | Find Conversation |
+| `POST` | [`/conversations`](#post-/conversations) | Create Conversation |
+| `PATCH` | [`/conversations/{id}`](#patch-/conversations/id) | Update Conversation |
+| `POST` | [`/conversations/{id}/replies`](#post-/conversations/id/replies) | Send Reply |
+| `POST` | [`/conversations/{id}/notes`](#post-/conversations/id/notes) | Add Internal Note |
+| `POST` | [`/conversations/{id}/tags`](#post-/conversations/id/tags) | Add Tags to Conversation |
+
+#### GET /me
+
+Who connected, and to which workspace. Zapier uses it to test the connection and labels the connection `<workspace_name> (<email>)`.
+
+```bash
+curl https://app.keloa.ai/api/zapier/v1/me \
+  -H "Authorization: Bearer kza_..."
+```
+
+```json 200 OK
+{
+  "id": "8f0c2d4e-6a1b-4c3d-9e5f-7a8b9c0d1e2f",
+  "user_id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+  "user_name": "Sanne de Vries",
+  "email": "sanne@bakkerijdevries.nl",
+  "workspace_id": "1d2e3f4a-5b6c-4d7e-8f9a-0b1c2d3e4f5a",
+  "workspace_name": "Bakkerij de Vries"
+}
+```
+
+`id` is the connection's ID.
+
+#### GET /users
+
+The workspace's teammates who can take conversations (owners, admins and agents; viewers are left out), sorted by name.
+
+```bash
+curl https://app.keloa.ai/api/zapier/v1/users \
+  -H "Authorization: Bearer kza_..."
+```
+
+```json 200 OK
+[
+  {
+    "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+    "name": "Sanne de Vries",
+    "email": "sanne@bakkerijdevries.nl",
+    "role": "owner"
+  }
+]
+```
+
+#### GET /teams
+
+The workspace's teams, sorted by name.
+
+```bash
+curl https://app.keloa.ai/api/zapier/v1/teams \
+  -H "Authorization: Bearer kza_..."
+```
+
+```json 200 OK
+[
+  {
+    "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+    "name": "Support"
+  }
+]
+```
+
+#### POST /hooks
+
+Subscribes a REST hook: Keloa POSTs each matching [event](#events) to `target_url` until the hook is deleted. Zapier calls this when a Zap with a Keloa trigger is turned on.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `target_url` | Yes | Where Keloa delivers events. Must be an `https` URL on `hooks.zapier.com`, without a port or credentials. At most 500 characters. |
+| `event` | Yes | One of the [event keys](#events). |
+| `status` | No | `conversation.status_changed` only: deliver only changes **to** this status (`open`, `pending`, `solved`, `closed`). |
+| `tag` | No | `conversation.tagged` only: deliver only when this tag is among the added tags. Case-insensitive, at most 40 characters. |
+| `command` | No | `operator.command` only: deliver only runs of this command. Lowercase letters, digits, `-` and `_`, starting with a letter or digit, at most 48 characters. A leading `/` is dropped and the name is lowercased. Empty means every command. |
+
+A filter that doesn't belong to the event is ignored. An empty filter matches everything.
+
+```bash
+curl -X POST https://app.keloa.ai/api/zapier/v1/hooks \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target_url": "https://hooks.zapier.com/hooks/standard/123456/abcdef/",
+    "event": "operator.command",
+    "command": "refund"
+  }'
+```
+
+```json 201 Created
+{
+  "id": "b7c8d9e0-f1a2-4b3c-8d4e-5f6a7b8c9d0e",
+  "event": "operator.command",
+  "target_url": "https://hooks.zapier.com/hooks/standard/123456/abcdef/",
+  "command": "refund",
+  "status": null,
+  "tag": null,
+  "created_at": "2026-10-05T08:40:00+00:00"
+}
+```
+
+Errors (`422`): a `target_url` that isn't a Zapier hook URL, an unknown `event`, an invalid `command`, or a workspace that already has **500** live hooks.
+
+#### DELETE /hooks/\{id\}
+
+Unsubscribes a REST hook. Zapier calls this when the Zap is turned off or deleted. It's idempotent: a hook that's already gone (or belongs to another workspace) answers the same, and nothing is deleted outside the connected workspace.
+
+```bash
+curl -X DELETE https://app.keloa.ai/api/zapier/v1/hooks/b7c8d9e0-f1a2-4b3c-8d4e-5f6a7b8c9d0e \
+  -H "Authorization: Bearer kza_..."
+```
+
+```json 200 OK
+{
+  "id": "b7c8d9e0-f1a2-4b3c-8d4e-5f6a7b8c9d0e",
+  "deleted": true
+}
+```
+
+#### GET /triggers/\{event\}/samples
+
+Up to 3 recent real events of the workspace, newest first, in exactly the payload shape of the [event](#events). Zapier uses them to test a trigger and to show sample data in the Zap editor. An empty workspace returns `[]`.
+
+| Parameter | In | Description |
+| --- | --- | --- |
+| `event` | path | One of the [event keys](#events). An unknown key answers `404`. |
+| `status` | query | Optional, for `conversation.status_changed`: only conversations now in this status. |
+| `tag` | query | Optional, for `conversation.tagged`: only conversations with this tag. |
+| `command` | query | Optional, for `operator.command`: only runs of this command. |
+
+Samples have a stable `id` per record (for example `conversation.created:<conversation id>`), so loading samples twice shows the same records. In samples, `previous_status` and `previous_assignee` are always `null`.
+
+```bash
+curl "https://app.keloa.ai/api/zapier/v1/triggers/conversation.tagged/samples?tag=shipping" \
+  -H "Authorization: Bearer kza_..."
+```
+
+```json 200 OK
+[
+  {
+    "id": "3d4e5f6a-7b8c-4d9e-9f0a-2b3c4d5e6f7a",
+    "event": "conversation.tagged",
+    "occurred_at": "2026-10-05T08:30:02+00:00",
+    "conversation": {
+      "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+      "subject": "Where is my order #10423?",
+      "status": "open",
+      "priority": "normal",
+      "channel": "email",
+      "tags": [
+        "order",
+        "shipping"
+      ],
+      "assignee": {
+        "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+        "name": "Sanne de Vries",
+        "email": "sanne@bakkerijdevries.nl"
+      },
+      "team": {
+        "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+        "name": "Support"
+      },
+      "contact": {
+        "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+        "name": "Jeroen Bakker",
+        "first_name": "Jeroen",
+        "last_name": "Bakker",
+        "email": "jeroen.bakker@example.nl",
+        "phone": "+31612345678",
+        "city": "Utrecht",
+        "language": "nl",
+        "company": {
+          "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+          "name": "Bakker Installaties"
+        },
+        "created_at": "2026-09-28T09:14:22+00:00",
+        "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+      },
+      "created_at": "2026-10-05T08:12:45+00:00",
+      "updated_at": "2026-10-05T08:30:02+00:00",
+      "resolved_at": null,
+      "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+    },
+    "added_tags": [
+      "shipping"
+    ]
+  }
+]
+```
+
+#### GET /contacts/search
+
+Contacts with this email address or phone number, newest first, at most 10. With both, a contact must match both.
+
+| Parameter | Description |
+| --- | --- |
+| `email` | Email address, case-insensitive. At most 255 characters. |
+| `phone` | Phone number. Also matches the same digits with or without a leading `+`. At most 60 characters. |
+
+Without `email` and `phone`, the answer is `[]`.
+
+```bash
+curl "https://app.keloa.ai/api/zapier/v1/contacts/search?email=jeroen.bakker@example.nl" \
+  -H "Authorization: Bearer kza_..."
+```
+
+```json 200 OK
+[
+  {
+    "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+    "name": "Jeroen Bakker",
+    "first_name": "Jeroen",
+    "last_name": "Bakker",
+    "email": "jeroen.bakker@example.nl",
+    "phone": "+31612345678",
+    "city": "Utrecht",
+    "language": "nl",
+    "company": {
+      "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+      "name": "Bakker Installaties"
+    },
+    "created_at": "2026-09-28T09:14:22+00:00",
+    "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+  }
+]
+```
+
+#### POST /contacts
+
+Creates a contact, with the same rules as the contact card in Keloa. When the email address's domain belongs to one of your companies, Keloa links the contact to it.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `name` | One of `name`, `email`, `phone` | At most 160 characters. |
+| `email` | | A valid email address, at most 255 characters. Stored lowercase. |
+| `phone` | | At most 60 characters. |
+| `city` | | At most 120 characters. |
+| `language` | | Language code such as `nl` or `en`, at most 8 characters. |
+
+```bash
+curl -X POST https://app.keloa.ai/api/zapier/v1/contacts \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Jeroen Bakker",
+    "email": "jeroen.bakker@example.nl",
+    "phone": "+31612345678",
+    "city": "Utrecht",
+    "language": "nl"
+  }'
+```
+
+`201 Created` with the new [Contact](#contact):
+
+```json
+{
+  "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+  "name": "Jeroen Bakker",
+  "first_name": "Jeroen",
+  "last_name": "Bakker",
+  "email": "jeroen.bakker@example.nl",
+  "phone": "+31612345678",
+  "city": "Utrecht",
+  "language": "nl",
+  "company": {
+    "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+    "name": "Bakker Installaties"
+  },
+  "created_at": "2026-09-28T09:14:22+00:00",
+  "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+}
+```
+
+Errors (`422`): none of `name`, `email` or `phone` (`Enter a name, an email address or a phone number.`), an invalid value, or an email address another contact already has (`This address already belongs to <name>.`, in `errors.email`). Use **Find Contact** first, or Zapier's **Find or Create Contact**, to avoid duplicates.
+
+#### PATCH /contacts/\{id\}
+
+Updates a contact. Send only the fields to change; fields you leave out or send empty keep their value.
+
+| Field | Description |
+| --- | --- |
+| `name` | At most 160 characters. |
+| `email` | A valid email address, at most 255 characters. Refused (`422`) when another contact already has it. |
+| `phone` | At most 60 characters. |
+| `city` | At most 120 characters. |
+| `language` | At most 8 characters. |
+
+```bash
+curl -X PATCH https://app.keloa.ai/api/zapier/v1/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13 \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{ "city": "Utrecht" }'
+```
+
+`200 OK` with the updated [Contact](#contact). An unknown ID answers `404`.
+
+#### GET /conversations/search
+
+With `id`, that conversation. Otherwise the newest conversations (at most 10) of the contacts with `contact_email`, optionally in one status. Conversations merged into another one are never returned.
+
+| Parameter | Description |
+| --- | --- |
+| `id` | A conversation ID. Takes precedence over `contact_email`. An ID that isn't a UUID returns `[]`. |
+| `contact_email` | The contact's email address, case-insensitive. |
+| `status` | Optional, with `contact_email`: `open`, `pending`, `solved` or `closed`. |
+
+Without `id` and `contact_email`, the answer is `[]`.
+
+```bash
+curl "https://app.keloa.ai/api/zapier/v1/conversations/search?contact_email=jeroen.bakker@example.nl&status=open" \
+  -H "Authorization: Bearer kza_..."
+```
+
+```json 200 OK
+[
+  {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "open",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": null,
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  }
+]
+```
+
+#### POST /conversations
+
+Emails a contact and starts a new email conversation, like **New message** in the inbox. Keloa sends it from the workspace's default mailbox, creates the contact when the address is new, and assigns the conversation to the teammate who connected. The AI agent stays out of the conversation, also when the contact answers.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `to_email` | Yes | The recipient's email address, at most 254 characters. It can't be one of the workspace's own addresses or a teammate's. |
+| `to_name` | No | The recipient's name, at most 160 characters. |
+| `subject` | Yes | At most 200 characters. |
+| `content` | Yes | The message, at most 8,000 characters. |
+
+```bash
+curl -X POST https://app.keloa.ai/api/zapier/v1/conversations \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "to_email": "jeroen.bakker@example.nl",
+    "to_name": "Jeroen Bakker",
+    "subject": "Where is my order #10423?",
+    "content": "Hi Jeroen, your order shipped this morning."
+  }'
+```
+
+`201 Created` with the new [Conversation](#conversation):
+
+```json
+{
+  "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+  "subject": "Where is my order #10423?",
+  "status": "open",
+  "priority": "normal",
+  "channel": "email",
+  "tags": [
+    "order",
+    "shipping"
+  ],
+  "assignee": {
+    "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+    "name": "Sanne de Vries",
+    "email": "sanne@bakkerijdevries.nl"
+  },
+  "team": {
+    "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+    "name": "Support"
+  },
+  "contact": {
+    "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+    "name": "Jeroen Bakker",
+    "first_name": "Jeroen",
+    "last_name": "Bakker",
+    "email": "jeroen.bakker@example.nl",
+    "phone": "+31612345678",
+    "city": "Utrecht",
+    "language": "nl",
+    "company": {
+      "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+      "name": "Bakker Installaties"
+    },
+    "created_at": "2026-09-28T09:14:22+00:00",
+    "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+  },
+  "created_at": "2026-10-05T08:12:45+00:00",
+  "updated_at": "2026-10-05T08:30:02+00:00",
+  "resolved_at": null,
+  "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+}
+```
+
+<Note>
+When the workspace has no verified [email domain](/settings/email-domains), or the email can't be sent, Keloa still creates the conversation and keeps the message in it, but the contact doesn't receive it. The response doesn't say so; your team sees why in the inbox.
+</Note>
+
+#### PATCH /conversations/\{id\}
+
+Changes the status, priority, assignee or team of a conversation. Send at least one field; fields you leave out or send empty stay as they are. Each change goes through the same rules as in the inbox: the timeline, SLA clocks and notifications follow.
+
+| Field | Description |
+| --- | --- |
+| `status` | `open`, `pending`, `solved` or `closed`. |
+| `priority` | `low`, `normal`, `high` or `urgent`. |
+| `assignee_id` | A teammate's ID from [`/users`](#get-/users), or `none` (or `unassigned`) to unassign. |
+| `team_id` | A team's ID from [`/teams`](#get-/teams), or `none` (or `no_team`) to take it out of its team. |
+
+```bash
+curl -X PATCH https://app.keloa.ai/api/zapier/v1/conversations/7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{ "status": "pending", "priority": "urgent" }'
+```
+
+`200 OK` with the updated [Conversation](#conversation).
+
+Errors: `404` for an unknown conversation. `422` when no field is given, for a teammate who isn't in the workspace or is a viewer, for an unknown team, for a status change that isn't possible, and for a conversation that was merged into another one.
+
+#### POST /conversations/\{id\}/replies
+
+Replies to the contact on the conversation's own channel (email, WhatsApp, Instagram, Messenger, Telegram, Slack or the web widget), as the teammate who connected. It's sent right away, without the inbox's undo window. Like a reply from the inbox, it assigns an unassigned conversation to that teammate (when the workspace assigns conversations on reply), and the AI agent stops answering in it.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `content` | Yes | The reply, at most 8,000 characters. |
+
+```bash
+curl -X POST https://app.keloa.ai/api/zapier/v1/conversations/7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a/replies \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{ "content": "Thanks for waiting! Your order shipped this morning." }'
+```
+
+```json 201 Created
+{
+  "id": "d4e5f6a7-b8c9-4d0e-8f1a-2b3c4d5e6f70",
+  "conversation_id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+  "content": "Thanks for waiting! Your order shipped this morning.",
+  "created_at": "2026-10-05T08:35:10+00:00",
+  "send_status": "sent",
+  "delivery_error": null,
+  "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+}
+```
+
+| Field | Description |
+| --- | --- |
+| `send_status` | `sent`, `failed`, `held_for_paywall` (an email reply from a workspace without a verified email domain), or `null` when the channel reports no send status. |
+| `delivery_error` | Why the reply wasn't delivered, for example a closed WhatsApp 24-hour window, or `null`. The reply is still saved in the conversation. |
+| `url` | The conversation in the Keloa inbox. |
+
+Errors: `404` for an unknown conversation. `422` for an empty `content` or a conversation that was merged into another one.
+
+#### POST /conversations/\{id\}/notes
+
+Adds an internal note as the teammate who connected. The contact never sees it. The assignee and teammates mentioned in it are notified, as for a note from the inbox.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `content` | Yes | The note, at most 10,000 characters. |
+
+```bash
+curl -X POST https://app.keloa.ai/api/zapier/v1/conversations/7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a/notes \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{ "content": "Refund approved in Shopify, waiting for the warehouse." }'
+```
+
+```json 201 Created
+{
+  "id": "e5f6a7b8-c9d0-4e1f-9a2b-3c4d5e6f7a81",
+  "conversation_id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+  "content": "Refund approved in Shopify, waiting for the warehouse.",
+  "created_at": "2026-10-05T08:36:44+00:00",
+  "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+}
+```
+
+Errors: `402` on a plan without internal notes (Starter). `404` for an unknown conversation. `422` for an empty `content` or a conversation that was merged into another one.
+
+#### POST /conversations/\{id\}/tags
+
+Adds tags to a conversation. Tags it already has (compared case-insensitively) are skipped, and its other tags stay.
+
+| Field | Required | Description |
+| --- | --- | --- |
+| `tags` | Yes | An array of 1 to 20 tags, or one comma-separated string. Each tag is at most 40 characters. |
+
+```bash
+curl -X POST https://app.keloa.ai/api/zapier/v1/conversations/7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a/tags \
+  -H "Authorization: Bearer kza_..." \
+  -H "Content-Type: application/json" \
+  -d '{ "tags": ["order", "shipping"] }'
+```
+
+`200 OK` with the updated [Conversation](#conversation). Adding a tag also fires the `conversation.tagged` event.
+
+Errors: `404` for an unknown conversation. `422` without tags, with more than 20, or for a conversation that was merged into another one.
+
+### REST hooks
+
+Keloa triggers are [REST hooks](https://zapier.com/developer/documentation/v2/rest-hooks/). When a Zap with a Keloa trigger is turned on, Zapier [subscribes](#post-/hooks) a hook; when it's turned off, Zapier [unsubscribes](#delete-/hooks/id) it. In between, Keloa POSTs every matching event to the hook's `target_url`.
+
+#### Delivery
+
+```http
+POST /hooks/standard/123456/abcdef/ HTTP/1.1
+Host: hooks.zapier.com
+Content-Type: application/json
+Accept: application/json
+User-Agent: Keloa-Zapier/1
+X-Keloa-Event: conversation.created
+X-Keloa-Delivery: 0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d
+```
+
+- **Body.** One event object, see [Events](#events). `X-Keloa-Delivery` is the event's `id`; retries of the event reuse it.
+- **Where.** Only `https` URLs on `hooks.zapier.com`. Keloa doesn't follow redirects.
+- **When.** Events go out from a queue right after the change is saved, one delivery per hook. Conversations from testing an AI agent never fire events. Deliveries can arrive out of order, for example after a retry.
+- **Timeouts.** 5 seconds to connect, 15 seconds in total.
+
+#### Retries and removal
+
+| Answer | What Keloa does |
+| --- | --- |
+| `2xx` | Delivered. |
+| `410 Gone` | Deletes the hook, as Zapier asks. Zapier answers `410` once a Zap is off or deleted. |
+| `429`, `5xx`, timeout or network error | Retries: up to 5 attempts in total, after 30 seconds, 2 minutes, 10 minutes and 30 minutes. |
+| Other `4xx` | Doesn't retry this event. |
+
+Keloa also deletes a hook when:
+
+- `hooks.zapier.com` answers **50 deliveries in a row** with an error status (a success resets the count);
+- its connection is revoked or disconnected (all of that connection's hooks go);
+- the teammate who connected is no longer an owner or admin, or has left the workspace (the connection is revoked at the next delivery).
+
+### Events
+
+Every event is a JSON object with the same envelope, followed by the event's subjects:
+
+| Field | Description |
+| --- | --- |
+| `id` | The event's ID. Use it to deduplicate. For `operator.command` it's the ID of the command run. |
+| `event` | The event key. |
+| `occurred_at` | When it happened. |
+
+| Event key | Trigger | Subjects |
+| --- | --- | --- |
+| `conversation.created` | New Conversation | `conversation` |
+| `conversation.status_changed` | Conversation Status Changed | `conversation`, `previous_status` |
+| `conversation.assigned` | Conversation Assigned | `conversation`, `previous_assignee` |
+| `conversation.tagged` | Conversation Tagged | `conversation`, `added_tags` |
+| `conversation.rated` | New Satisfaction Rating | `conversation`, `rating` |
+| `message.received` | New Customer Message | `conversation`, `message` |
+| `contact.created` | New Contact | `contact` |
+| `operator.command` | New Zap Command | `conversation`, `command`, `arguments`, `operator` |
+
+<AccordionGroup>
+  <Accordion title="conversation.created">
+    A conversation is created on any channel: a contact starts one, or a teammate or a Zap starts an email.
+
+```json
+{
+  "id": "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d",
+  "event": "conversation.created",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "conversation": {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "open",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": null,
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  }
+}
+```
+  </Accordion>
+
+  <Accordion title="conversation.status_changed">
+    A conversation's status changes, by a teammate, the AI agent, a flow, a Zap or automatically. `previous_status` is the status before the change. A hook with a `status` filter gets only changes to that status.
+
+```json
+{
+  "id": "1b2c3d4e-5f6a-4b7c-9d8e-0f1a2b3c4d5e",
+  "event": "conversation.status_changed",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "conversation": {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "solved",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": "2026-10-05T08:30:02+00:00",
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  },
+  "previous_status": "open"
+}
+```
+  </Accordion>
+
+  <Accordion title="conversation.assigned">
+    A conversation is assigned to a teammate (also a re-assignment). Unassigning doesn't fire it. `previous_assignee` is the teammate who had it before, or `null`.
+
+```json
+{
+  "id": "2c3d4e5f-6a7b-4c8d-8e9f-1a2b3c4d5e6f",
+  "event": "conversation.assigned",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "conversation": {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "open",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": null,
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  },
+  "previous_assignee": {
+    "id": "4d5e6f7a-8b9c-4d0e-9f1a-2b3c4d5e6f7a",
+    "name": "Mark Jansen",
+    "email": "mark@bakkerijdevries.nl"
+  }
+}
+```
+  </Accordion>
+
+  <Accordion title="conversation.tagged">
+    One or more tags are added to a conversation. `added_tags` lists only the new tags. A hook with a `tag` filter gets the event only when that tag is among `added_tags`.
+
+```json
+{
+  "id": "3d4e5f6a-7b8c-4d9e-9f0a-2b3c4d5e6f7a",
+  "event": "conversation.tagged",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "conversation": {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "open",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": null,
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  },
+  "added_tags": [
+    "shipping"
+  ]
+}
+```
+  </Accordion>
+
+  <Accordion title="conversation.rated">
+    A contact rates a conversation in the satisfaction survey. `rating.score` is 1 to 5; `rating.comment` is the contact's comment or `null`.
+
+```json
+{
+  "id": "4e5f6a7b-8c9d-4e0f-8a1b-3c4d5e6f7a8b",
+  "event": "conversation.rated",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "conversation": {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "solved",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": "2026-10-05T08:20:00+00:00",
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  },
+  "rating": {
+    "score": 5,
+    "comment": "Quick and friendly help, thanks!"
+  }
+}
+```
+  </Accordion>
+
+  <Accordion title="message.received">
+    A contact writes on any channel, in a new or an existing conversation. Replies by teammates or the AI agent and internal notes don't fire it.
+
+```json
+{
+  "id": "5f6a7b8c-9d0e-4f1a-9b2c-4d5e6f7a8b9c",
+  "event": "message.received",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "conversation": {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "open",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": null,
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  },
+  "message": {
+    "id": "a2b3c4d5-e6f7-4a8b-9c0d-1e2f3a4b5c6d",
+    "content": "Hi, my order #10423 still has not arrived. Can you check where it is?",
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "attachments_count": 0
+  }
+}
+```
+  </Accordion>
+
+  <Accordion title="contact.created">
+    A contact is created: by a message from someone new, by a teammate or by a Zap.
+
+```json
+{
+  "id": "6a7b8c9d-0e1f-4a2b-8c3d-5e6f7a8b9c0d",
+  "event": "contact.created",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "contact": {
+    "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+    "name": "Jeroen Bakker",
+    "first_name": "Jeroen",
+    "last_name": "Bakker",
+    "email": "jeroen.bakker@example.nl",
+    "phone": "+31612345678",
+    "city": "Utrecht",
+    "language": "nl",
+    "company": {
+      "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+      "name": "Bakker Installaties"
+    },
+    "created_at": "2026-09-28T09:14:22+00:00",
+    "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+  }
+}
+```
+  </Accordion>
+
+  <Accordion title="operator.command">
+    A teammate runs a [Zap command](#zap-commands) on a conversation. `command` is the lowercase command name, `arguments` the details the teammate typed (an empty string when none), and `operator` the [teammate](#teammate) who ran it. A hook with a `command` filter gets only that command.
+
+```json
+{
+  "id": "7b8c9d0e-1f2a-4b3c-9d4e-6f7a8b9c0d1e",
+  "event": "operator.command",
+  "occurred_at": "2026-10-05T08:30:02+00:00",
+  "conversation": {
+    "id": "7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a",
+    "subject": "Where is my order #10423?",
+    "status": "open",
+    "priority": "normal",
+    "channel": "email",
+    "tags": [
+      "order",
+      "shipping"
+    ],
+    "assignee": {
+      "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+      "name": "Sanne de Vries",
+      "email": "sanne@bakkerijdevries.nl"
+    },
+    "team": {
+      "id": "5e8d2c1b-4a3f-4e9d-8c7b-6a5f4e3d2c1b",
+      "name": "Support"
+    },
+    "contact": {
+      "id": "3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13",
+      "name": "Jeroen Bakker",
+      "first_name": "Jeroen",
+      "last_name": "Bakker",
+      "email": "jeroen.bakker@example.nl",
+      "phone": "+31612345678",
+      "city": "Utrecht",
+      "language": "nl",
+      "company": {
+        "id": "c41d7e02-5a9b-4f3c-8e6d-2b1a0f9c8d75",
+        "name": "Bakker Installaties"
+      },
+      "created_at": "2026-09-28T09:14:22+00:00",
+      "url": "https://app.keloa.ai/contacts/3f2a9c71-8b4e-4d2a-a6f1-0e9b7c5d2a13"
+    },
+    "created_at": "2026-10-05T08:12:45+00:00",
+    "updated_at": "2026-10-05T08:30:02+00:00",
+    "resolved_at": null,
+    "url": "https://app.keloa.ai/inbox?selected=7c4e1b2a-9d3f-4a8e-b5c6-1f0e2d3c4b5a"
+  },
+  "command": "refund",
+  "arguments": "order 10423 full amount",
+  "operator": {
+    "id": "9b1e4f6a-2c8d-4e1b-9a3f-5d7c2e8b1a40",
+    "name": "Sanne de Vries",
+    "email": "sanne@bakkerijdevries.nl"
+  }
+}
+```
+  </Accordion>
+</AccordionGroup>
+
+## Related
+
+<CardGroup cols={2}>
+  <Card title="Webhooks" icon="webhook" href="/developers/webhooks">
+    Signed POSTs to your own endpoint on conversation events.
+  </Card>
+  <Card title="Members & roles" icon="users" href="/settings/members-and-roles">
+    Who's an owner or admin in your workspace.
+  </Card>
+  <Card title="Plans" icon="credit-card" href="/billing/plans">
+    Integration slots and internal notes per plan.
+  </Card>
+  <Card title="Custom HTTP tool" icon="code" href="/agents/tools-custom-http">
+    Let your AI agent call your own endpoints.
+  </Card>
+</CardGroup>
