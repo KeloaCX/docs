@@ -1,16 +1,22 @@
 ---
 title: "Messages & actions"
-description: "Send replies and apply changes from within a flow."
+description: "Send replies and run tools from within a reply flow."
 ---
 
 ## Message nodes
 
-A **Message** node sends a message to the customer, on the same channel the conversation is on.
+A **Message** node replies to the contact, on the same channel the conversation is on. It's sent right away, as your AI agent's reply to the message that started the flow.
 
 ### Configure
 
-- **Template** — the text, with variable substitution (e.g. `{{contact.first_name}}`)
-- **Delay** — optional delay before sending (seconds, minutes, hours). Useful for a natural-feeling follow-up.
+- **Message template** — the text, with variable substitution (e.g. `{{contact.first_name}}`). Click a variable under the field to insert it.
+- **Compose with AI** — switch it on to let the AI write the message instead. Fill in **Instructions for the AI** (*"Acknowledge the customer warmly, tell them a specialist will reply shortly. Keep it short."*). The AI writes one to three short sentences in the contact's language, based on your instructions and the conversation so far. Useful for hand-off acknowledgements where a fixed template would feel robotic.
+
+If the AI can't write the message, nothing is sent. A **Resolve** node after it then hands the conversation to your team instead of solving it, so the contact is never left without an answer.
+
+### One reply per message
+
+A reply flow sends at most one message per customer message. If a path passes through more than one Message node, the last one is sent.
 
 ### Variables
 
@@ -41,12 +47,9 @@ Signed-in users' conversations follow the rules above for email and phone. Other
 
 The same rules apply wherever a flow reads the contact on a website conversation: [Condition nodes](/flows/conditions#contact-fields-on-website-conversations), and `{{contact.*}}` values you pass to an action. A detail the visitor isn't shown to own counts as empty there too.
 
-### Use a macro instead
-
-In the template field, click **Use macro** to pull from your saved replies. Keeps voice consistent across manual and automated messages.
-
 ### Channel quirks
 
+- The message goes out like your AI agent's other replies, so the agent's sending settings apply. On **email**, a reply the agent would only draft stays a draft for your team to send.
 - **WhatsApp**, **Messenger** and **Instagram** only deliver within the reply window (24 hours after the contact's last message; 72 hours after a click-to-WhatsApp ad). A Message node on a conversation whose window has closed isn't delivered.
 - **Telegram** and **Slack** have no reply window.
 - **Email** messages go as a reply in the existing thread.
@@ -54,43 +57,55 @@ In the template field, click **Use macro** to pull from your saved replies. Keep
 
 ## Action nodes
 
-An **Action** node changes something about the conversation or contact — no message is sent.
+An **Action** node runs one tool, then the flow goes on to the next node. It sends nothing to the contact by itself.
 
-### Available actions
+### Configure
 
-| Action | What it does |
+- **Tool** — pick one of the tools your workspace has.
+- **Parameters** — values the tool needs, if any. A value can be a contact variable such as `{{contact.email}}`.
+
+### Available tools
+
+The **Tool** list depends on what your workspace has connected:
+
+| Tool | Available when |
 | --- | --- |
-| **Add tag** | Add a tag to the conversation (e.g. `vip`, `returns`) |
-| **Remove tag** | Remove a tag |
-| **Set priority** | Low / normal / high / urgent |
-| **Collect email** | Ask the visitor for their email if not known (webchat only) |
-| **Set contact field** | Write to a custom field on the contact |
+| **Get Shopify order**, **Search Shopify product** | A Shopify store is linked to one of your AI agents |
+| **Get WooCommerce order**, **Search WooCommerce products** | A WooCommerce store is linked to one of your AI agents |
+| **Look up TRONVoice invoices**, **quotes**, **subscriptions** | TRONVoice is connected |
+| **Search the web** | Your plan includes web search |
+| **Custom HTTP call** | Always |
+| **Hand off to a human** | Always |
 
-Each action runs instantly. The flow continues to the next node.
+The tool runs as the flow's AI agent. A store tool only runs when that agent is linked to the store with the tool switched on (**AI agents → Skills → Store**). If a tool can't run, the flow carries on to the next node.
+
+<Tip>
+To hand a conversation to your team, use a [Handoff node](/flows/handoff-and-resolve) rather than the **Hand off to a human** tool: the Handoff node assigns the conversation and lets you pick who gets it.
+</Tip>
 
 ### Chaining
 
-Put several actions in a row — *tag, set priority, notify* — all on one incoming message. Each action node has one output to keep the graph linear.
+Each Action node has one output, so you can put several in a row. In the tester, tools aren't called: the panel shows *Would run "…" (not called in tests)*, and the steps after it see an empty result.
 
-## Example: after-hours flow
-
-```
-Trigger (message received, channel: any)
-  → Condition (business hours: open?)
-      ├── Yes → (end, AI continues)
-      └── No  → Message ("Thanks! Our team replies when we reopen at 9:00.")
-              → Action (tag: "after-hours")
-```
-
-The customer gets a friendly acknowledgement, the conversation is tagged for analytics, and the AI still processes the message so it's ready with context when you log in.
-
-## Example: auto-tag refund requests
+## Example: after-hours note
 
 ```
-Trigger (message received)
-  → Condition (message.body contains "refund" OR intent equals "refund")
-      ├── Yes → Action (tag: "returns") → Action (set priority: high)
-      └── No  → (end)
+Trigger (New conversation, channel: any)
+  → Condition (Business hours equals "closed")
+      ├── Closed    → Message ("Thanks! Our team replies when we reopen at 9:00.")
+      └── Otherwise → (not connected: the AI answers)
 ```
 
-Now every refund conversation is pre-tagged and prioritised without anyone lifting a finger.
+Outside business hours the contact gets a friendly acknowledgement as the reply to their first message. Inside business hours the flow ends and the AI answers as usual. Set your hours in [Workspace settings](/settings/workspace); with no hours set, the workspace counts as always open.
+
+## Example: AI acknowledgement before a hand-off
+
+```
+Trigger (New conversation)
+  → Intent (billing, other)
+      ├── billing → Message (Compose with AI: "Tell them our billing team will reply today.")
+      │            → Handoff (A team: Billing, reason "Billing question")
+      └── other   → (not connected: the AI answers)
+```
+
+The contact gets a short, natural reply in their own language, and the conversation lands with the billing team.

@@ -3,53 +3,63 @@ title: "Build a flow"
 description: "From blank canvas to published automation in five minutes."
 ---
 
-We'll build a classic flow: **"When a VIP customer messages on WhatsApp, route them to our senior team."**
+We'll build a classic reply flow: **"When someone from a key account emails us, hand the conversation to their account manager."**
+
+<Note>
+This page builds a **reply flow**. To send reminders after your team replies, see [Follow-up flows](/flows/follow-up-flows).
+</Note>
 
 <Steps>
-  <Step title="Open Flows">
+  <Step title="Create the flow">
     Sidebar → **Flows** → **New flow**.
 
-    Give it a name (*VIP WhatsApp routing*) and an optional description.
+    Under **What should this flow do?** pick **Reply flow**, give it a name (*Acme routing*) and click **Create flow**.
+
+    A new reply flow starts with a starter flow: **New conversation** → **Classify intent** → hand-offs for sales and billing. Select the nodes you don't need and remove them, or build on them.
   </Step>
 
-  <Step title="Drop a Trigger">
-    From the node palette on the left, drag **Trigger** onto the canvas.
+  <Step title="Pick the AI agent">
+    At the top of the canvas, pick the AI agent this flow belongs to. The flow only runs in conversations that agent answers; next to the picker you see what it answers (its mailboxes and web chat).
 
-    Click it to configure:
-    - **Channel** — WhatsApp
-    - **Event** — Message received
+    Each agent runs one reply flow at a time. Publishing this flow later moves the agent's other published reply flow back to draft.
+  </Step>
 
-    (Leave both as "any" to trigger on everything — we're scoping to WhatsApp here.)
+  <Step title="Set the Trigger">
+    Click the **Trigger** node to configure it:
+    - **Channel** — Email
+    - **Event** — New conversation (first message)
+
+    (Leave **Channel** on **Any channel** to run on every channel the agent answers.)
   </Step>
 
   <Step title="Add a Condition">
-    Drag **Condition** onto the canvas and connect Trigger → Condition.
+    Drag **Condition** from the palette on the left onto the canvas (or click it) and connect Trigger → Condition.
 
-    Click to configure:
-    - **Field** — `contact.tags`
-    - **Operator** — `contains`
-    - **Value** — `vip`
+    Click it to configure **Branch 1**:
+    - **Field** — Sender domain
+    - **Operator** — equals
+    - **Value** — `acme.com`
 
-    The condition node always has **two outputs**: `yes` (matches) and `no` (doesn't).
+    Rename the branch to *Acme* if you like. A Condition node has one output per branch, plus **Otherwise** for everything that matches no branch.
   </Step>
 
   <Step title="Add a Handoff">
-    Drag **Handoff** onto the canvas. Connect the condition's **yes** output to it.
+    Drag **Handoff** onto the canvas. Connect the *Acme* output to it.
 
     Configure:
-    - **Target type** — Team
-    - **Team** — Senior support (or whoever handles VIPs)
-    - **Reason** — *"VIP customer on WhatsApp"*  (shown to the assignee)
+    - **Hand off to** — Specific member
+    - **Assign to** — the account manager
+    - **Reason / note** — *"Acme key account"* (added to the conversation as an internal note)
   </Step>
 
   <Step title="Let the AI handle the rest">
-    Leave the **no** output unconnected. When the condition doesn't match, the flow simply ends — and the AI agent on the channel continues normally.
+    Leave **Otherwise** unconnected. When the condition doesn't match, the flow simply ends — and the AI agent answers as usual.
   </Step>
 
   <Step title="Save and test">
-    Hit **Save**. The flow is saved as a **draft** — it doesn't run yet.
+    Click **Save** (or press <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd>). The flow is saved as a **draft** — it doesn't run yet.
 
-    Click **Test run** → simulate a WhatsApp message with a VIP tag. Watch the flow light up each node as it executes.
+    Click **Test**. On the **Scenario** tab set **Channel** to Email and **Email** to an `@acme.com` address, then send a message on the **Chat** tab. The path the message takes lights up on the canvas.
 
     See [Publish and test](/flows/publish-and-test) for the full testing workflow.
   </Step>
@@ -61,23 +71,27 @@ We'll build a classic flow: **"When a VIP customer messages on WhatsApp, route t
 
 ## Canvas basics
 
-- **Drag** from a node's handle to another node to connect.
-- **Click** a node to open its config panel on the right.
-- **Right-click** to delete, duplicate, or re-arrange.
-- **Space + drag** (or scroll wheel) to pan.
-- <kbd>Cmd</kbd>+<kbd>Enter</kbd> saves.
+- **Drag** from a node's output to another node to connect them.
+- **Click** a node to open its settings panel on the right; <kbd>Esc</kbd> closes it.
+- To remove a node, click **Delete** in its settings panel. Removing a node also removes its connections.
+- **Drag** the empty canvas to pan; scroll or use the zoom buttons in the bottom-right corner to zoom. **Fit view** shows the whole flow.
+- <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>S</kbd> saves, <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd> undoes and <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> redoes.
 
 ## Auto-layout
 
-Messy canvas? Click **Auto-layout** in the toolbar to let Keloa tidy the nodes based on their connections.
+Messy canvas? Click **Auto-layout** to let Keloa tidy the nodes based on their connections.
 
-## Versions and rollback
+## Compose with AI
 
-Every **Publish** snapshots the flow. If the new version misbehaves, open the flow → **Versions** → roll back to any previous published version.
+In a reply flow, click **Compose with AI** and describe the flow in plain English, for example *"if shopping → Tayfun, technical questions → the Technical team, otherwise let the AI handle it."* Keloa builds the nodes for you and replaces the canvas (undo with <kbd>Cmd</kbd>/<kbd>Ctrl</kbd>+<kbd>Z</kbd>). Review the result, then save.
+
+## Editing a published flow
+
+Saving changes to a published flow puts them live straight away. To take a flow offline, click **Unpublish**: it goes back to draft and stops running, and you can publish it again any time.
 
 ## Common flow patterns
 
-- **Welcome message** — Trigger (conversation opened) → Message ("Hi, welcome to Acme!")
-- **After-hours** — Trigger (message received) → Condition (business hours?) → Message ("We're back at 9")
-- **Auto-tag by keyword** — Trigger → Condition (message.body contains "refund") → Action (tag: returns)
-- **CSAT** — Trigger (conversation resolved) → Resolve (csat_enabled: true)
+- **Welcome message** — Trigger (New conversation) → Message ("Hi, welcome to Acme! How can we help?")
+- **After-hours** — Trigger (New conversation) → Condition (Business hours equals closed) → Message ("We're back at 9:00")
+- **Route by topic** — Trigger (New conversation) → Intent (sales, billing, support) → Handoff for sales and billing
+- **Route by mailbox** — Trigger (New conversation, Email) → Condition (Sent to contains `sales@`) → Handoff (A team: Sales)

@@ -1,0 +1,206 @@
+---
+title: "Follow-up flows"
+description: "Send automatic email reminders after your team replies, and stop the moment the contact answers."
+---
+
+A **follow-up flow** sends reminder emails after your team has replied to a contact, as long as the contact doesn't answer. It stops on its own as soon as they do.
+
+## The typical case: a proposal
+
+1. A contact emails: *"What would it cost to do this for us?"*
+2. A teammate replies: *"We can do it for €1,000 excl. VAT. Let me know what you think!"*
+3. The contact goes quiet.
+
+Without a flow, someone has to remember to check back in a few days. With a follow-up flow, Keloa waits for you: if there's no answer after 3 working days, it sends a friendly check-in in the same email thread, from the same teammate. Still nothing? A last reminder a few days later. And if the contact still doesn't answer, the conversation goes back to the teammate with a note, so they can decide what to do.
+
+The moment the contact replies — to the first email or to any reminder — the follow-ups stop and your team takes it from there.
+
+## Create a follow-up flow
+
+<Steps>
+  <Step title="Start a new flow">
+    Sidebar → **Flows** → **New flow**.
+
+    Under **What should this flow do?** pick **Follow-up flow** (*Follows up after your team replies, and stops when the customer answers.*). You can't change this later.
+
+    Give it a name, for example *Proposal follow-up*, and click **Create flow**.
+  </Step>
+
+  <Step title="Review the starter flow">
+    A new follow-up flow comes ready to use:
+
+    ```
+    Your team replied                 Trigger: When your team replies
+      → Is it a proposal?             Condition: Your team's reply contains "€"
+      → Wait for a reply              3 working days
+      → No reply: Friendly check-in   Send follow-up, written by AI
+      → Wait for a reply              4 working days
+      → No reply: Last reminder       Send follow-up, written by AI
+      → Wait for a reply              3 working days
+      → No reply: Back to the owner   Update ticket: add tag "no-response",
+                                      add an internal note, reopen for the owner
+    ```
+
+    Every **Replied** output is left unconnected, so the flow simply stops when the contact answers.
+
+    Change the waits, the texts and the condition to fit your team, or start from scratch.
+  </Step>
+
+  <Step title="Test it">
+    Click **Test** to try the flow with a sample reply. See [Test it](#test-it) below.
+  </Step>
+
+  <Step title="Publish">
+    Click **Publish**. From now on the flow watches your team's email replies.
+  </Step>
+</Steps>
+
+A follow-up flow belongs to the whole workspace: it has no AI agent picker and works for every email conversation, whichever agent answers it.
+
+## How a follow-up starts
+
+Click the **Trigger** node and pick how the flow **Starts**:
+
+### When your team replies
+
+The flow starts each time a teammate's email reply reaches the contact. Use a **Condition** after the Trigger to pick which replies get follow-ups, with the field **Your team's reply**:
+
+| Your team's reply… | Follows up on |
+| --- | --- |
+| contains `€` | replies that mention a price (the starter flow) |
+| contains `proposal` | replies that mention a proposal |
+| contains `quote` | replies that mention a quote |
+
+You can use every other condition field too, such as **Tag**, **Mailbox (email)** or a custom field. Connect only the branches that should get follow-ups: a reply that ends on an unconnected **Otherwise** gets no follow-ups at all.
+
+<Warning>
+Without a Condition, **every** email reply your team sends starts follow-ups. Most teams only want them on proposals and quotes.
+</Warning>
+
+When several follow-up flows start this way, they are tried in the order they were first published, and the first one whose conditions match the reply runs.
+
+A reply that goes out as part of solving the conversation starts nothing: the solve would stop it right away.
+
+### Started by hand from a ticket
+
+The flow only runs when a teammate starts it. On an email conversation, open the **Follow-up** section in the context drawer on the right, pick the flow under **Follow-up flow** and click **Start follow-up**. The follow-ups are about the teammate's latest reply on that conversation.
+
+You can start a follow-up by hand when:
+
+- the conversation is an email conversation that isn't solved, closed or merged,
+- your team has replied to the contact (*"Reply to the customer first: the follow-up is about your team's last reply."*),
+- the contact hasn't already written back since that reply, and no teammate has answered since,
+- no other follow-up is running on the conversation.
+
+## The steps
+
+Follow-up flows have their own palette: **Trigger**, **Condition** and **Wait for a reply**; **Send follow-up** and **Update ticket**; and **Resolve** to end with.
+
+### Wait for a reply
+
+Pauses the flow until the time is up or the contact answers first.
+
+- **Wait for** — a whole number of **Working days** (1 to 60), **Days** (1 to 60) or **Hours** (1 to 720).
+- The flow goes on after that time, at the same time of day. **Working days** skip the days your [business hours](/settings/workspace) are closed; without business hours, weekends are skipped. Days are counted in your workspace's time zone.
+
+A Wait has two outputs:
+
+| Output | Taken when |
+| --- | --- |
+| **No reply** | The time is up and the contact hasn't answered. Required: connect it to the next step. |
+| **Replied** | The contact answered first. Optional: leave it unconnected to simply stop. |
+
+After **Replied** the contact is waiting on your team, so the flow can only check or update the conversation there (tag it, add a note, hand it back). It can't send another follow-up, wait again or solve the conversation. A conversation the contact answered is back in your team's **Open** list anyway.
+
+### Send follow-up
+
+Sends one email in the conversation's email thread, as the teammate whose reply started the flow: from their name, with their signature added below the text. It copies only the people that teammate's reply went to. In the thread it shows as *Sent by follow-up flow "…"*.
+
+Write the email one of two ways:
+
+- **Follow-up text** — your own text. Click a variable to insert `{{contact.first_name}}`, `{{contact.name}}` or `{{teammate.first_name}}`.
+- **Write it with AI** — switch it on and fill in **Instructions for the AI**, for example *"Friendly check-in on the proposal we sent. Ask if they have any questions."* The AI writes a short, friendly email in the contact's language, based on your instructions and your team's reply. It never adds prices or promises that aren't in the thread. Emails it wrote are marked **Written by AI** in the thread, and each one counts as an AI reply on your usage.
+
+With **Write it with AI** on, you can add **Text if the AI can't write it (optional)**. Without it, nothing is sent when the AI fails: the flow stops and your team gets an internal note. The same happens when AI replies are paused in your workspace.
+
+<Tip>
+Don't add a sign-off to the text or the instructions: the teammate's signature is added below the email.
+</Tip>
+
+If the teammate who replied has left the workspace, the follow-up goes out without their name, from the mailbox's address.
+
+### Update ticket
+
+Changes the conversation, in the order you list the changes, then goes on:
+
+| Change | What it does |
+| --- | --- |
+| **Add tag** | Adds a tag to the conversation (up to 40 characters), e.g. `no-response`. |
+| **Remove tag** | Removes a tag. |
+| **Add internal note** | Adds a note only your team sees. You can use `{{contact.first_name}}` and `{{teammate.first_name}}`. |
+| **Reopen for the owner** | Moves the conversation back to **Open** and assigns it to the teammate who replied, if they can still take conversations. |
+
+### Resolve
+
+Solves the conversation right away, with the **Resolution** you pick. A follow-up flow never sends a satisfaction survey: a contact who never answered gets no rating email. A Resolve can't come after **Replied**.
+
+## When it stops on its own
+
+A running follow-up stops, and sends nothing more, when:
+
+- **The contact answers.** Out-of-office replies, auto-replies and mail flagged as spam don't count. If the Wait's **Replied** output is connected, the flow goes on along it first.
+- **A teammate replies** to the contact (a reply, or an AI draft a teammate sends). Internal notes don't count. If the new reply matches a follow-up flow, a fresh follow-up starts on it.
+- **The conversation is solved, closed, merged or deleted.**
+- **An email bounces**: a follow-up email can't be delivered, or the teammate's reply it is about never arrived.
+- **A newer follow-up starts** on the same conversation.
+- **The flow is unpublished** (or deleted). Follow-ups waiting on conversations stop for good, also when you publish the flow again.
+- **The contact writes on another channel** (optional), for example a WhatsApp message or a new email conversation from the same contact. This is on by default: switch off **Also stop when this contact writes on another channel** on the Trigger to keep following up.
+
+Follow-ups also stop when your plan no longer includes flows.
+
+It also stops, with an internal note for your team, when a follow-up can't be sent: the contact has no email address, the mailbox isn't connected anymore, email can't be sent from the workspace right now, or the AI couldn't write the email and there's no fallback text.
+
+When the flow reaches its last step, the follow-up is finished.
+
+## How it works with automatic solving and closing
+
+Follow-up flows never fight the automatic solving and closing in **Settings → Helpdesk**:
+
+- **AI auto-resolve after customer silence** leaves conversations with a running follow-up alone. The flow decides what happens next, not the timer.
+- **Any solve stops the follow-up**, whoever or whatever solves the conversation. A follow-up never reopens a solved conversation.
+- A follow-up flow only solves through its own **Resolve** step, and never sends a satisfaction survey.
+- Solved conversations still move to **Closed** after your workspace's **Auto-close solved conversations after** period, as usual.
+
+## What teammates see on the conversation
+
+On an email conversation, the **Follow-up** section in the context drawer on the right shows:
+
+- **While a follow-up runs**: the flow's name, **Waiting** or **Sending**, how many follow-ups went out (*1 of 2 follow-ups sent*), who they're sent as, and when the next one goes (*Next follow-up …, unless the customer replies first.*).
+  - **Send now** sends the next follow-up right away instead of at the planned time. If the contact replied in the meantime, nothing is sent. When no follow-up emails are left, the button reads **Continue now** and runs the next step.
+  - **Stop** ends the follow-ups on this conversation. You can't pick them up again later.
+- **When nothing runs**: **Start follow-up** with a **Follow-up flow** picker, listing the published flows that start **by hand**.
+- **After it ended** (for 30 days): *Follow-up finished* or *Follow-up stopped: the customer replied*, with the reason.
+
+Follow-up emails and notes in the thread are labelled with the flow that wrote them. Viewers see the section read-only: they can't start, stop or speed up a follow-up.
+
+## Test it
+
+Click **Test** in the flow editor. The follow-up tester runs on an email conversation and sends, saves and schedules nothing. AI steps give real answers, free of charge.
+
+1. Under **Your team's reply**, write the email a teammate sent (e.g. *"Hi Jan, as discussed: we can do it for €1,000 excl. VAT."*). Conditions on **Your team's reply** check this text.
+2. Click **Run**. The flow runs until its first Wait, showing each follow-up email it would send and every change it would make.
+3. At each Wait, choose what happens next:
+   - **Skip the wait (no reply)** — the time is up and the contact didn't answer.
+   - **Customer replies now** — type the contact's answer and click **Send answer** to test the **Replied** output.
+4. **Run again from the start** to test your latest edits.
+
+Each run, skip and reply counts as one test toward the tester's limit of 30 every 10 minutes.
+
+## Limits
+
+- **Email conversations only.** Follow-ups go out by email in the same thread, from the teammate who replied, with their signature.
+- **At most 5 follow-up emails per flow** (five **Send follow-up** steps).
+- **One follow-up per conversation at a time.** To start another by hand, stop the running one first.
+- Every **Wait for a reply** needs its **No reply** output connected, and nothing after **Replied** may send, wait or solve. Keloa checks this when you publish.
+- **A follow-up already running keeps the version of the flow it started with.** Changes you save apply to follow-ups that start afterwards. A published follow-up flow can only be saved without problems; fix them, or unpublish it first.
+- **Plan availability** is the same as for flows: from **Growth** upwards, and each follow-up flow counts toward your plan's flow cap. See [Flows overview](/flows/overview#plan-availability).
