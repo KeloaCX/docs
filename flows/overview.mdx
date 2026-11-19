@@ -1,46 +1,68 @@
 ---
 title: "Flows overview"
-description: "Visual automation for your inbox — triggers, conditions, messages, actions, handoffs."
+description: "Visual automation for your inbox: reply flows that route and answer, and follow-up flows that chase an unanswered email."
 ---
 
-A **flow** is a visual automation you build by dragging nodes onto a canvas and connecting them. Use flows to route, tag, escalate, or auto-reply — layered on top of your AI agent.
+A **flow** is a visual automation you build by dragging nodes onto a canvas and connecting them. Flows add fixed, predictable logic on top of your AI agent: route a conversation to the right person, send a set reply, or follow up when a contact doesn't answer your email.
 
-## When to use a flow
+## Two kinds of flow
 
-- **Routing** — send VIP customers to a senior teammate immediately.
-- **Escalation** — if the AI can't resolve in 2 turns, hand off.
-- **Auto-tagging** — tag anything mentioning "refund" with `returns`.
-- **Auto-replies** — send a templated greeting when a conversation opens on a specific channel.
-- **After-hours** — politely acknowledge messages outside business hours.
-
-You don't need a flow for the AI to answer — that happens automatically once an agent is attached to a channel. Flows add deterministic logic on top.
-
-## Node types
+When you click **New flow**, you pick what the flow should do. You can't change this later.
 
 <CardGroup cols={2}>
-  <Card title="Trigger" icon="bolt">
-    The start. Fires on *message received*, *conversation opened*, *contact created*.
+  <Card title="Reply flow" icon="comments">
+    Answers incoming messages with your AI agent. It runs when a contact writes, before the AI answers, and can route, reply, hand off or solve.
   </Card>
-  <Card title="Condition" icon="code-branch">
-    Branch on channel, tag, AI intent, language, or a custom field.
-  </Card>
-  <Card title="Message" icon="comment">
-    Send a message to the customer (with optional delay).
-  </Card>
-  <Card title="Action" icon="wrench">
-    Tag, set priority, assign, collect an email.
-  </Card>
-  <Card title="Handoff" icon="user-plus">
-    Route to a teammate, team, or round-robin within a specialty.
-  </Card>
-  <Card title="Resolve" icon="circle-check">
-    Close the conversation, optionally send CSAT.
+  <Card title="Follow-up flow" icon="envelope" href="/flows/follow-up-flows">
+    Follows up by email after your team replies, and stops when the contact answers. For example: reminders after you send a price.
   </Card>
 </CardGroup>
 
+A reply flow belongs to one AI agent and only runs in conversations that agent answers. An agent runs one reply flow at a time. A follow-up flow belongs to the whole workspace and doesn't need an agent.
+
+## When to use a flow
+
+- **Routing** — hand mail from a key account straight to its account manager.
+- **Topic triage** — let the AI sort the first message into *sales*, *billing* or *support*, and hand sales and billing to the right team.
+- **Auto-replies** — send a set greeting on the first message of a conversation on one channel.
+- **After-hours** — send a short note when a conversation starts outside business hours.
+- **Follow-ups** — remind a contact about the proposal you sent, and stop as soon as they answer. See [Follow-up flows](/flows/follow-up-flows).
+
+You don't need a flow for the AI to answer — that happens automatically once an agent is attached to a channel. When a reply flow ends without sending anything, the AI answers as usual.
+
+## Node types
+
+Reply flows use these nodes:
+
+<CardGroup cols={2}>
+  <Card title="Trigger" icon="bolt">
+    The start. Fires on a new conversation, every customer message, a reopened conversation or a new contact.
+  </Card>
+  <Card title="Condition" icon="code-branch">
+    Branch on channel, mailbox, subject, message text, tag, team, contact details, language, business hours or a custom field.
+  </Card>
+  <Card title="Intent" icon="wand-magic-sparkles">
+    The AI sorts the latest customer message into one of the intents you list; the flow follows that output.
+  </Card>
+  <Card title="Message" icon="comment">
+    Reply with your own text, or let the AI write it from your instructions.
+  </Card>
+  <Card title="Action" icon="wrench">
+    Run one of your workspace's tools, such as a Shopify order lookup.
+  </Card>
+  <Card title="Handoff" icon="user-plus">
+    Hand the conversation to a member, a team, the least busy teammate or the next one in the rotation.
+  </Card>
+  <Card title="Resolve" icon="circle-check">
+    Mark the conversation as solved, optionally with a satisfaction survey.
+  </Card>
+</CardGroup>
+
+Follow-up flows use **Trigger**, **Condition** and **Resolve** too, plus three nodes of their own: **Wait for a reply**, **Send follow-up** and **Update ticket**. See [Follow-up flows](/flows/follow-up-flows).
+
 ## Plan availability
 
-Flows are available from the **Growth** plan upwards. Caps:
+Flows are available from the **Growth** plan upwards. Reply flows and follow-up flows count toward the same cap:
 
 | Plan | Flows |
 | --- | --- |
@@ -49,28 +71,42 @@ Flows are available from the **Growth** plan upwards. Caps:
 | Business | 6 |
 | Scale | Unlimited |
 
+Only workspace admins can create and change flows. Other teammates see them read-only.
+
 ## Typical flow shapes
 
-**Triage flow:**
+**Key-account routing:**
 ```
-Trigger (message received)
-  → Condition (channel == WhatsApp AND tag == "vip")
-      ├── Yes → Handoff (senior team)
-      └── No  → let AI continue
-```
-
-**After-hours flow:**
-```
-Trigger (message received)
-  → Condition (business hours)
-      ├── Open   → let AI continue
-      └── Closed → Message ("We're back at 9") → Action (tag "after-hours")
+Trigger (New conversation, channel: Email)
+  → Condition (Sender domain equals "acme.com")
+      ├── Acme      → Handoff (Specific member: the account manager)
+      └── Otherwise → (not connected: the AI answers)
 ```
 
-**CSAT on resolve:**
+**After-hours note:**
 ```
-Trigger (conversation resolved)
-  → Resolve (csat enabled, delay 30s)
+Trigger (New conversation)
+  → Condition (Business hours equals "closed")
+      ├── Closed    → Message ("Thanks! Our team is back at 9:00 and will reply then.")
+      └── Otherwise → (not connected: the AI answers)
+```
+
+**Topic triage** (the starter every new reply flow begins with):
+```
+Trigger (New conversation)
+  → Intent (support, sales, billing, other)
+      ├── sales   → Handoff (reason: sales inquiry)
+      ├── billing → Handoff (reason: billing question)
+      └── support, other → (not connected: the AI answers)
+```
+
+**Proposal follow-up** (the starter every new follow-up flow begins with):
+```
+Trigger (When your team replies)
+  → Condition (Your team's reply contains "€")
+  → Wait for a reply (3 working days)
+      └── No reply → Send follow-up → Wait for a reply → Send follow-up
+                   → Wait for a reply → Update ticket (tag, note, reopen for the owner)
 ```
 
 ## Next
@@ -85,7 +121,10 @@ Trigger (conversation resolved)
   <Card title="Conditions" icon="code-branch" href="/flows/conditions">
     Fields, operators, and combining logic.
   </Card>
+  <Card title="Follow-up flows" icon="envelope" href="/flows/follow-up-flows">
+    Automatic reminders after your team replies.
+  </Card>
   <Card title="Publish &amp; test" icon="rocket" href="/flows/publish-and-test">
-    Safely ship a flow to production.
+    Test a flow, then put it live.
   </Card>
 </CardGroup>

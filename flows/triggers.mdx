@@ -5,22 +5,35 @@ description: "Every event that can start a flow, and how to scope it."
 
 A **Trigger** node is where every flow begins. Each flow has exactly one Trigger.
 
-## Events
+## Reply flow events
 
 | Event | Fires when |
 | --- | --- |
-| `message_received` | A new inbound message arrives on any conversation |
-| `conversation_opened` | A conversation is created (first inbound message) |
-| `conversation_reopened` | A resolved conversation gets a new inbound message |
-| `contact_created` | A new contact is created (first time we see this person) |
+| **New conversation (first message)** | The message is the first customer message in the conversation. This is the default. |
+| **Every customer message** | Any customer message in the conversation. |
+| **Conversation reopened** | A customer message reopens a solved conversation. |
+| **New contact (first ever message)** | The message is the contact's first message ever, across all their conversations. |
 
-You pick one event per flow. If you need multiple events to feed the same logic, duplicate the flow and change the trigger.
+You pick one event per flow.
+
+**Every customer message** runs the flow on each message of a long conversation, so a Message node in it answers every time. Use **New conversation** when the flow should act once per conversation.
+
+## Follow-up flow events
+
+A follow-up flow starts on something your team did, not on a customer message:
+
+| Event | Starts when |
+| --- | --- |
+| **When your team replies** | A teammate's email reply reaches the contact. Use a Condition after it to pick which replies get follow-ups. |
+| **Started by hand from a ticket** | A teammate clicks **Start follow-up** on the conversation. |
+
+See [Follow-up flows](/flows/follow-up-flows) for both.
 
 ## Channel scoping
 
-By default a trigger fires on **all channels**. Scope it to one or more of the channels connected to your workspace:
+By default a reply flow's trigger fires on **Any channel**. Pick one channel to scope it:
 
-- Webchat
+- Web chat
 - Email
 - WhatsApp
 - Instagram
@@ -28,26 +41,30 @@ By default a trigger fires on **all channels**. Scope it to one or more of the c
 - Telegram
 - Slack
 
-A channel only shows in the list once it's connected.
+The list shows the channels connected to your workspace. This is how you build channel-specific flows — different greetings, different routing, different after-hours handling.
 
-This is how you build channel-specific flows — different greetings, different routing, different after-hours handling.
+Follow-up flows have no channel setting: they only run on email conversations.
+
+## Which conversations a reply flow sees
+
+A reply flow belongs to one AI agent and runs inside that agent's reply: only in conversations the agent answers, and only while the AI is answering. Once a teammate has taken the conversation over (a hand-off, a teammate's reply, or a teammate assigning it to someone), neither the AI nor the flow runs until the conversation is solved or closed.
+
+A published flow without an agent never runs. The flow list shows it as **Published, but not running: no agent**.
 
 ## Timing
 
-Triggers fire **before** the AI agent replies. So if your flow sends a message or does a handoff, it happens before the AI would have. If the flow just tags or sets a condition and falls through, the AI proceeds as usual.
+A reply flow runs **before** the AI agent replies:
 
-Want to trigger **after** the AI replies instead? Use a flow with `message_received` and no blocking action — it'll run in parallel.
+- If the flow sends a **Message**, that message is the reply. The AI doesn't answer that message as well.
+- If the flow hands off, the conversation goes to your team. Without a Message before the Handoff, the AI agent writes a short acknowledgement for the contact.
+- If the flow ends without sending anything (for example an **Otherwise** output that isn't connected), the AI answers as usual.
 
-## Multiple flows on the same trigger
+## One reply flow per agent
 
-You can have several flows on `message_received`. All matching flows run. If two flows both try to handoff, the first one wins — the second is skipped (you'll see this in the flow log).
+Each AI agent runs one reply flow. When you publish a reply flow, the agent's other published reply flow moves back to draft, and Keloa tells you which one. To combine several routes, build them into one flow with Condition or Intent branches.
 
-Order of execution across flows is stable but not configurable. If you need strict ordering, combine them into one flow with conditional branches.
+Follow-up flows work differently: several can be live side by side. See [Follow-up flows](/flows/follow-up-flows#how-a-follow-up-starts).
 
-## Debouncing
+## Disabling a flow
 
-Triggers don't debounce on their own — a burst of 5 messages in 2 seconds will fire 5 times. If you want to act only once per conversation, check the conversation for an internal tag the flow sets, and skip if it's there.
-
-## Disabling a trigger
-
-Pause the flow (**⋯ → Pause**) to disable every trigger in it without deleting. Resume restores.
+Click **Unpublish** to stop a flow without deleting it. It goes back to draft; **Publish** puts it live again.

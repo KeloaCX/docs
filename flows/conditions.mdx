@@ -1,79 +1,105 @@
 ---
 title: "Conditions"
-description: "Branch your flow on channel, tag, AI intent, sentiment and more."
+description: "Branch your flow on channel, mailbox, message text, tags, contact details, business hours, custom fields and more."
 ---
 
-A **Condition** node splits the flow into two paths — one for matches, one for non-matches.
+A **Condition** node splits the flow into paths. It has one output per branch, plus an **Otherwise** output for everything that matches no branch.
 
 ## Fields you can match on
 
 | Field | Example value |
 | --- | --- |
-| `channel` | `webchat`, `email`, `whatsapp`, `instagram`, `messenger`, `telegram`, `slack` |
-| `subject` | Email subject line |
-| `message.body` | The incoming message text |
-| `contact.email` | Contact's email |
-| `contact.name` | Full name |
-| `contact.company` | Company name |
-| `contact.tags` | Any tag on the contact |
-| `intent` | AI-inferred intent (e.g. `shipping`, `refund`, `pre_sales`) |
-| `sentiment` | `positive`, `neutral`, `negative` |
+| **Channel** | `webchat`, `email`, `whatsapp`, `instagram`, `messenger`, `telegram`, `slack` |
+| **Mailbox (email)** | The Keloa mailbox the email arrived in, e.g. `support@yourdomain.com` |
+| **Sent to (email)** | The addresses the latest email was sent to (To and Cc), also for mail forwarded to Keloa — so you can tell `info@` from `sales@` |
+| **Subject** | Email subject line |
+| **Message text** | The latest customer message |
+| **Has attachments** | `yes` / `no` (the latest customer message) |
+| **Status** | `open`, `pending`, `solved`, `closed` |
+| **Priority** | `low`, `normal`, `high`, `urgent` |
+| **Tag** | Any tag on the conversation |
+| **Team** | The name of the team the conversation is routed to |
+| **Contact email** | The contact's email address |
+| **Sender domain** | The domain of the contact's email, e.g. `acme.com` |
+| **Contact name** | Full name |
+| **Company** | The contact's company name |
+| **New contact** | `yes` when this is the contact's first message ever |
+| **Customer language** | Two-letter code, e.g. `en`, `nl` — the contact's language, else the language of their message |
+| **Business hours** | `open` or `closed`, by your workspace's business hours right now |
+| Custom fields | Every contact, company and conversation custom field from **Settings → Custom fields**, listed as e.g. *Contact · Plan* |
+
+Follow-up flows add one more field, **Your team's reply**: the teammate's reply that started the follow-ups, for example *contains €* or *contains proposal*. See [Follow-up flows](/flows/follow-up-flows#how-a-follow-up-starts).
+
+To branch on what the message is *about* (sales, billing, support…), use an [Intent node](#intent-nodes) instead of keyword rules.
 
 ## Contact fields on website conversations
 
 A branch decides what the visitor sees next, so on a website conversation a condition only sees the contact details a [flow message](/flows/messages-and-actions#contact-details-on-website-conversations) may show:
 
-- `contact.email` (and its domain) and `contact.phone` count as empty on an anonymous website conversation, unless the visitor typed that address or number in that conversation (an address left in the contact form counts, also in the form of one of their own earlier conversations your team merged into it). On a signed-in user's conversation they also see the verified email and the phone your site signed for that user.
-- `contact.name` and `contact.company` count as empty on an anonymous website conversation, unless the visitor gave that name in that conversation (in the chat or the contact form) or in the contact form of one of their own earlier conversations your team merged into it. On a signed-in user's conversation they are the name and company your site signed for that user.
-- On an anonymous website conversation, `language` and every contact and company custom field, your team's included, count as unknown; `language` then follows the visitor's own messages. On a signed-in user's conversation, `language` is the one your site signed, and custom fields only count when your site signed them for that user.
-- `subject` and `tags` leave out what an earlier merge brought in from another person's conversation.
-- On a mixed conversation, one a merge made before Keloa refused such merges mixed with another person's or another channel's conversation, every conversation custom field counts as empty, and `subject` and `tags` leave out what any merge brought in; once data retention deleted the conversations merged into it, they count as empty. On an email or other conversation such a merge moved a website conversation into, a conversation custom field filled before that merge counts as empty too. See [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule).
+- **Contact email** and **Sender domain** count as empty on an anonymous website conversation, unless the visitor typed that address in that conversation (an address left in the contact form counts, also in the form of one of their own earlier conversations your team merged into it). On a signed-in user's conversation they also see the verified email your site signed for that user.
+- **Contact name** and **Company** count as empty on an anonymous website conversation, unless the visitor gave that name in that conversation (in the chat or the contact form) or in the contact form of one of their own earlier conversations your team merged into it. On a signed-in user's conversation they are the name and company your site signed for that user.
+- On an anonymous website conversation, **Customer language** and every contact and company custom field, your team's included, count as unknown; **Customer language** then follows the visitor's own messages. On a signed-in user's conversation, the language is the one your site signed, and custom fields only count when your site signed them for that user.
+- **Subject** and **Tag** leave out what an earlier merge brought in from another person's conversation.
+- On a mixed conversation, one a merge made before Keloa refused such merges mixed with another person's or another channel's conversation, every conversation custom field counts as empty, and **Subject** and **Tag** leave out what any merge brought in; once data retention deleted the conversations merged into it, they count as empty. On an email or other conversation such a merge moved a website conversation into, a conversation custom field filled before that merge counts as empty too. See [Website conversations merged before the rule](/contacts/contact-profile#website-conversations-merged-before-the-rule).
 
-Other channels, such as email and WhatsApp, see every field as usual. In the Try run the panel shows the value the condition used.
+Other channels, such as email and WhatsApp, see every field as usual. In the tester, each rule shows the value the condition used.
 
 ## Operators
 
 | Operator | Meaning |
 | --- | --- |
-| `equals` | exact match |
-| `not_equals` | not this value |
-| `contains` | substring match (case-insensitive) |
-| `starts_with` | beginning of the string |
-| `ends_with` | end of the string |
-| `in` | value is one of a list |
+| **equals** | exact match (not case-sensitive) |
+| **does not equal** | not this value |
+| **contains** | the text contains the value (not case-sensitive) |
+| **starts with** | beginning of the text |
+| **ends with** | end of the text |
+| **is one of** | the value is one of a comma-separated list, e.g. `nl, de` |
+| **is greater than / after** | for number and date custom fields |
+| **is less than / before** | for number and date custom fields |
+| **has tag** | the conversation has this tag |
+| **is empty** | the field has no value |
+| **is not empty** | the field has a value |
+
+For a number field, write the number without a currency sign or unit, like `1,000` or `12.5`. A rule that isn't a valid number blocks publishing. A rule left without a value blocks publishing too — use **is empty** / **is not empty** to check for a missing value.
 
 ## Combining conditions
 
-One Condition node can have multiple rules. All rules in a condition are **AND-ed** — the branch matches only if every rule passes.
+A branch can hold several rules (**+ Add condition**). All rules in a branch must match — they're AND-ed.
 
-For OR logic, use **two Condition nodes** back to back, each feeding the same next node from their `yes` outputs.
+For OR logic, click **Add branch** and connect both branches to the same next node.
 
 ## Multiple branches
 
-Advanced: add more than two branches on a single Condition node. Each branch has its own rule set — the first matching branch wins. This is like `if/else if/else` instead of just `if/else`.
+Branches are checked top to bottom, and the first one whose rules all match wins. When none match, the flow takes **Otherwise**. This works like `if / else if / else`.
 
-Use multiple branches when you're classifying into more than two buckets — e.g. *intent = refund* → returns team, *intent = sales* → sales team, *default* → AI.
+Leave **Otherwise** unconnected in a reply flow to let the AI answer normally. In a follow-up flow, an unconnected **Otherwise** ends the flow there, with no follow-ups.
 
-## Intent and sentiment
+## Intent nodes
 
-`intent` and `sentiment` are classified by the AI on every inbound message. They're available as fields for conditions and as analytics dimensions.
+An **Intent** node lets the AI sort the latest customer message into one of the intents you list, then follows the matching output. Use it for branching on what a message is about, where keyword rules would miss phrasings.
 
-Common intents surface automatically — shipping, refund, pricing, technical, cancellation, pre-sales. If the model isn't confident, `intent` is `unknown`.
+- **Intents** — one output each. New nodes start with `support`, `sales`, `billing` and `other`; add your own (lowercase, no spaces).
+- **Fallback intent** — used when the AI can't match any intent, the message is empty or the classification fails.
+- **Description** (optional) — extra context for borderline messages, e.g. *"sales = pricing, demos, partnership. billing = invoices, refunds, payment failures."*
+
+Leave an intent's output unconnected to let the AI answer those messages. Intent nodes are only available in reply flows.
 
 ## Example
 
-Match a high-value customer in distress:
+Route sales questions from new contacts to the sales team, and leave everything else to the AI:
 
 ```
-Condition:
-  contact.tags     contains   "vip"
-  AND sentiment    equals     "negative"
-→ yes: Handoff (senior team, reason "VIP in distress")
-→ no:  let AI continue
+Trigger (New conversation)
+  → Condition
+      Branch "New lead": New contact equals "yes"
+      ├── New lead  → Intent (sales, support, other)
+      │                 ├── sales → Handoff (A team: Sales, reason "New sales lead")
+      │                 └── support, other → (not connected: the AI answers)
+      └── Otherwise → (not connected: the AI answers)
 ```
 
 ## Tips
 
 - **Start with one rule.** Add more only when the first one isn't specific enough.
-- **Prefer tags over string matching.** A tag is deliberate; a keyword match fires on anything.
-- **Test with the Try run.** The panel shows every condition's evaluation with real values.
+- **Prefer tags and fields over string matching.** A tag is deliberate; a keyword match fires on anything.
+- **Test with the tester.** Each condition shows which branch it took and the value every rule compared against.

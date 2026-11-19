@@ -68,6 +68,7 @@
               "flows/conditions",
               "flows/messages-and-actions",
               "flows/handoff-and-resolve",
+              "flows/follow-up-flows",
               "flows/publish-and-test"
             ]
           },

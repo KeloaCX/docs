@@ -5,39 +5,49 @@ description: "Hand conversations to humans, and close them out with optional CSA
 
 ## Handoff node
 
-A **Handoff** node assigns the conversation to a teammate and signals that the AI should step back.
+A **Handoff** node hands the conversation to your team and tells the AI to step back. It ends the flow: nothing can come after it.
 
-### Targets
+### Hand off to
 
-| Target type | Use when |
+| Option | What happens |
 | --- | --- |
-| **User** | You want this specific person (e.g. account manager for a VIP) |
-| **Team** | You want any member of a team (e.g. Senior support) |
-| **Round-robin within specialty** | You want even distribution across everyone with a specialty |
+| **Specific member** | The conversation goes to this member, even if someone else has it. If they can no longer take conversations, the least busy teammate gets it. |
+| **A team** | The team's own assignment method decides who gets it (round-robin, least busy, or manual). Someone on the team who already has the conversation keeps it. A team that assigns manually keeps it in the team queue and alerts the whole team. |
+| **Least busy** | The teammate with the fewest open conversations gets it. |
+| **Round-robin across everyone** | All teammates take turns: whoever was handed a conversation longest ago is next. |
+
+With **Least busy** and **Round-robin across everyone**, a conversation someone already owns stays with them, and one already routed to a team (for example by an [assignment rule](/settings/assignment-rules)) stays with that team.
+
+Create teams in **Settings → Teams**. If the team a Handoff node points to is deleted, the node hands off as **Least busy** until you pick another team, and you can't publish until you do.
 
 ### Reason
 
-Add a short reason (*"VIP customer"*, *"Complex billing issue"*). It's shown to the assignee in the conversation header so they know why it landed with them.
+Add a short **Reason / note** (*"VIP customer"*, *"Complex billing issue"*). It's added to the conversation as an internal note and sent with the hand-off notification, so the assignee knows why it landed with them.
 
 ### What handoff actually does
 
-- Assigns the conversation to the chosen teammate / team.
-- Stops the AI from replying (you can hand back manually).
-- Sends a desktop notification to the assignee.
-- Clears the AI's "responding" indicator in the widget.
+- Assigns the conversation to the chosen member or team, and notifies them.
+- Stops the AI and the flow from replying until the conversation is solved or closed.
+- If the flow sent no Message before the Handoff, the AI agent writes a short acknowledgement for the contact. To say something specific instead, put a **Message** node right before the Handoff.
 
-### Let the AI continue after a human
+### When the AI takes over again
 
-If a teammate resolves the issue and the customer asks a follow-up later, the **AI takes over again** once the conversation goes back to an unassigned state (`Unassign` from the header).
+After a hand-off, your team answers. Once the conversation is solved or closed, a brand-new question from the contact is the AI's again.
 
 ## Resolve node
 
-A **Resolve** node closes the conversation — optional at the end of any flow.
+A **Resolve** node marks the conversation as solved. It ends the flow: nothing can come after it.
 
 ### Configure
 
-- **Resolution** — resolved / no action needed / duplicate / spam
-- **Satisfaction survey** — tick **Always send a satisfaction survey** to survey every conversation this step solves
+- **Resolution** — Resolved / Spam / No action needed / Duplicate. Recorded on the conversation.
+- **Satisfaction survey** — switch on **Always send a satisfaction survey** to survey every conversation this step solves.
+
+### When it solves
+
+- If a **Message** comes before the Resolve, the conversation is solved once that reply is actually sent. A reply that stays a draft or can't be sent keeps the conversation open for your team.
+- If that Message came out empty (the AI couldn't write it), the Resolve hands the conversation to your team instead, with an internal note saying why.
+- A conversation that is already solved or closed is left as it is.
 
 ### CSAT
 
@@ -47,27 +57,24 @@ With it off, your usual survey rules in **Settings → Customer satisfaction** d
 
 The survey goes out on the conversation's own channel: a rating card in website chat, an email, a message with a link on Messenger and Instagram, or a message with five faces on Telegram and in Slack direct messages. WhatsApp conversations and Slack channel threads aren't surveyed. See [CSAT](/analytics/csat).
 
+In a [follow-up flow](/flows/follow-up-flows), a Resolve node solves the conversation right away and never sends a satisfaction survey.
+
 ## Combining handoff and resolve
 
-Rarely in the same flow — usually one or the other. But they do combine in one pattern:
+A flow path ends in one or the other. One flow can use both on different branches:
 
 ```
-Trigger (message received)
-  → Condition (intent equals "cancellation" AND sentiment equals "negative")
-      ├── Yes → Handoff (retention team, reason "angry cancel")
-      └── No  → (end)
+Trigger (Every customer message)
+  → Intent (thanks, billing, other)
+      ├── thanks  → Message (Compose with AI: "Say you're glad we could help.")
+      │            → Resolve (resolved)
+      ├── billing → Handoff (A team: Billing, reason "Billing question")
+      └── other   → (not connected: the AI answers)
 ```
 
-...and a separate flow:
-
-```
-Trigger (conversation resolved)
-  → Resolve (csat_enabled: true, delay 30s)
-```
-
-The first escalates the right cases to humans; the second asks every resolved customer how it went.
+A contact who just says thanks gets a short reply and the conversation is solved once it's sent; billing questions go to the billing team; everything else is answered by the AI.
 
 ## Important
 
-- A flow that does **Handoff** should not also send a **Message** right after — the human will, and two messages looks unprofessional. If you want a reassurance message, send it from the flow *before* the handoff.
-- **Resolve** is the actual close. If you only want to tag "resolved-by-ai" without closing, use an **Action** node with a tag — not a Resolve.
+- A **Handoff** and a **Resolve** end the flow. If you want a reassurance message, put the **Message** before the Handoff.
+- **Resolve** is the actual solve. If you don't want to solve the conversation, end the path without a Resolve node.

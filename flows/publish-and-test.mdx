@@ -1,67 +1,62 @@
 ---
 title: "Publish & test a flow"
-description: "Safely ship a flow — dry-run, publish, monitor, roll back."
+description: "Safely ship a flow — test it as a customer, publish, unpublish."
 ---
 
 A flow can sit as a **draft** forever — it won't affect a real conversation until you publish. Always test before you publish.
 
-## Dry-run
+## Test a reply flow
 
-In the flow editor, click **Test run**. You get a simulation panel:
+In the flow editor, click **Test**. The tester opens next to the canvas in **Test mode**: it tries your current edits, saved or not. Nothing is sent to customers, saved or assigned. AI steps (Intent, Compose with AI, the AI agent's own answer) give real answers, free of charge.
 
-1. Pick a **trigger event** (e.g. `message_received` on WhatsApp).
-2. Fill in simulated message text, tags, contact fields.
-3. Click **Run**.
+1. On the **Scenario** tab, set who is writing and when: **Channel**, **Language**, **Contact** (new or returning), **Business hours** (current time, inside or outside), **Name**, **Email**, **Tags**, **Email subject** and your custom fields. The scenario is remembered for this flow on this device.
+2. On the **Chat** tab, type a message as the customer and click **Send**.
+3. Keep chatting to test later messages in the same conversation. **Start over** clears the chat and keeps the scenario.
 
-The canvas lights up each node as it executes. You see:
+For every message you see:
 
-- which conditions matched
-- what message would have been sent (not actually sent)
-- which assignee would have been chosen
-- any tags / actions that would have fired
+- the reply the contact would get, from the flow or, when the flow sends nothing, from your AI agent
+- every step the flow took (**Steps**), with the value each condition rule compared against and the branch it took
+- the path lit up on the canvas (**Show on canvas**)
+- what would happen live: *Would hand off to team Sales*, *Would mark the conversation as solved*, *Would run "Get Shopify order" (not called in tests)*
 
-Iterate until it matches your expectation.
+You can send 30 test messages every 10 minutes. To test a [follow-up flow](/flows/follow-up-flows#test-it), the tester works differently: you write your team's reply and choose how the customer responds.
 
 ## Validation
 
-When you click **Publish**, Keloa validates the flow and blocks publishing if:
+When you click **Publish**, Keloa checks the flow and lists anything that blocks publishing under **Fix these before publishing:**
 
-- A node is missing a required config (e.g. Message with empty template).
-- A Condition has an unreachable branch.
-- The flow would loop indefinitely.
+- The flow needs exactly one Trigger.
+- Every node must be reachable from the Trigger.
+- The flow can't loop back to an earlier node.
+- **Handoff** and **Resolve** nodes can't have anything after them.
+- Each Condition needs at least one connected output, and every rule needs a value (or **is empty** / **is not empty**). Number rules must be valid numbers.
+- Required settings must be filled in: the Message text (or the AI instructions), the Action's tool, the Handoff's team.
 
-Fix the red nodes it highlights, then publish.
+Follow-up flows have a few extra checks, see [Follow-up flows](/flows/follow-up-flows#limits). The tester runs the same checks and shows the problems before you test.
 
 ## Publishing
 
-Click **Publish**. The flow:
+Click **Publish**. If you have unsaved edits, Keloa asks to **Save & publish**. The flow:
 
-- Gets a version stamp.
-- Becomes live immediately — next matching trigger runs it.
-- Previous version is archived (not deleted).
+- Becomes live immediately — the next matching trigger runs it.
+- For a reply flow: moves the AI agent's other published reply flow back to draft, as each agent runs one reply flow at a time.
 
-## Monitor
+A reply flow without an AI agent asks **Publish without an agent?** first. You can publish it, but it won't run until you pick an agent at the top of the canvas.
 
-Open the flow → **Runs** tab for a live log:
+Saving changes to a published flow puts them live straight away. A live follow-up flow can only be saved without problems: fix them, or unpublish it first.
 
-- Every trigger firing (timestamp, conversation link)
-- Which branch was taken at each condition
-- What nodes ran
-- Any error messages
+## Unpublish
 
-You can filter by status (success / partial / failed) and date.
+Click **Unpublish** to stop a flow without deleting it. It goes back to draft, and you can publish it again any time. Unpublishing a follow-up flow also stops the follow-ups it is waiting to send on conversations, for good.
 
-## Rollback
+## Paused flows
 
-Go to **Versions** → pick a previous published version → **Restore**. It becomes live immediately. The broken version stays archived in case you want to compare or patch.
-
-## Pausing
-
-Toggle the flow's status to **paused** to stop all runs without deleting. Useful during incidents or while redesigning.
+If your plan no longer includes flows, your published flows show as **Paused** and don't run. Your AI agent answers customers as usual, and the flows are kept: they run again once flows are back on your plan.
 
 ## Best practices
 
 - **Ship small, iterate.** One flow, one purpose. Don't build a mega-flow with 30 nodes.
-- **Tag from the flow**, so you can measure its impact later in analytics.
-- **Dry-run three scenarios**: the happy path, an edge case, and a "nothing matches" case.
-- **Review runs weekly** for the first month. Most surprises show up in the first 100 runs.
+- **Name your branches and nodes** so the canvas and the tester read like a sentence.
+- **Test three scenarios**: the happy path, an edge case, and a "nothing matches" case.
+- **Check the AI answer too.** When the flow sends nothing, the tester shows the AI agent's real answer — make sure that's what you want.
