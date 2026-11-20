@@ -1,0 +1,250 @@
+---
+title: "Xelion"
+description: "Connect your Xelion phone system to Keloa: every contact's call history in one place, recordings you play from Keloa, and missed calls and voicemails that land in your inbox with a Call back link."
+---
+
+Connect your Xelion phone system and Keloa imports its call log. Your team sees every contact's calls next to their conversations, plays recordings and voicemails right from Keloa, and gets missed calls and voicemails in the inbox, ready to call back.
+
+Keloa only reads from Xelion. It never changes anything there: it doesn't mark calls as seen, heard or handled.
+
+## What you get
+
+- **A call log per contact and company.** The contact profile gets a **Calls** tab, and the company profile a **Calls** section: totals, missed calls, average duration, the last call, and every call with its direction, outcome, line, teammate and duration. See [Where calls show up](#where-calls-show-up).
+- **Calls in the inbox.** The **Calls** section in the context drawer shows the contact's recent calls next to any of their conversations, on every channel.
+- **Recordings and voicemails.** Play a recorded call or a voicemail from Keloa. Keloa streams it from Xelion each time and never stores a copy. See [Recordings](#recordings).
+- **Missed calls land in the inbox.** A missed call or voicemail from a contact opens a conversation on the **Phone call** channel, with a **Call back** button. When someone calls the contact back, Keloa notes it and can solve the conversation. See [Missed calls and voicemails](#missed-calls-and-voicemails).
+- **Missed-call notifications** to the teammates whose phone rang. See [Notifications](#notifications).
+- **Connection problem notices.** When the import stops, owners and admins get an email and a notification in Keloa.
+
+Your AI agent doesn't take part in calls, and it never answers a missed-call conversation.
+
+## Plans
+
+Xelion is available on every plan. It **doesn't use an integration slot**, so it never counts against your plan's **Integrations** pool, and a Starter workspace whose one slot is in use can still connect it. It doesn't count against **Channels** either.
+
+A workspace connects one Xelion tenant, and a Xelion tenant can be connected to one Keloa workspace at a time.
+
+Connecting, changing and disconnecting Xelion needs the **owner** or **admin** role. Other teammates can open the Xelion panel, but can't change it.
+
+## Before you start: create an API user in Xelion
+
+Keloa signs in to Xelion with a user of its own. Create it in Xelion first, or ask your Xelion partner to:
+
+- **A user just for Keloa**, for example "Keloa koppeling", with its own Xelion password. Don't use a user that only signs in through Microsoft.
+- **No multi-factor authentication** for this user. Xelion emails those codes, and Keloa signs in on its own.
+- **Read access to the call logs of every line**, and to the recordings where you limit who may hear them. Keloa only imports the calls this user may read.
+- **A password that doesn't expire.**
+
+<Warning>
+Wrong passwords count toward Xelion's lockout. Keloa never retries a refused password by itself, and it allows at most 5 password logins per Xelion tenant in 15 minutes. Check the user name and password before you try again.
+</Warning>
+
+## Connect Xelion
+
+<Steps>
+  <Step title="Open the integration">
+    Sidebar → **Integrations** → **Xelion**, under **Telephony**. The **Connect Xelion** window opens.
+  </Step>
+
+  <Step title="Enter the server address">
+    Under **Server address**, enter the host name of your Xelion server only, for example `acme.xelion.nl`.
+
+    Do you have the full API address, such as `https://acme.xelion.nl/api/v1/master/`? Paste it: Keloa keeps the host name and fills in **Tenant** for you.
+  </Step>
+
+  <Step title="Check the tenant">
+    **Tenant** is usually `master`. Ask your Xelion partner if you're not sure.
+  </Step>
+
+  <Step title="Enter the API user">
+    Enter the **User name** and **Password** of the API user you created. The password is stored encrypted, and it's never shown again.
+  </Step>
+
+  <Step title="Connect">
+    Click **Connect**. Keloa first checks that the address is a Xelion server (it sends no password to anything else), then signs in and checks which phone lines the user can see. Nothing is saved until that check passes.
+
+    You see "Xelion connected. Keloa is importing your calls."
+  </Step>
+</Steps>
+
+Keloa then reads your Xelion users and imports the **calls of the last 30 days**. The first import runs in the background. After that, Keloa checks Xelion for new calls about every two minutes.
+
+<Note>
+**"This account can't see any phone lines yet."** The user name and password work, but the API user may not read any line. Give it access in Xelion, then click **Test** on the Xelion card.
+</Note>
+
+## The Xelion card
+
+**Integrations** → **Xelion** opens the Xelion panel. Its card shows:
+
+- The tenant and server, for example **master on acme.xelion.nl**, the API user and the Xelion version.
+- How many phone lines the API user can see.
+- When Keloa last imported calls, and how many calls it imported in the last 30 days.
+- How many calls the API user may not read, if any. Give it read access to those lines in Xelion to import them too.
+- The status: **active**, or **error** when the import has stopped. See [Troubleshooting](#troubleshooting).
+
+The card has three buttons:
+
+- **Test** signs in again and checks the connection. A connection in **error** starts importing again once **Test** passes.
+- **Update credentials** replaces the user name and password. The server and tenant can't change here: to use another Xelion server or tenant, disconnect this one and connect the new one.
+- **Disconnect**. See [Disconnecting](#disconnecting).
+
+The settings below sit in the same panel and save as soon as you change them.
+
+## Missed calls and voicemails
+
+When a contact calls and nobody picks up, or they leave a voicemail, Keloa opens a conversation on the **Phone call** channel. It lands in **Open** in your inbox, like a new message from the contact.
+
+- **The line.** The conversation shows "Missed call from +31 6 1234 5678" or "Voicemail from +31 6 1234 5678 (0:42)", with the line it came in on. A voicemail has a **Play voicemail** button when you may [play recordings](#recordings).
+- **Call back.** Click **Call back** on the line or in the conversation header. It opens your phone app (on a computer, whatever app handles phone links) with the contact's number.
+- **One conversation per contact.** Another missed call from the same contact goes into their existing call conversation while it's open or pending, or solved within the period you choose. A solved conversation reopens.
+- **Calls back are noted.** When a teammate calls the contact back, or the contact calls again and someone picks up, Keloa adds a divider such as "Called back by Anna (3:12)" or "Answered by Anna (3:12)". That callback counts as the conversation's first response for [SLA timers](/inbox/sla). Without a callback, the conversation breaches its first-response target like any other.
+- **Solved on callback.** With **Solve the ticket when someone calls back** on, Keloa solves the conversation after the callback, as long as it holds only call lines.
+
+Assignment rules and SLA timers apply to these conversations as to any other.
+
+### Internal notes only
+
+You can't send a message from a missed-call conversation: the reply box opens as an internal note, and you call the contact back by phone. Internal notes work here on every plan, also on Starter. Your AI agent never answers it, and Keloa sends no satisfaction survey for it.
+
+**Merging.** You can merge a missed-call conversation into another conversation of the contact. The other way round isn't possible: the merge picker shows other conversations locked as **Phone call ticket**, because a conversation merged into it could no longer be answered.
+
+**Follow-up flows.** A missed call counts as the contact reaching out. It stops a [follow-up flow](/flows/follow-up-flows#when-it-stops-on-its-own) on the contact's other conversations, unless that flow has **Also stop when this contact writes on another channel** switched off.
+
+### Settings
+
+Under **Missed calls** in the Xelion panel:
+
+| Setting | Options | Default |
+| --- | --- | --- |
+| **Open a ticket for** | **Missed calls and voicemails**, **Voicemails only**, **Nothing** | **Missed calls and voicemails** |
+| **Solve the ticket when someone calls back** | On or off | On |
+| **Reuse a solved call ticket for** | 1, 3, 7, 14 or 30 days | 7 days |
+
+With **Nothing**, missed calls and voicemails still show in the call log, but open no conversation and send no notification.
+
+A missed call opens a conversation only when:
+
+- It's an inbound call from a number Keloa linked to a contact. A call from a **withheld number** opens none.
+- It happened in the last 24 hours. The first import and older calls fill the call log only; they never flood your inbox.
+
+## Where calls show up
+
+| Where | What you see |
+| --- | --- |
+| **Contact profile → Calls** | **Total calls**, **Missed** (with the share of inbound calls), **Avg. duration** of answered calls with the total talk time, **Last call**, and the full list. The tab shows while Xelion is connected, or while the workspace has any calls. |
+| **Company profile → Calls** | The same figures and list for all the company's contacts. |
+| **Inbox → Calls** (context drawer) | The contact's figures and last 10 calls, on any of their conversations. **Show all** opens the **Calls** tab of the contact profile. |
+
+Each call shows its direction (inbound or outbound), outcome (**Answered**, **Missed**, **Voicemail**, **Not picked up** or **Busy**), the teammate who took it, the line, the duration and the time. A call that opened a conversation links to it with **Open ticket**. The **⋯** menu of a call has **Call back**, **Open ticket**, **Open contact** and **Download recording**, where they apply.
+
+Calls between colleagues aren't imported.
+
+### Linking calls to contacts
+
+Keloa links each call to a contact by phone number. It matches the number against your contacts' phone numbers and their WhatsApp numbers.
+
+- **Several contacts with the same number.** Keloa links the most recently updated one, and the call shows **Matched by number**.
+- **A number Keloa doesn't know** becomes a new contact, for inbound and outbound calls alike. Its name is the caller name Xelion has, or else the number. When the number is a company's main number, the new contact belongs to that company.
+- **Withheld numbers and your own lines never become contacts.** A call from a withheld number is still imported, but it opens no conversation and sends no notification.
+- **A number added later.** When a contact gets a phone number, typed in by a teammate or from WhatsApp, Keloa links the calls of the last 90 days from that number that no contact holds yet.
+- **Merged contacts** keep their calls: the merge moves them to the contact you keep.
+- **Last activity.** A call counts as activity: the contact list sorts by it, and the contact profile's **First seen** and **Last activity** include the first and the latest call.
+
+## Address book
+
+Keloa reads your Xelion address book once a day and adds its people and organisations to your contacts and companies. You see your customers in Keloa right after you connect, not only the numbers that called.
+
+- **People become contacts, organisations become companies.** A person who works for an organisation in Xelion belongs to that company in Keloa. Keloa takes the name, a mobile or phone number and an email address.
+- **Contacts you already have.** When exactly one Keloa contact has the same phone number or email address, Keloa links the Xelion entry to it and only fills empty fields. When more than one contact matches, Keloa adds nothing and counts the entry under **Skipped: no clear match**. Merge the duplicates, and the next sync links it.
+- **Your edits win.** When a teammate changes or clears a field in Keloa, Keloa never changes that field again. A change in Xelion updates only the fields Keloa filled and nobody changed since.
+- **Not added:** Xelion users (your colleagues), your own company and phone lines, numbers that Xelion saved from calls only, and numbers that were erased from Keloa.
+- **Removed in Xelion.** The contact stays in Keloa. Keloa never deletes customers.
+- **Read-only.** Keloa never changes your Xelion address book.
+
+On the Xelion card, under **Address book**, you see the number of linked contacts and companies and the time of the last sync. Click **Sync address book** to sync now, or turn off **Sync the Xelion address book** to stop. Contacts that were added before stay.
+
+## Recordings
+
+When Xelion records a call, or a contact leaves a voicemail, a teammate can play it in Keloa: on the call in any call list, and on the voicemail line in the conversation.
+
+- **Never stored.** Keloa streams the recording from Xelion each time someone plays it. It keeps no copy, so recordings play only while Xelion is reachable and connected. After a disconnect they stop playing.
+- **Only recorded calls.** Xelion records answered calls and voicemails, so missed and unanswered calls have nothing to play.
+- **Audit log.** Each playback is recorded in the workspace's audit log.
+
+**Who can listen** is a setting under **Recordings** in the Xelion panel:
+
+| Option | Who can play recordings and voicemails |
+| --- | --- |
+| **Everyone who answers tickets** (default) | Owners, admins and agents |
+| **Owners and admins only** | Owners and admins |
+
+Viewers never play recordings. The API user in Xelion also needs access to the recordings of a line; without it, the player says "The Keloa account in Xelion may not listen to this line's recordings."
+
+## Teammates
+
+Under **Teammates**, link each Xelion user to the teammate it stands for, so every call shows who took it and missed-call notifications reach the right person.
+
+- **Suggestions.** When a Xelion user's email address matches a teammate's, Keloa suggests the link, marked **Suggested — confirm**. Click **Confirm** to keep it, or pick another teammate.
+- **Your choice wins.** A link you pick or confirm is never changed by Keloa. Pick **No teammate** to clear one.
+- **Earlier calls follow.** When you change a link, the calls already imported for that Xelion user get the new teammate in the background.
+- **Fresh users.** Keloa reads the Xelion users once a day. To read them now, click **Refresh Xelion users** (once every few minutes).
+
+A Xelion user who is switched off in Xelion shows **Inactive in Xelion**. When a linked teammate leaves the workspace, the row says **The linked teammate left this workspace**. Only owners and admins can change the links.
+
+## Notifications
+
+**Missed calls.** A missed call or voicemail that opens a conversation notifies:
+
+1. the teammates whose phone rang, as linked under [Teammates](#teammates);
+2. if none of them is linked, the conversation's assignee;
+3. if it has none, the team, as for a new conversation.
+
+The notification reads, for example, "Anna de Vries called and nobody picked up" or "Anna de Vries left a voicemail". Each teammate chooses where it reaches them under **Profile → Notifications → Missed calls**. In Keloa, on the desktop and as a push notification are on by default; email and Slack are off. A missed call that opens no conversation, such as one from a withheld number, notifies nobody.
+
+**Connection problems.** When Keloa stops importing calls, the workspace's owners and admins get a notification in Keloa ("reports that calls from Xelion are no longer coming in", with **Check Xelion**) and an email. Keloa sends them once per problem: right away when Xelion refuses the connection, and after 6 hours when the Xelion server can't be reached.
+
+## Call history and your data
+
+Imported calls are your workspace's records.
+
+- **Older calls.** Under **Call history**, pick **Import calls from the last** 7, 30 or 90 days and click **Import older calls**. Calls Keloa already has aren't duplicated.
+- **Retention.** Your workspace's [retention setting](/settings/data-and-privacy#retention) applies to calls too: calls older than it are deleted every night, and Keloa never imports calls further back than it.
+- **Export.** The workspace's JSON export includes the call log (the call details, no audio). The CSV export doesn't.
+- **Deleting a contact.** [Deleting a contact](/settings/data-and-privacy#delete-a-contact) also deletes all their calls. Keloa keeps their phone numbers only as a one-way code, so the calls Xelion still has from before the deletion are never imported again. Later calls from that number are imported, but never turn into a contact by themselves. A teammate can still add the contact by hand.
+- **Deleting in Xelion.** Keloa can't see calls you delete or anonymize in Xelion. Its own call log stays until your retention setting or a contact deletion removes it.
+
+Keloa support staff never enter or change your Xelion password, change your teammate links or listen to your recordings.
+
+## Disconnecting
+
+**Integrations** → **Xelion** → **Disconnect** → **Disconnect**. Keloa stops importing calls, recordings stop playing, and the stored password is deleted.
+
+The imported call history stays, and so do the missed-call conversations, the contacts Keloa created and the teammate links.
+
+**To reconnect**, connect the same Xelion tenant again. Your settings and teammate links come back, and Keloa also imports the calls made while it was disconnected, up to 90 days back.
+
+## Troubleshooting
+
+| Issue | Fix |
+| --- | --- |
+| "Xelion didn't accept this user name and password (or the tenant)" | Check the user name, password and tenant. Keloa doesn't retry a refused password by itself; wrong passwords count toward Xelion's lockout. |
+| "Xelion refused the login for this user" | The user may be locked out, or sign in only through Microsoft. Check the user in Xelion before you try again. |
+| "This Xelion user signs in with a verification code" | Turn multi-factor authentication off for the API user, or use another API user. |
+| "This Xelion user is disabled" or "The password of this Xelion user has expired" | Turn the user on in Xelion, or set a new password that doesn't expire and enter it with **Update credentials**. |
+| "This Xelion user may not read the call log" | Give the API user read access to the call logs of your lines in Xelion, then click **Test**. |
+| "The Keloa user in Xelion may not read the address book" | Give the API user read access to the address book in Xelion, then click **Sync address book**. |
+| "This server didn't answer like a Xelion server" | The server address is wrong, or isn't a Xelion server. Keloa sent it no password. Check the address. |
+| "Keloa couldn't reach this Xelion server" | Check the address, or try again in a moment. Keloa only connects to a Xelion server on a public `https` address. |
+| "Too many login attempts for this Xelion tenant in a short time" | Keloa waits so the API user isn't locked out. Try again after the time shown, at most 15 minutes. |
+| "This Xelion tenant is already connected to another Keloa workspace" | Disconnect it in that workspace first. |
+| "This workspace already has a Xelion tenant connected" | Disconnect it first to connect another one. |
+| The card shows **error** | Xelion no longer accepts Keloa's login: the card says why. Fix it in Xelion, then click **Test**, or enter new details with **Update credentials**. Until then no new calls arrive, and missed calls open no conversations. The calls already imported stay. |
+| "Keloa couldn't reach the Xelion server the last time it tried" | Keloa keeps trying by itself. If it lasts, ask your Xelion administrator to check that the server is online and reachable from the internet. |
+| "Xelion asked Keloa to slow down" | Nothing to do: the import continues shortly. |
+| "This Xelion server runs an older version, so new calls come in more slowly" | Your Xelion server is older than Xelion 9u6. Everything works, but new calls take longer to arrive. Ask your Xelion partner about an update. |
+| "This recording is no longer in Xelion" | Xelion has deleted the recording. Keloa keeps no copy. |
+| A call has no **Play** button | The call wasn't recorded, it was missed, you may not play recordings (see [Recordings](#recordings)), or Xelion is disconnected. |
+| No conversation for a missed call | Check **Open a ticket for**. Calls from withheld numbers and calls older than 24 hours never open one. |
+| A missed call notified the whole team | Nobody whose phone rang is linked to a teammate. Link them under [Teammates](#teammates). |
+| "This contact can't be erased right now because a server setting is missing" | Nothing was deleted. Contact Keloa support at [support@keloa.ai](mailto:support@keloa.ai). |

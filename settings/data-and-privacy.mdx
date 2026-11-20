@@ -11,6 +11,8 @@ Keloa is built in the Netherlands and hosted in the EU. Everything privacy-relat
 
 **Export workspace → JSON** and **Export workspace → CSV** return a machine-readable snapshot of contacts, conversations, messages, knowledge sources, flows, and audit log entries. The CSV is a spreadsheet-friendly subset (contacts + conversations); the JSON is the full record.
 
+With [Xelion](/channels/xelion) connected, the JSON also holds the call log (call details only, no recordings). The CSV doesn't.
+
 Both download immediately for typical workspaces; very large workspaces are streamed in chunks.
 
 ### Audit log
@@ -30,6 +32,7 @@ Effects:
 - The contact record is deleted.
 - Every conversation with this contact is deleted.
 - Every message (inbound and outbound) is deleted.
+- Every phone call imported from [Xelion](/channels/xelion#call-history-and-your-data) is deleted. Their phone numbers are kept only as a one-way code, so those calls are never imported again.
 - Files they uploaded are purged from storage (within 24h).
 - Verified website identities ([identity verification](/developers/identity-verification)) and their synced profile are deleted, along with companies created by that sync that no other contact uses.
 - Audit log retains the deletion event (timestamp, operator) — that stays.
@@ -44,6 +47,8 @@ Set how long resolved conversations are kept (in days). The setting lives at **S
 - **N days** — resolved conversations older than `N` days are removed by a daily job. Pick a value that matches your DPA commitment.
 
 Retention runs daily. Messages, attachments, and any AI metadata on the conversation are removed.
+
+With [Xelion](/channels/xelion#call-history-and-your-data) connected, phone calls older than the retention period are removed too, and Keloa never imports calls further back than it.
 
 Setting a retention policy **does not** retroactively delete older data. It applies as the cleanup job runs each day. To delete a specific person's data immediately, use **Delete contact**.
 
